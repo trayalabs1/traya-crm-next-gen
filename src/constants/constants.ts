@@ -1,1 +1,1 @@
-export const DEFAULT_AXIOS_TIMEOUT = 15000
+export const DEFAULT_AXIOS_TIMEOUT = 15000;
