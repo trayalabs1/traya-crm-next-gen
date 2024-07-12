@@ -1,7 +1,17 @@
+import Maker from "@components/CMS/Maker";
+import { ContentLayout } from "@components/Layout/ContentLayout";
+import AdminPanelLayout from "@components/Layout/Layout";
+import { Suspense } from "react";
+import { BrowserRouter } from "react-router-dom";
+
 export default function App() {
   return (
-    <h1 className="text-3xl font-bold underline mx-auto text-center">
-      Hello world!
-    </h1>
+    <BrowserRouter>
+      <Suspense fallback={<p>Loading</p>}>
+        <AdminPanelLayout>
+          <ContentLayout title="Dashboard">{<Maker />}</ContentLayout>
+        </AdminPanelLayout>
+      </Suspense>
+    </BrowserRouter>
   );
 }
