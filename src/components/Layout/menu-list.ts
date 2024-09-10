@@ -25,23 +25,23 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: "",
       menus: [
         {
-          href: "",
+          href: "cms",
           label: "CMS",
           active: pathname.includes("/cms"),
           icon: SquarePen,
           submenus: [
             {
-              href: "cms/maker",
+              href: "/cms/maker",
               label: "Maker",
               active: pathname === "cms/maker",
             },
             {
-              href: "cms/checker",
+              href: "/cms/checker",
               label: "Checker",
               active: pathname === "cms/checker",
             },
             {
-              href: "cms/publisher",
+              href: "/cms/publisher",
               label: "Publisher",
               active: pathname === "cms/publisher",
             },
