@@ -1,1 +1,1 @@
-export * from "./cmsServices"
+export * from "./cmsServices";
