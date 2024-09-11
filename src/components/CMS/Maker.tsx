@@ -1,5 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
+import { getSegments } from "src/services";
+
 const Maker = () => {
-  return <div>Maker</div>;
+  const { data } = useQuery({
+    queryKey: ["segments"],
+    queryFn: () => getSegments(),
+  });
+
+  return <div>Maker {data}</div>;
 };
 
 export default Maker;
