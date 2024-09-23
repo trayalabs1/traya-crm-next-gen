@@ -220,7 +220,7 @@ export default function SegmentManager() {
                         size="sm"
                         className="mr-2"
                         onClick={() => {
-                          navigate(segment.segment_id)
+                          navigate(segment.segment_id);
                         }}
                       >
                         <Edit className="mr-2 h-4 w-4" /> Edit

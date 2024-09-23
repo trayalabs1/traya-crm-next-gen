@@ -9,7 +9,9 @@ import NotFound from "@components/NotFound/NotFound";
 import { useAuth } from "src/context/useAuth";
 import ForgotPasswordPage from "@components/ForgetPassword/ForgetPassword";
 // import ApprovalLogUI from "@components/CMS/ApprovalLogs";
-const SegmentManager = lazy(() => import("@components/CMS/Segment/SegmentManager"));
+const SegmentManager = lazy(
+  () => import("@components/CMS/Segment/SegmentManager"),
+);
 const ComponentManager = lazy(
   () => import("@components/CMS/Component/ComponentManager"),
 );
@@ -18,7 +20,9 @@ import CreateComponentLayout from "@components/CMS/Component/CreateComponentLayo
 import CreateSegmentLayout from "@components/CMS/Segment/CreateSegmentLayout";
 import SegmentComponents from "@components/CMS/Segment/SegmentComponents";
 import ComponentContents from "@components/CMS/Component/ComponentContents";
-const ContentManager = lazy(() => import("@components/CMS/Content/ContentManager"));
+const ContentManager = lazy(
+  () => import("@components/CMS/Content/ContentManager"),
+);
 
 const AppRoutesConfig = (): RouteObject[] => {
   const { isAuthenticated } = useAuth();
