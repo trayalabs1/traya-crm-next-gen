@@ -22,9 +22,10 @@ const onRequest = (
 
   logOnDev(`🚀 [API] ${method?.toUpperCase()} ${url} | Request`);
 
-  const accessToken = localStorage.getItem("token");
+  // const accessToken = localStorage.getItem("token")
+  const accessToken = import.meta.env.VITE_TEMPORARY_TOKEN
 
-  if (accessToken) config.headers.setAuthorization("Bearer " + "accessToken");
+  if (accessToken) config.headers.setAuthorization("Bearer " + accessToken);
 
   if (method === "get") {
     config.timeout = DEFAULT_AXIOS_TIMEOUT;

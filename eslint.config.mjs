@@ -38,7 +38,6 @@ export default [
       globals: {
         ...globals.browser,
       },
-
       parser: tsParser,
     },
 

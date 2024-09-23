@@ -8,6 +8,7 @@ import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "@components/Fallback/ErrorFallback";
 import GlobalFallback from "@components/Fallback/GlobalFallback";
+import { Toaster } from "@components/ui/toaster";
 
 function AppRoutes() {
   const routes = AppRoutesConfig();
@@ -28,7 +29,13 @@ export default function App() {
         <BrowserRouter>
           <QueryErrorResetBoundary>
             {({ reset }) => (
-              <ErrorBoundary FallbackComponent={ErrorFallback} onReset={reset}>
+              <ErrorBoundary
+                FallbackComponent={ErrorFallback}
+                onReset={reset}
+                onError={(error) => {
+                  console.error(error);
+                }}
+              >
                 <Suspense fallback={<GlobalFallback />}>
                   <AppRoutes />
                 </Suspense>
@@ -36,6 +43,7 @@ export default function App() {
             )}
           </QueryErrorResetBoundary>
           <ReactQueryDevtools initialIsOpen={false} />
+          <Toaster />
         </BrowserRouter>
       </AuthProvider>
     </QueryClientProvider>

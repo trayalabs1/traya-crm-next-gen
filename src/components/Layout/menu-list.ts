@@ -31,19 +31,19 @@ export function getMenuList(pathname: string): Group[] {
           icon: SquarePen,
           submenus: [
             {
-              href: "/cms/maker",
-              label: "Maker",
-              active: pathname === "cms/maker",
+              href: "/cms/segments",
+              label: "Segments",
+              active: pathname === "cms/segments",
             },
             {
-              href: "/cms/checker",
-              label: "Checker",
-              active: pathname === "cms/checker",
+              href: "/cms/components",
+              label: "Components",
+              active: pathname === "cms/components",
             },
             {
-              href: "/cms/publisher",
-              label: "Publisher",
-              active: pathname === "cms/publisher",
+              href: "/cms/contents",
+              label: "Contents",
+              active: pathname === "cms/contents",
             },
           ],
         },

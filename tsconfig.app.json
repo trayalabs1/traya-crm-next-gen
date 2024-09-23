@@ -9,7 +9,7 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -33,9 +33,14 @@
       "@hooks/*": ["./src/hooks/*"],
       "@providers/*": ["./src/providers/*"],
       "@schemas/*": ["./src/schemas/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@services/*": ["./src/services/*"],
       "@types/*": ["./src/types/*"],
-      "@utils/*": ["./src/utils/*"]
-    }
+      "@api/*": ["./src/api/*"]
+
+    },
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "include": ["src"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

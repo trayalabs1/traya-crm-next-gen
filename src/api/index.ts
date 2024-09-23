@@ -1,1 +1,1 @@
-export { makerApi } from "./cmsApi";
+export { contentsApi, componentsApi } from "./cmsApi";
