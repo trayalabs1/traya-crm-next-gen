@@ -4,7 +4,6 @@ import { useToast } from "@hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createContent, updateContent } from "@services/cmsServices";
 import { ContentMutationPayload } from "cms";
-// import { ContentMutationPayload } from "@types/cms/content";
 
 function CreateContentLayout() {
   const { toast } = useToast();
@@ -12,43 +11,36 @@ function CreateContentLayout() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const handleSuccess = ({ duration = 1000, message = "Success" } = {}) => {
+    queryClient.invalidateQueries({ queryKey: ["getContents"] });
+    toast({
+      description: message,
+      variant: "success",
+      duration,
+    });
+    onBack();
+  };
+
+  const handleError = ({ duration = 1000, message = "Error" } = {}) => {
+    toast({
+      description: message,
+      variant: "destructive",
+      duration: duration,
+    });
+  };
+
   const createContentQuery = useMutation({
     mutationFn: (payload: ContentMutationPayload["payload"]) =>
       createContent(payload),
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["getContents"] });
-      toast({
-        description: "Content created successfully.",
-        variant: "success",
-        duration: 500,
-      });
-    },
-    onError() {
-      toast({
-        description: "Unable to create Content.",
-        variant: "destructive",
-        duration: 500,
-      });
-    },
+    onSuccess: () =>
+      handleSuccess({ message: "Content created successfully." }),
+    onError: () => handleError({ message: "Unable to create Content." }),
   });
 
   const updateContentQuery = useMutation({
     mutationFn: (data: ContentMutationPayload) => updateContent(data),
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["getContents"] });
-      toast({
-        description: "Content updated successfully.",
-        variant: "success",
-        duration: 500,
-      });
-    },
-    onError() {
-      toast({
-        description: "Unable to update Content.",
-        variant: "destructive",
-        duration: 500,
-      });
-    },
+    onSuccess: () => handleSuccess({ message: "Content update successfully." }),
+    onError: () => handleError({ message: "Unable to update Content." }),
   });
 
   const onSubmit = async ({ id, payload }: ContentMutationPayload) => {

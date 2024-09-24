@@ -34,7 +34,7 @@ import {
 } from "@components/ui/table";
 import { Edit, GripVertical, Plus } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 // const segments = [
 //   {
@@ -147,19 +147,19 @@ const status = [
 //   current_version: number;
 // }
 
-const initialComponents = Array(10)
+const initialContent = Array(10)
   .fill(null)
   .map((_, index) => ({
-    id: `component-${index + 1}`,
+    id: `content-${index + 1}`,
     data: {
-      name: `Component ${index + 1}`,
-      description: `Description for Component ${index + 1}`,
+      name: `content ${index + 1}`,
+      description: `Description for content ${index + 1}`,
     },
     status: "draft",
   }));
 export default function ComponentContents() {
   const { componentId } = useParams();
-  const [components, setComponents] = useState(initialComponents);
+  const [contents, setContents] = useState(initialContent);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -180,10 +180,10 @@ export default function ComponentContents() {
     e.preventDefault();
     // const draggedOverItem = components[index];
     if (draggedIndex !== null && draggedIndex !== index) {
-      const newComponents = [...components];
-      newComponents.splice(draggedIndex, 1);
-      newComponents.splice(index, 0, components[draggedIndex]);
-      setComponents(newComponents);
+      const newContents = [...contents];
+      newContents.splice(draggedIndex, 1);
+      newContents.splice(index, 0, contents[draggedIndex]);
+      setContents(newContents);
       setDraggedIndex(index);
       setHasChanges(true);
     }
@@ -195,7 +195,7 @@ export default function ComponentContents() {
 
   const handleSave = () => {
     // Here you would typically send the updated order to your backend
-    console.log("Saving new order:", components);
+    console.log("Saving new order:", contents);
     setHasChanges(false);
     setIsConfirmationOpen(false);
   };
@@ -212,7 +212,7 @@ export default function ComponentContents() {
           <div className="flex flex-wrap gap-2">
             <Button
               onClick={() => {
-                navigate("new");
+                navigate(`/cms/components/${componentId}`);
               }}
               className="mb-4"
             >
@@ -259,7 +259,7 @@ export default function ComponentContents() {
               </TableHeader>
 
               <TableBody>
-                {components.map((component, index) => (
+                {contents.map((content, index) => (
                   <TableRow
                     key={index}
                     draggable
@@ -273,20 +273,22 @@ export default function ComponentContents() {
                     </TableCell>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">
-                      <Button asChild variant="link" className="no-underline">
-                        <Link to="/cms/segments/123/components">
-                          {component.data.name}
-                        </Link>
-                      </Button>
+                      {/* <Button asChild variant="link" className="no-underline"> */}
+                      {/* <Link to="/cms/segments/123/components"> */}
+                      {content.data.name}
+                      {/* </Link> */}
+                      {/* </Button> */}
                     </TableCell>
-                    <TableCell>{component.data.description}</TableCell>
-                    <TableCell>{component.status}</TableCell>
+                    <TableCell>{content.data.description}</TableCell>
+                    <TableCell>{content.status}</TableCell>
                     <TableCell className="text-center">
                       <Button
                         variant="outline"
                         size="sm"
                         className="mr-2"
-                        onClick={() => {}}
+                        onClick={() => {
+                          navigate(`/cms/contents/${content.id}`);
+                        }}
                       >
                         <Edit className="mr-2 h-4 w-4" /> Edit
                       </Button>

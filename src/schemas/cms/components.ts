@@ -19,7 +19,7 @@ export const componentSchema = z.object({
 });
 
 export const componentsSchema = z.object({
-  row_count: z.number(),
+  total_count: z.number(),
   mainData: z.array(componentSchema),
 });
 
@@ -33,7 +33,8 @@ export const FormComponentSchema = z.object({
       .min(3, { message: "Title must be at least 3 characters long." }),
     description: z
       .string({ message: "Description is required." })
-      .min(3, { message: "Description must be at least 3 characters long." }),
+      // .min(3, { message: "Description must be at least 3 characters long." })
+      .optional(),
     contents: z
       .array(z.object({ value: z.string(), label: z.string() }))
       .min(1, { message: "Content is required." }),

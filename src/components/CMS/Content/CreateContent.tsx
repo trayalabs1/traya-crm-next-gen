@@ -22,6 +22,7 @@ import { Link, useParams } from "react-router-dom";
 import { useGetContents } from "src/queries";
 import { get } from "lodash";
 import { ContentMutationPayload } from "cms";
+import { generateQueryString } from "@utils/common";
 
 const contentTypes = [
   "banner",
@@ -283,7 +284,12 @@ export default function CreateContent({
   const { id } = useParams();
 
   const isNew = id === "new";
-  const { data: contentData, refetch } = useGetContents(`content_id=${id}`, {
+
+  const queryString = generateQueryString({
+    content_id: id,
+  });
+
+  const { data: contentData, refetch } = useGetContents(queryString, {
     enabled: false,
   });
   const content = get(contentData, ["mainData", 0]);

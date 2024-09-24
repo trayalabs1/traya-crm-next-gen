@@ -212,7 +212,7 @@ export default function SegmentComponents() {
           <div className="flex flex-wrap gap-2">
             <Button
               onClick={() => {
-                navigate("new");
+                navigate(`/cms/segments/${segmentId}`);
               }}
               className="mb-4"
             >
@@ -274,7 +274,7 @@ export default function SegmentComponents() {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">
                       <Button asChild variant="link" className="no-underline">
-                        <Link to="/cms/segments/123/components">
+                        <Link to={`/cms/components/${component.id}/contents`}>
                           {component.data.name}
                         </Link>
                       </Button>

@@ -7,15 +7,6 @@ import {
   CardTitle,
 } from "@components/ui/card";
 import TableSkeleton from "@components/ui/Loader/TableSkeleton";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@components/ui/pagination";
 import { ScrollArea } from "@components/ui/scroll-area";
 import {
   Select,
@@ -42,16 +33,29 @@ import { Edit, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get } from "lodash";
-const status = [
-  "draft",
-  "submitted",
-  "approved_by_checker",
-  "approved_by_publisher",
-  "published",
+import { generateQueryString, PAGINATION_CONFIG } from "@utils/common";
+import GenericPagination from "@components/ui/GenericPagination";
+const statusList = [
+  { label: "Draft", value: "draft" },
+  { label: "Submitted", value: "submitted" },
+  { label: "Approved By Checker", value: "approved_by_checker" },
+  { label: "Approved By Publisher", value: "approved_by_publisher" },
+  { label: "Published", value: "published" },
 ];
 export default function ComponentManager() {
   const navigate = useNavigate();
-  const [queryString] = useState<string>("");
+
+  const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
+  const [limit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
+  const [status, setStatus] = useState<string>("");
+  const [currentVersion, setCurrentVersion] = useState<string>("");
+
+  const queryString = generateQueryString({
+    page_number: String(page),
+    page_size: String(limit),
+    status,
+    current_version: currentVersion,
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["getComponents", queryString],
@@ -82,29 +86,47 @@ export default function ComponentManager() {
           <Button onClick={() => {}} className="mb-4">
             <Plus className="mr-2 h-4 w-4" /> Add Content
           </Button> */}
-          <Select>
+          <Select
+            onValueChange={(value) => {
+              setStatus(value);
+              setPage(1);
+            }}
+            value={status}
+          >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Select a Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Status</SelectLabel>
-                {status.map((item, index) => (
-                  <SelectItem key={index} value={item}>
-                    {item}
+                {statusList.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
                   </SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select>
+          <Select
+            onValueChange={(value) => {
+              setCurrentVersion(value);
+              setPage(1);
+            }}
+            value={currentVersion}
+          >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Select a Version" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Version</SelectLabel>
-                <SelectItem value="v1">V1</SelectItem>
+                {Array.from({ length: 5 }, (_, index) =>
+                  (index + 1).toString(),
+                ).map((version, index) => (
+                  <SelectItem key={index} value={version}>
+                    {version}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -167,30 +189,12 @@ export default function ComponentManager() {
             <TableFooter>
               <TableRow>
                 <TableCell colSpan={7}>
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious href="#" />
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink href="#">1</PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink href="#" isActive>
-                          2
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink href="#">3</PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationNext href="#" />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+                  <GenericPagination
+                    currentPage={page}
+                    itemsPerPage={limit}
+                    onPageChange={(page) => setPage(page)}
+                    totalItems={get(data, ["total_count"], 0)}
+                  />
                 </TableCell>
               </TableRow>
             </TableFooter>

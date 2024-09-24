@@ -12,43 +12,37 @@ function CreateComponentLayout() {
 
   const queryClient = useQueryClient();
 
+  const handleSuccess = ({ duration = 1000, message = "Success" } = {}) => {
+    queryClient.invalidateQueries({ queryKey: ["getComponents"] });
+    toast({
+      description: message,
+      variant: "success",
+      duration,
+    });
+    onBack();
+  };
+
+  const handleError = ({ duration = 1000, message = "Error" } = {}) => {
+    toast({
+      description: message,
+      variant: "destructive",
+      duration: duration,
+    });
+  };
+
   const createComponentQuery = useMutation({
     mutationFn: (payload: ComponentMutationPayload["payload"]) =>
       createComponent(payload),
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["getComponents"] });
-      toast({
-        description: "Component created successfully.",
-        variant: "success",
-        duration: 1000,
-      });
-    },
-    onError() {
-      toast({
-        description: "Unable to create Component.",
-        variant: "destructive",
-        duration: 1000,
-      });
-    },
+    onSuccess: () =>
+      handleSuccess({ message: "Component created successfully." }),
+    onError: () => handleError({ message: "Unable to create Component." }),
   });
 
   const updateComponentQuery = useMutation({
     mutationFn: (data: ComponentMutationPayload) => updateComponent(data),
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["getComponents"] });
-      toast({
-        description: "Component updated successfully.",
-        variant: "success",
-        duration: 500,
-      });
-    },
-    onError() {
-      toast({
-        description: "Unable to update Component.",
-        variant: "destructive",
-        duration: 500,
-      });
-    },
+    onSuccess: () =>
+      handleSuccess({ message: "Component updated successfully." }),
+    onError: () => handleError({ message: "Unable to update Component." }),
   });
 
   const onSubmit = async ({ id, payload }: ComponentMutationPayload) => {

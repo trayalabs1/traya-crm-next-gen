@@ -1,6 +1,6 @@
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
-import Select, { StylesConfig } from "react-select";
+import Select from "react-select";
 import { ArrowLeft } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useGetContents } from "src/queries";
@@ -18,60 +18,13 @@ import { FormComponentSchema } from "@schemas/cms/components";
 import { ComponentMutationPayload, FormComponentSchemaType } from "cms";
 import { useQuery } from "@tanstack/react-query";
 import { getComponents } from "@services/cmsServices";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import _ from "lodash";
+import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
+import { generateQueryString } from "@utils/common";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
   onBack?: () => void;
-};
-
-type OptionType = { label: string; value: string };
-
-const selectStyles: StylesConfig<OptionType, true> = {
-  control: (styles) => ({
-    ...styles,
-    backgroundColor: "hsl(var(--background))",
-    borderColor: "hsl(var(--border))",
-    "&:hover": {
-      borderColor: "hsl(var(--border-hover))",
-    },
-    boxShadow: "none",
-  }),
-  menu: (styles) => ({
-    ...styles,
-    backgroundColor: "hsl(var(--background))",
-    borderColor: "hsl(var(--border))",
-  }),
-  option: (styles, { isFocused, isSelected }) => ({
-    ...styles,
-    backgroundColor: isSelected
-      ? "hsl(var(--primary))"
-      : isFocused
-        ? "hsl(var(--accent))"
-        : "hsl(var(--background))",
-    color: isSelected
-      ? "hsl(var(--primary-foreground))"
-      : "hsl(var(--foreground))",
-    ":active": {
-      backgroundColor: "hsl(var(--accent))",
-    },
-  }),
-  multiValue: (styles) => ({
-    ...styles,
-    backgroundColor: "hsl(var(--accent))",
-  }),
-  multiValueLabel: (styles) => ({
-    ...styles,
-    color: "hsl(var(--accent-foreground))",
-  }),
-  multiValueRemove: (styles) => ({
-    ...styles,
-    color: "hsl(var(--accent-foreground))",
-    ":hover": {
-      backgroundColor: "hsl(var(--destructive))",
-      color: "hsl(var(--destructive-foreground))",
-    },
-  }),
 };
 
 export default function CreateComponent({
@@ -105,7 +58,10 @@ export default function CreateComponent({
     },
   });
 
-  const [queryString] = useState<string>(`component_id=${id}`);
+  const queryString = generateQueryString({
+    component_id: id,
+  });
+
   const { refetch, data: component } = useQuery({
     queryKey: ["getComponent", queryString],
     queryFn: () => getComponents(queryString),
@@ -120,8 +76,6 @@ export default function CreateComponent({
 
   useEffect(() => {
     if (component) {
-      console.log(component, "com");
-
       const data = _.get(component, ["mainData", 0]);
       const name = _.get(data, ["name"]);
       let dataKey = "data";
@@ -145,7 +99,6 @@ export default function CreateComponent({
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h3 className="font-bold text-xl">
-          {" "}
           {isNew ? "Create" : "Edit"} Component
         </h3>
       </div>
@@ -217,7 +170,7 @@ export default function CreateComponent({
                         onBlur={onBlur}
                         onChange={onChange}
                         ref={ref}
-                        styles={selectStyles}
+                        styles={reactSelectStyles}
                         isMulti
                         placeholder="Select contents..."
                         options={contentsOptions}

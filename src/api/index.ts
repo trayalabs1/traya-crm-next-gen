@@ -1,1 +1,1 @@
-export { contentsApi, componentsApi } from "./cmsApi";
+export * from "./cmsApi";
