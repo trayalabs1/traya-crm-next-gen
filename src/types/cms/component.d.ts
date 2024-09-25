@@ -18,4 +18,4 @@ interface ComponentPayload {
 
 export type ComponentMutationPayload = ComponentPayload;
 
-export type ComponentContentsType = z.infer<typeof ComponentContentsSchema>
+export type ComponentContentsType = z.infer<typeof ComponentContentsSchema>;
