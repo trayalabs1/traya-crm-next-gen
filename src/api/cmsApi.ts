@@ -7,7 +7,8 @@ export const contentsApi = {
     return "/v2/cms/contents" + (queryString ? queryString : "");
   },
   CREATE_CONTENT: "/v2/cms/content/create",
-  UPDATE_CONTENT: (id = "contentId") => "/v2/cms/content/update/" + id,
+  UPDATE_CONTENT: (contentId: string | undefined) =>
+    "/v2/cms/content/update/" + contentId,
 } as const;
 
 export const componentsApi = {
@@ -15,7 +16,10 @@ export const componentsApi = {
     return "/v2/cms/components" + (queryString ? queryString : "");
   },
   CREATE_COMPONENT: "/v2/cms/component/create",
-  UPDATE_COMPONENT: (id = "componentId") => "/v2/cms/component/update/" + id,
+  UPDATE_COMPONENT: (componentId: string | undefined) =>
+    "/v2/cms/component/update/" + componentId,
+  GET_COMPONENT_CONTENTS_BY_COMPONENT_ID: (componentId?: string) =>
+    "/v2/cms/component/content/" + componentId,
 } as const;
 
 export const segmentsApi = {

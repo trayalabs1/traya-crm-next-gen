@@ -15,15 +15,15 @@ import {
   DialogTitle,
 } from "@components/ui/dialog";
 import { ScrollArea } from "@components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectGroup,
+//   SelectItem,
+//   SelectLabel,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@components/ui/select";
 import {
   Table,
   TableBody,
@@ -32,137 +32,23 @@ import {
   TableHeader,
   TableRow,
 } from "@components/ui/table";
+import { getComponentContents } from "@services/cmsServices";
+import { useQuery } from "@tanstack/react-query";
+import { ComponentContentsType } from "cms";
+// import { statusList } from "@utils/common";
 import { Edit, GripVertical, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
-// const segments = [
-//   {
-//     segment_id: "segment_id_1st",
-//     name: "female-draft",
-//     gender: "female",
-//     weeks_in_program: 1,
-//     order_counts: 1,
-//     recommended_products: ["prod1", "prod2"],
-//     status: "draft",
-//     data: {
-//       component_ids: [],
-//     },
-//     current_version: 3,
-//     draft_version: 3,
-//     draft: {
-//       name: "female-draft",
-//       gender: "female",
-//       weeks_in_program: 1,
-//       product_counts: 1,
-//       recommended_products: ["prod1", "prod2"],
-//       data: {
-//         component_ids: [],
-//       },
-//     },
-//     created_by: "user_id_1",
-//     created_at: "2024-06-10T00:00:00Z",
-//     updated_by: "user_id_3",
-//     updated_at: "2024-06-12T00:00:00Z",
-//   },
-//   {
-//     segment_id: "segment_id_2st",
-//     name: "female-draft",
-//     gender: "female",
-//     weeks_in_program: 1,
-//     order_counts: 1,
-//     recommended_products: ["prod1", "prod2"],
-//     status: "draft",
-//     data: {
-//       component_ids: [],
-//     },
-//     current_version: 3,
-//     draft_version: 3,
-//     draft: {
-//       name: "female-draft",
-//       gender: "female",
-//       weeks_in_program: 1,
-//       product_counts: 1,
-//       recommended_products: ["prod1", "prod2"],
-//       data: {
-//         component_ids: [],
-//       },
-//     },
-//     created_by: "user_id_1",
-//     created_at: "2024-06-10T00:00:00Z",
-//     updated_by: "user_id_3",
-//     updated_at: "2024-06-12T00:00:00Z",
-//   },
-//   {
-//     segment_id: "segment_id_3st",
-//     name: "female-draft",
-//     gender: "female",
-//     weeks_in_program: 1,
-//     order_counts: 1,
-//     recommended_products: ["prod1", "prod2"],
-//     status: "draft",
-//     data: {
-//       component_ids: [],
-//     },
-//     current_version: 3,
-//     draft_version: 3,
-//     draft: {
-//       name: "female-draft",
-//       gender: "female",
-//       weeks_in_program: 1,
-//       product_counts: 1,
-//       recommended_products: ["prod1", "prod2"],
-//       data: {
-//         component_ids: [],
-//       },
-//     },
-//     created_by: "user_id_1",
-//     created_at: "2024-06-10T00:00:00Z",
-//     updated_by: "user_id_3",
-//     updated_at: "2024-06-12T00:00:00Z",
-//   },
-// ];
-
-const status = [
-  "draft",
-  "submitted",
-  "approved_by_checker",
-  "approved_by_publisher",
-  "published",
-];
-
-// interface Component {
-//   component_id: string;
-//   data: {
-//     name: string;
-//     description: string;
-//     content_ids: string[]; // Array of strings, assuming content IDs are strings
-//   };
-//   status:
-//     | "draft"
-//     | "submitted"
-//     | "approved_by_checker"
-//     | "approved_by_publisher"
-//     | "published";
-//   current_version: number;
-// }
-
-const initialContent = Array(10)
-  .fill(null)
-  .map((_, index) => ({
-    id: `content-${index + 1}`,
-    data: {
-      name: `content ${index + 1}`,
-      description: `Description for content ${index + 1}`,
-    },
-    status: "draft",
-  }));
+import TableSkeleton from "@components/ui/Loader/TableSkeleton";
+import { isArray, get } from "lodash";
 export default function ComponentContents() {
   const { componentId } = useParams();
-  const [contents, setContents] = useState(initialContent);
+  const [contents, setContents] = useState<ComponentContentsType>([]);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  // const [status, setStatus] = useState<string>("");
+  // const [currentVersion, setCurrentVersion] = useState<string>("");
 
   const onDragStart = (
     e: React.DragEvent<HTMLTableRowElement>,
@@ -201,12 +87,29 @@ export default function ComponentContents() {
   };
   const navigate = useNavigate();
 
+  // const queryString = generateQueryString({
+  //   page_number: String(page),
+  //   page_size: String(limit),
+  //   status,
+  //   current_version: currentVersion,
+  // });
+  const { data, isLoading, isSuccess } = useQuery({
+    queryKey: ["getComponentContents", componentId],
+    queryFn: () => getComponentContents(componentId),
+  });
+
+  useEffect(() => {
+    if (isArray(data)) {
+      setContents(data);
+    }
+  }, [isSuccess, data]);
+  if (isLoading) return <TableSkeleton />;
   return (
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Component {componentId}</CardTitle>
-          <CardDescription>Manage Contents</CardDescription>
+          <CardTitle>{get(data, [0, "name"], "-")}</CardTitle>
+          <CardDescription>Manage Contents of Component</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -218,32 +121,48 @@ export default function ComponentContents() {
             >
               <Plus className="mr-2 h-4 w-4" /> Add Content
             </Button>
-            <Select>
+            {/* <Select
+              onValueChange={(value) => {
+                setStatus(value);
+              }}
+              value={status}
+            >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select a Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Status</SelectLabel>
-                  {status.map((item, index) => (
-                    <SelectItem key={index} value={item}>
-                      {item}
+                  {statusList.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
                     </SelectItem>
                   ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <Select>
+            <Select
+              onValueChange={(value) => {
+                setCurrentVersion(value);
+              }}
+              value={currentVersion}
+            >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select a Version" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Version</SelectLabel>
-                  <SelectItem value="v1">V1</SelectItem>
+                  {Array.from({ length: 5 }, (_, index) =>
+                    (index + 1).toString(),
+                  ).map((version, index) => (
+                    <SelectItem key={index} value={version}>
+                      {version}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
-            </Select>
+            </Select> */}
           </div>
           <ScrollArea>
             <Table>
@@ -253,55 +172,65 @@ export default function ComponentContents() {
                   <TableHead>#</TableHead>
                   <TableHead className="w-[100px]">Name</TableHead>
                   <TableHead>Description</TableHead>
+                  <TableHead>Version</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
-                {contents.map((content, index) => (
-                  <TableRow
-                    key={index}
-                    draggable
-                    onDragStart={(e) => onDragStart(e, index)}
-                    onDragOver={(e) => onDragOver(e, index)}
-                    onDragEnd={onDragEnd}
-                    className={draggedIndex === index ? "opacity-50" : ""}
-                  >
-                    <TableCell>
-                      <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
-                    </TableCell>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell className="font-medium">
-                      {/* <Button asChild variant="link" className="no-underline"> */}
-                      {/* <Link to="/cms/segments/123/components"> */}
-                      {content.data.name}
-                      {/* </Link> */}
-                      {/* </Button> */}
-                    </TableCell>
-                    <TableCell>{content.data.description}</TableCell>
-                    <TableCell>{content.status}</TableCell>
-                    <TableCell className="text-center">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mr-2"
-                        onClick={() => {
-                          navigate(`/cms/contents/${content.id}`);
-                        }}
-                      >
-                        <Edit className="mr-2 h-4 w-4" /> Edit
-                      </Button>
-                      {/* <Button
+                {isArray(data) &&
+                  data.map((content, index) => (
+                    <TableRow
+                      key={index}
+                      draggable
+                      onDragStart={(e) => onDragStart(e, index)}
+                      onDragOver={(e) => onDragOver(e, index)}
+                      onDragEnd={onDragEnd}
+                      className={draggedIndex === index ? "opacity-50" : ""}
+                    >
+                      <TableCell>
+                        <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
+                      </TableCell>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell className="font-medium">
+                        {/* <Button asChild variant="link" className="no-underline"> */}
+                        {/* <Link to="/cms/segments/123/components"> */}
+                        {get(content, ["content_name"])}
+                        {/* </Link> */}
+                        {/* </Button> */}
+                      </TableCell>
+                      <TableCell>
+                        {get(content, ["content_type"]) || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {" "}
+                        {get(content, ["current_version"]) || "-"}
+                      </TableCell>
+                      <TableCell> {get(content, ["status"]) || "-"}</TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mr-2"
+                          onClick={() => {
+                            navigate(
+                              `/cms/contents/${content.contents.content_id}`,
+                            );
+                          }}
+                        >
+                          <Edit className="mr-2 h-4 w-4" /> Edit
+                        </Button>
+                        {/* <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => {}}
                       >
                         <Trash2 className="mr-2 h-4 w-4" /> Delete
                       </Button> */}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </ScrollArea>

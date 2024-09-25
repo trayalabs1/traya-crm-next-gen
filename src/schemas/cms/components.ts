@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ContentSchema } from "./contents";
 
 export const componentSchema = z.object({
   data: z.object({
@@ -40,3 +41,24 @@ export const FormComponentSchema = z.object({
       .min(1, { message: "Content is required." }),
   }),
 });
+
+export const ComponentContentsSchema = z.array(
+  z.object({
+    contentId: z.string(),
+    content_data: z.array(z.object({}).nullable()),
+    contents: ContentSchema,
+    _id: z.string(),
+    component_id: z.string(),
+    name: z.string(),
+    data: z.object({
+      title: z.string(),
+      description: z.string(),
+      content_ids: z.array(z.string()),
+    }),
+    status: z.enum(["draft"]),
+    current_version: z.number(),
+    draft_version: z.number(),
+    content_name: z.string(),
+    content_type: z.enum(["banner"]),
+  }),
+);

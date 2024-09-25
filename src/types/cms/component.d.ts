@@ -1,4 +1,5 @@
 import {
+  ComponentContentsSchema,
   componentSchema,
   componentsSchema,
   FormComponentSchema,
@@ -16,3 +17,5 @@ interface ComponentPayload {
 }
 
 export type ComponentMutationPayload = ComponentPayload;
+
+export type ComponentContentsType = z.infer<typeof ComponentContentsSchema>
