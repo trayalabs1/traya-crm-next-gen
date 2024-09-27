@@ -28,4 +28,8 @@ export const segmentsApi = {
   },
   CREATE_SEGMENT: "/v2/cms/segment/create",
   UPDATE_SEGMENT: (id = "segmentId") => "/v2/cms/segment/update/" + id,
+  GET_CONTENTS_COMPONENTS_FROM_SEGMENT: (
+    segmentId: string,
+    fetchContents: boolean,
+  ) => `v2/cms/segment/component/content/${segmentId}/${fetchContents}`,
 } as const;

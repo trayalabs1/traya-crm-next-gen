@@ -18,7 +18,7 @@ interface TableSkeletonProps {
 export default function TableSkeleton({
   rows = 10,
   columns = 6,
-}: TableSkeletonProps = {}) {
+}: TableSkeletonProps = {}): React.ReactElement {
   return (
     <Card className="w-screen h-screen flex flex-col">
       <CardHeader className="space-y-2 flex-shrink-0">

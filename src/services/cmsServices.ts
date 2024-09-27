@@ -9,6 +9,7 @@ import {
   SegmentMutationPayload,
   Segment,
   ComponentContentsType,
+  SegmentComponentsContentsExpandedType,
 } from "cms";
 import { axiosClient } from "@utils/axiosInterceptor";
 import { contentsApi, componentsApi, segmentsApi } from "src/api";
@@ -90,6 +91,16 @@ export const updateSegment = async ({
   const response = await axiosClient.put(
     segmentsApi.UPDATE_SEGMENT(id),
     payload,
+  );
+  return response.data;
+};
+
+export const getContentsComponentsFromSegment = async (
+  segmentId: string,
+  fetchContents = false,
+): Promise<SegmentComponentsContentsExpandedType> => {
+  const response = await axiosClient.get(
+    segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, fetchContents),
   );
   return response.data;
 };

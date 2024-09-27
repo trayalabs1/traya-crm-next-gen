@@ -2,7 +2,7 @@ import { Button } from "@components/ui/button";
 import {
   Card,
   CardContent,
-  // CardDescription,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@components/ui/card";
@@ -16,15 +16,6 @@ import {
 } from "@components/ui/dialog";
 import { ScrollArea } from "@components/ui/scroll-area";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -32,134 +23,20 @@ import {
   TableHeader,
   TableRow,
 } from "@components/ui/table";
+import { SegmentComponentsContentsExpandedType } from "cms";
 import { Edit, GripVertical, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSegmentComponentContent } from "src/queries/cms/segments";
+import { isArray, get } from "lodash";
+import TableSkeleton from "@components/ui/Loader/TableSkeleton";
+import { formatWithSpaces } from "@utils/common";
 
-// const segments = [
-//   {
-//     segment_id: "segment_id_1st",
-//     name: "female-draft",
-//     gender: "female",
-//     weeks_in_program: 1,
-//     order_counts: 1,
-//     recommended_products: ["prod1", "prod2"],
-//     status: "draft",
-//     data: {
-//       component_ids: [],
-//     },
-//     current_version: 3,
-//     draft_version: 3,
-//     draft: {
-//       name: "female-draft",
-//       gender: "female",
-//       weeks_in_program: 1,
-//       product_counts: 1,
-//       recommended_products: ["prod1", "prod2"],
-//       data: {
-//         component_ids: [],
-//       },
-//     },
-//     created_by: "user_id_1",
-//     created_at: "2024-06-10T00:00:00Z",
-//     updated_by: "user_id_3",
-//     updated_at: "2024-06-12T00:00:00Z",
-//   },
-//   {
-//     segment_id: "segment_id_2st",
-//     name: "female-draft",
-//     gender: "female",
-//     weeks_in_program: 1,
-//     order_counts: 1,
-//     recommended_products: ["prod1", "prod2"],
-//     status: "draft",
-//     data: {
-//       component_ids: [],
-//     },
-//     current_version: 3,
-//     draft_version: 3,
-//     draft: {
-//       name: "female-draft",
-//       gender: "female",
-//       weeks_in_program: 1,
-//       product_counts: 1,
-//       recommended_products: ["prod1", "prod2"],
-//       data: {
-//         component_ids: [],
-//       },
-//     },
-//     created_by: "user_id_1",
-//     created_at: "2024-06-10T00:00:00Z",
-//     updated_by: "user_id_3",
-//     updated_at: "2024-06-12T00:00:00Z",
-//   },
-//   {
-//     segment_id: "segment_id_3st",
-//     name: "female-draft",
-//     gender: "female",
-//     weeks_in_program: 1,
-//     order_counts: 1,
-//     recommended_products: ["prod1", "prod2"],
-//     status: "draft",
-//     data: {
-//       component_ids: [],
-//     },
-//     current_version: 3,
-//     draft_version: 3,
-//     draft: {
-//       name: "female-draft",
-//       gender: "female",
-//       weeks_in_program: 1,
-//       product_counts: 1,
-//       recommended_products: ["prod1", "prod2"],
-//       data: {
-//         component_ids: [],
-//       },
-//     },
-//     created_by: "user_id_1",
-//     created_at: "2024-06-10T00:00:00Z",
-//     updated_by: "user_id_3",
-//     updated_at: "2024-06-12T00:00:00Z",
-//   },
-// ];
+export default function SegmentComponents(): React.ReactElement {
+  const { segmentId } = useParams<{ segmentId: string }>();
+  const [components, setComponents] =
+    useState<SegmentComponentsContentsExpandedType>([]);
 
-const status = [
-  "draft",
-  "submitted",
-  "approved_by_checker",
-  "approved_by_publisher",
-  "published",
-];
-
-// interface Component {
-//   component_id: string;
-//   data: {
-//     name: string;
-//     description: string;
-//     content_ids: string[]; // Array of strings, assuming content IDs are strings
-//   };
-//   status:
-//     | "draft"
-//     | "submitted"
-//     | "approved_by_checker"
-//     | "approved_by_publisher"
-//     | "published";
-//   current_version: number;
-// }
-
-const initialComponents = Array(10)
-  .fill(null)
-  .map((_, index) => ({
-    id: `component-${index + 1}`,
-    data: {
-      name: `Component ${index + 1}`,
-      description: `Description for Component ${index + 1}`,
-    },
-    status: "draft",
-  }));
-export default function SegmentComponents() {
-  const { segmentId } = useParams();
-  const [components, setComponents] = useState(initialComponents);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -201,12 +78,25 @@ export default function SegmentComponents() {
   };
   const navigate = useNavigate();
 
+  const { data, isSuccess, isLoading } = useSegmentComponentContent({
+    segmentId: segmentId ?? "defaultSegmentId",
+    fetchContents: false,
+  });
+
+  useEffect(() => {
+    if (isArray(data)) {
+      setComponents(data);
+    }
+  }, [isSuccess, data]);
+
+  if (isLoading) return <TableSkeleton />;
+
   return (
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Segments {segmentId}</CardTitle>
-          {/* <CardDescription>Manage Components</CardDescription> */}
+          <CardTitle>Segment</CardTitle>
+          <CardDescription>Manage Components of Segment</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -218,7 +108,7 @@ export default function SegmentComponents() {
             >
               <Plus className="mr-2 h-4 w-4" /> Add Component
             </Button>
-            <Select>
+            {/* <Select>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select a Status" />
               </SelectTrigger>
@@ -243,7 +133,7 @@ export default function SegmentComponents() {
                   <SelectItem value="v1">V1</SelectItem>
                 </SelectGroup>
               </SelectContent>
-            </Select>
+            </Select> */}
           </div>
           <ScrollArea>
             <Table>
@@ -252,7 +142,9 @@ export default function SegmentComponents() {
                   <TableHead></TableHead>
                   <TableHead>#</TableHead>
                   <TableHead className="w-[100px]">Name</TableHead>
+                  <TableHead>Title</TableHead>
                   <TableHead>Description</TableHead>
+                  <TableHead>Version</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-center">Action</TableHead>
                 </TableRow>
@@ -274,20 +166,30 @@ export default function SegmentComponents() {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">
                       <Button asChild variant="link" className="no-underline">
-                        <Link to={`/cms/components/${component.id}/contents`}>
-                          {component.data.name}
+                        <Link
+                          to={`/cms/components/${component.componentId}/contents`}
+                        >
+                          {get(component, ["name"]) || "-"}
                         </Link>
                       </Button>
                     </TableCell>
-                    <TableCell>{component.data.description}</TableCell>
-                    <TableCell>{component.status}</TableCell>
+                    <TableCell> {get(component, ["title"]) || "-"}</TableCell>
+                    <TableCell>
+                      {get(component, ["description"]) || "-"}
+                    </TableCell>
+                    <TableCell>
+                      {get(component, ["current_version"]) || "-"}
+                    </TableCell>
+                    <TableCell>
+                      {formatWithSpaces(get(component, ["status"])) || "-"}
+                    </TableCell>
                     <TableCell className="text-center">
                       <Button
                         variant="outline"
                         size="sm"
                         className="mr-2"
                         onClick={() => {
-                          navigate(`/cms/components/${component.id}`);
+                          navigate(`/cms/components/${component.componentId}`);
                         }}
                       >
                         <Edit className="mr-2 h-4 w-4" /> Edit

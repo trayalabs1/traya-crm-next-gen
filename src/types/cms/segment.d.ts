@@ -1,5 +1,6 @@
 import {
   FormSegmentSchema,
+  segmentComponentsContentsExpanded,
   segmentSchema,
   segmentsSchema,
 } from "@schemas/cms/segments";
@@ -16,3 +17,5 @@ interface SegmentPayload {
 }
 
 export type SegmentMutationPayload = SegmentPayload;
+
+export type SegmentComponentsContentsExpandedType = z.infer<typeof segmentComponentsContentsExpanded>

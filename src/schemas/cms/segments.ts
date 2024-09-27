@@ -114,3 +114,24 @@ export const FormSegmentSchema = z.object({
     { message: "Days Since Latest Form Filled is required." },
   ),
 });
+
+export const segmentComponentsContentsExpanded = z.array(
+  z.object({
+    componentId: z.string(),
+    name: z.string(),
+    title: z.string(),
+    description: z.string(),
+    status: z.enum(["published"]),
+    current_version: z.number(),
+    contents: z
+      .array(
+        z.object({
+          content_id: z.string(),
+          content_name: z.string(),
+          content_type: z.string(),
+          content_data: z.record(z.union([z.string(), z.object({})])),
+        }),
+      )
+      .optional(),
+  }),
+);

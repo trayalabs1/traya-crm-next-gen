@@ -147,7 +147,9 @@ export default function SegmentManager() {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">
                       <Button asChild variant="link" className="no-underline">
-                        <Link to="/cms/segments/123/components">
+                        <Link
+                          to={`/cms/segments/${segment.segment_id}/components`}
+                        >
                           {segment.name}
                         </Link>
                       </Button>
