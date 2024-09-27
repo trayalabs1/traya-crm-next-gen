@@ -18,4 +18,6 @@ interface SegmentPayload {
 
 export type SegmentMutationPayload = SegmentPayload;
 
-export type SegmentComponentsContentsExpandedType = z.infer<typeof segmentComponentsContentsExpanded>
+export type SegmentComponentsContentsExpandedType = z.infer<
+  typeof segmentComponentsContentsExpanded
+>;
