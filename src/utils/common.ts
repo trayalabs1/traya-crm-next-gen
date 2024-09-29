@@ -131,3 +131,22 @@ export const daysSinceLatestFormFilled: CustomOptionType[] = [
   { label: "D31-D45", value: "D31-D45" },
   { label: "D45+", value: "D45+" },
 ];
+
+export const getJsonFromStorage = <T>(
+  key: string,
+  storageType: "local" | "session" = "local",
+): T | null => {
+  const storage = storageType === "local" ? localStorage : sessionStorage;
+  const jsonString = storage.getItem(key);
+
+  if (jsonString) {
+    try {
+      return JSON.parse(jsonString);
+    } catch (error) {
+      console.error("Error parsing JSON from storage:", error);
+      return null;
+    }
+  }
+
+  return null;
+};

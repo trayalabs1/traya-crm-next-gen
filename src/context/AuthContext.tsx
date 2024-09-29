@@ -1,8 +1,11 @@
+import type { User } from "user";
 import React, { createContext, useEffect, useState } from "react";
+import { getJsonFromStorage } from "@utils/common";
 
 export interface AuthContextProps {
   isAuthenticated: boolean;
-  login: () => void;
+  user: User | null;
+  login: (userData: User) => void;
   logout: () => void;
 }
 
@@ -21,11 +24,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem("isAuthenticated", isAuthenticated ? "true" : "false");
   }, [isAuthenticated]);
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    setUser(getJsonFromStorage("user"));
+  }, [isAuthenticated]);
+  const login = (userData: User) => {
+    setIsAuthenticated(true);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );

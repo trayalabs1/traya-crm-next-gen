@@ -136,6 +136,7 @@ export default function CreateSegment({
       });
     }
   }, [segment, form]);
+
   return (
     <>
       <div className="flex items-center m-6 ">
@@ -150,6 +151,9 @@ export default function CreateSegment({
         </Button>
         <h3 className="font-bold text-xl">
           {isNew ? "Create" : "Edit"} Segment
+          {_.get(segment, ["mainData", 0, "status"]) == "draft"
+            ? " (Draft Version) "
+            : ""}
         </h3>
       </div>
       <div className="w-3/4 mx-auto">
