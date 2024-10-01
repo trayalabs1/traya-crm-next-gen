@@ -1,4 +1,4 @@
-import { WhyTrustTrayaProps } from "@components/Home/Home";
+import { WhyTrustTrayaProps } from "@components/MobileLayout/RenderMobileComponents";
 
 const WhyTrustTraya: React.FC<WhyTrustTrayaProps> = ({ contents }) => {
   return (

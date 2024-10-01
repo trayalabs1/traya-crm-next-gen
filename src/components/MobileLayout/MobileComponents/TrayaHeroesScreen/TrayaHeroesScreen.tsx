@@ -1,4 +1,4 @@
-import { TrayaHeroesScreenProps } from "@components/Home/Home";
+import { TrayaHeroesScreenProps } from "@components/MobileLayout/RenderMobileComponents";
 import { ScrollArea, ScrollBar } from "@components/ui/scroll-area";
 import { memo } from "react";
 

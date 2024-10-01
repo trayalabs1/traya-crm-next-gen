@@ -1,4 +1,4 @@
-import { GetStartedV2Props } from "@components/Home/Home";
+import { GetStartedV2Props } from "@components/MobileLayout/RenderMobileComponents";
 import { memo } from "react";
 
 const GetStartedV2: React.FC<GetStartedV2Props> = ({ contents }) => {

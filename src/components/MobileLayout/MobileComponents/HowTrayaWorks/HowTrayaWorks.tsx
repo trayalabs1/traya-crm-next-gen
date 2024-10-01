@@ -2,7 +2,7 @@ import { doubleQuotesRemover } from "@utils/common";
 import React, { useState } from "react";
 import { COLORS } from "../colors";
 import { cn } from "@utils/shadcn";
-import { HowTrayaWorksProps } from "@components/Home/Home";
+import { HowTrayaWorksProps } from "@components/MobileLayout/RenderMobileComponents";
 
 const HowTrayaWorks: React.FC<HowTrayaWorksProps> = ({ contents, title }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);

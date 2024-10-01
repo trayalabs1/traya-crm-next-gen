@@ -1,4 +1,4 @@
-import { TrayaDoctorsProps } from "@components/Home/Home";
+import { TrayaDoctorsProps } from "@components/MobileLayout/RenderMobileComponents";
 import { ScrollArea, ScrollBar } from "@components/ui/scroll-area";
 import React, { memo } from "react";
 

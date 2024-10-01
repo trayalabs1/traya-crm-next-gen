@@ -33,13 +33,16 @@ export const FormSegmentSchema = z.object({
   name: z
     .string({ message: "Name is required." })
     .min(3, { message: "Name must be at least 3 characters long." }),
-  gender: z.object(
-    { value: z.string(), label: z.string() },
-    { message: "Gender is required" },
-  ),
+  gender: z
+    .object(
+      { value: z.string(), label: z.string() },
+      { message: "Gender is required" },
+    )
+    .optional(),
   weeksInProgram: z
     .array(z.object({ value: z.string(), label: z.string() }))
-    .min(1, { message: "Weeks In Program is required." }),
+    // .min(1, { message: "Weeks In Program is required." })
+    .optional(),
   orderCounts: z
     .union([
       z
@@ -109,10 +112,12 @@ export const FormSegmentSchema = z.object({
       { message: "Phases is required." },
     )
     .optional(),
-  daysSinceLatestFormFilled: z.object(
-    { value: z.string(), label: z.string() },
-    { message: "Days Since Latest Form Filled is required." },
-  ),
+  daysSinceLatestFormFilled: z
+    .object(
+      { value: z.string(), label: z.string() },
+      { message: "Days Since Latest Form Filled is required." },
+    )
+    .optional(),
 });
 
 export const segmentComponentsContentsExpanded = z.array(

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@components/ui/button";
 import { COLORS } from "../colors";
 import { cn } from "@utils/shadcn";
-import { HairTestProps } from "@components/Home/Home";
+import { HairTestProps } from "@components/MobileLayout/RenderMobileComponents";
 
 const HairTest: React.FC<HairTestProps> = ({ contents }) => {
   // const saleTheme = { isOn: true };

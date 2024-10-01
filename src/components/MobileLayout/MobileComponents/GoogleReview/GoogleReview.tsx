@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@components/ui/scroll-area";
 import { memo } from "react";
-import { GoogleReviewsProps } from "@components/Home/Home";
+import { GoogleReviewsProps } from "@components/MobileLayout/RenderMobileComponents";
 
 interface Review {
   reviewer_name?: string;

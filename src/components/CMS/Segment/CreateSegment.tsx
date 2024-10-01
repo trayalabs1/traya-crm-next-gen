@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import Select from "react-select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getComponents, getSegments } from "@services/cmsServices";
 import { useQuery } from "@tanstack/react-query";
@@ -31,6 +31,9 @@ import {
   stages,
   streaks,
 } from "@utils/common";
+import DiffChecker from "../DiffChecker/DiffChecker";
+import CustomDrawer from "@components/ui/Drawer/CustomDrawer";
+
 type CreateSegmentProps = {
   onSubmit: (content: SegmentMutationPayload) => void;
   onBack?: () => void;
@@ -50,6 +53,20 @@ const weeks = [
   { label: "Week 4", value: "week4" },
 ];
 
+const defaultValues = {
+  name: "",
+  gender: undefined,
+  weeksInProgram: [],
+  orderCounts: "",
+  components: [],
+  recommendedProducts: [],
+  formStatus: undefined,
+  coins: undefined,
+  stages: undefined,
+  streaks: undefined,
+  phases: undefined,
+  daysSinceLatestFormFilled: undefined,
+};
 export default function CreateSegment({
   onSubmit,
   onBack,
@@ -84,19 +101,11 @@ export default function CreateSegment({
 
   const form = useForm<FormSegmentSchemaType>({
     resolver: zodResolver(FormSegmentSchema),
-    defaultValues: {
-      name: "",
-      gender: undefined,
-      weeksInProgram: [],
-      orderCounts: "",
-      components: [],
-      recommendedProducts: [],
-      formStatus: undefined,
-    },
+    defaultValues,
   });
 
   const handleReset = () => {
-    form.reset();
+    form.reset(defaultValues);
   };
   useEffect(() => {
     if (!isNew) {
@@ -137,26 +146,42 @@ export default function CreateSegment({
     }
   }, [segment, form]);
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
   return (
-    <>
-      <div className="flex items-center m-6 ">
+    <div className="w-3/4 mx-auto">
+      <div className="flex flex-wrap justify-between my-6 ">
+        <div className="flex flex-wrap items-center">
+          <Button
+            onClick={onBack}
+            variant="ghost"
+            size="icon"
+            className="mr-2"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h3 className="font-bold text-xl">
+            {isNew ? "Create" : "Edit"} Segment
+            {_.get(segment, ["mainData", 0, "status"]) == "draft"
+              ? " (Draft Version) "
+              : ""}
+          </h3>
+        </div>
         <Button
-          onClick={onBack}
-          variant="ghost"
-          size="icon"
-          className="mr-2"
-          aria-label="Go back"
+          disabled={!form.formState.isValid}
+          onClick={toggleDrawer}
+          className="bg-green-500 hover:bg-green-700 hover:ease-in"
+          type="button"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <Smartphone className="mr-2 h-4 w-4" /> Phone Screen
         </Button>
-        <h3 className="font-bold text-xl">
-          {isNew ? "Create" : "Edit"} Segment
-          {_.get(segment, ["mainData", 0, "status"]) == "draft"
-            ? " (Draft Version) "
-            : ""}
-        </h3>
       </div>
-      <div className="w-3/4 mx-auto">
+      <div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -194,7 +219,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select Gender"
                           options={genderList}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -219,7 +244,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select Form Status"
                           options={formStatus}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -285,7 +310,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select Latest Form Filled"
                           options={daysSinceLatestFormFilled}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -310,7 +335,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select Stage"
                           options={stages}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -335,7 +360,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select streaks"
                           options={streaks}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -360,7 +385,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select coins"
                           options={coins}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -385,7 +410,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select phases"
                           options={phases}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -453,21 +478,6 @@ export default function CreateSegment({
                 )}
               />
             </div>
-            {/* {showOtpInput && (
-              <div className="space-y-2">
-                <Label htmlFor="otp">Enter OTP</Label>
-                <InputOTP id="otp" maxLength={6} onChange={handleOtpChange}>
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
-              </div>
-            )} */}
             <div className="flex flex-wrap gap-2 justify-end">
               <Button
                 type="reset"
@@ -489,6 +499,18 @@ export default function CreateSegment({
           </form>
         </Form>
       </div>
-    </>
+
+      <CustomDrawer
+        isOpen={isDrawerOpen}
+        onClose={toggleDrawer}
+        direction="right"
+      >
+        <DiffChecker
+          currentVersion={{}}
+          newVersion={{}}
+          toggleDrawer={toggleDrawer}
+        />
+      </CustomDrawer>
+    </div>
   );
 }
