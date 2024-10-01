@@ -1,11 +1,8 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@components/ui/button";
-import { Maximize2, Minimize2, Expand, X, Check } from "lucide-react";
+import { Minimize2, Expand, X, Check } from "lucide-react";
 import SegmentManager from "./SegmentManager";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import RenderComponents from "@components/Home/Home";
 import {
   Dialog,
   DialogContent,
@@ -16,8 +13,6 @@ import {
   DialogTrigger,
 } from "@components/ui/dialog";
 import { useToast } from "@hooks/use-toast";
-import { Label } from "@components/ui/label";
-import { Input } from "@components/ui/input";
 import {
   Form,
   FormControl,
@@ -36,15 +31,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { cn } from "@utils/shadcn";
+import RenderComponents from "@components/MobileLayout/RenderMobileComponents";
 
 export default function SplitScreen() {
   const [isRightComponentOpen, setIsRightComponentOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<null | object>(null);
 
   const rightComponentRef = useRef<HTMLDivElement>(null);
 
-  const handleItemClick = (item: any) => {
+  const handleItemClick = (item: object) => {
     setSelectedItem(item);
     setIsRightComponentOpen(!isRightComponentOpen);
   };
@@ -77,11 +73,9 @@ export default function SplitScreen() {
   }, []);
 
   const { toast } = useToast();
-  const [activeSlide, setActiveSlide] = useState(0);
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false);
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
-  const [otp, setOtp] = useState("");
 
   const handleApprove = () => {
     setIsApproveDialogOpen(false);
@@ -278,7 +272,16 @@ const FormSchema = z.object({
   }),
 });
 
-export function DialogOtpComponent({ isOpen, onSubmit, onClose }) {
+interface DialogOtpComponentProps {
+  isOpen: boolean;
+  onSubmit: (formData: object) => void;
+  onClose: () => void;
+}
+export function DialogOtpComponent({
+  isOpen,
+  onSubmit,
+  onClose,
+}: DialogOtpComponentProps) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
