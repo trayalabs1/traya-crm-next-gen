@@ -20,6 +20,7 @@ import CreateComponentLayout from "@components/CMS/Component/CreateComponentLayo
 import CreateSegmentLayout from "@components/CMS/Segment/CreateSegmentLayout";
 import SegmentComponents from "@components/CMS/Segment/SegmentComponents";
 import ComponentContents from "@components/CMS/Component/ComponentContents";
+import SplitScreen from "@components/CMS/Segment/SplitScreen";
 const ContentManager = lazy(
   () => import("@components/CMS/Content/ContentManager"),
 );
@@ -43,7 +44,7 @@ const AppRoutesConfig = (): RouteObject[] => {
           path: "segments",
           element: (
             <PrivateRoute isAuthenticated={isAuthenticated}>
-              <SegmentManager />
+              <SplitScreen />
             </PrivateRoute>
           ),
         },

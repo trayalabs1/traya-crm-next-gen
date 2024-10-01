@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "tscheck": "tsc -b",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
     "preview": "vite preview",
@@ -33,6 +34,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
+    "framer-motion": "^11.7.0",
     "i": "^0.3.7",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.407.0",

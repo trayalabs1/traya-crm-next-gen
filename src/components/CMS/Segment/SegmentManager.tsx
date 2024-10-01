@@ -41,7 +41,10 @@ import {
 } from "@utils/common";
 import GenericPagination from "@components/ui/GenericPagination";
 
-export default function SegmentManager() {
+interface SegmentManagerProps {
+  onItemClick: (params: object) => void;
+}
+export default function SegmentManager({ onItemClick }: SegmentManagerProps) {
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
   const [limit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
@@ -61,7 +64,7 @@ export default function SegmentManager() {
 
   if (isLoading) return <TableSkeleton />;
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Segments</CardTitle>
         <CardDescription>Manage your segments</CardDescription>
@@ -134,8 +137,8 @@ export default function SegmentManager() {
                 <TableHead>#</TableHead>
                 <TableHead className="w-[100px]">Name</TableHead>
                 <TableHead>Gender</TableHead>
-                {/* <TableHead>Week In Program</TableHead>
-                <TableHead>Order Count</TableHead> */}
+                {/* <TableHead>Week In Program</TableHead> */}
+                <TableHead>Version</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-center">Action</TableHead>
               </TableRow>
@@ -155,12 +158,23 @@ export default function SegmentManager() {
                       </Button>
                     </TableCell>
                     <TableCell>{segment.gender}</TableCell>
-                    {/* <TableCell>{segment.weeks_in_program}</TableCell>
-                    <TableCell>{segment.order_counts}</TableCell> */}
+                    {/* <TableCell>{segment.weeks_in_program}</TableCell>*/}
+                    <TableCell>{segment.current_version}</TableCell>
                     <TableCell>
                       {formatWithSpaces(segment.status) || "-"}
                     </TableCell>
                     <TableCell className="text-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mr-2"
+                        onClick={() => {
+                          onItemClick({ name: "TTTTTT", description: "Ppp" });
+                        }}
+                      >
+                        <Edit className="mr-2 h-4 w-4" /> Compare
+                      </Button>
+
                       <Button
                         variant="outline"
                         size="sm"

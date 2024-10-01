@@ -150,3 +150,7 @@ export const getJsonFromStorage = <T>(
 
   return null;
 };
+
+export function doubleQuotesRemover(str: string) {
+  if (str) return str.replace(/"/g, "");
+}
