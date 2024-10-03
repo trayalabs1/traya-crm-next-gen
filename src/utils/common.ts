@@ -207,7 +207,6 @@ export const getCMSFilterStatusByRole = (role?: Roles) => {
   return status;
 };
 
-
 export const getCMSActionButtonColor = (action: string) => {
   switch (action) {
     case "edit":

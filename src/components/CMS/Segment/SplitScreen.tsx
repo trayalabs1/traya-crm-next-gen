@@ -78,7 +78,7 @@ export default function SplitScreen() {
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
 
   const handleApprove = () => {
-    handleItemClick({})
+    handleItemClick({});
     setIsApproveDialogOpen(false);
     setIsOtpDialogOpen(true);
     toast({
