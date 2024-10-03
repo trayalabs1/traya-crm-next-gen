@@ -33,8 +33,7 @@ import {
   stages as stagesList,
   streaks,
 } from "@utils/common";
-import DiffChecker from "../DiffChecker/DiffChecker";
-import CustomDrawer from "@components/ui/Drawer/CustomDrawer";
+import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 
 type CreateSegmentProps = {
   onSubmit: (content: SegmentMutationPayload) => void;
@@ -560,17 +559,12 @@ export default function CreateSegment({
         </Form>
       </div>
 
-      <CustomDrawer
-        isOpen={isDrawerOpen}
-        onClose={toggleDrawer}
-        direction="right"
-      >
-        <DiffChecker
-          currentVersion={{}}
-          newVersion={{}}
-          toggleDrawer={toggleDrawer}
-        />
-      </CustomDrawer>
+      <DiffCheckerDrawer
+        isDrawerOpen={isDrawerOpen}
+        toggleDrawer={toggleDrawer}
+        currentVersion={isNew ? undefined : {}}
+        newVersion={isNew ? {} : undefined}
+      />
     </div>
   );
 }

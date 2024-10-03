@@ -206,3 +206,23 @@ export const getCMSFilterStatusByRole = (role?: Roles) => {
 
   return status;
 };
+
+
+export const getCMSActionButtonColor = (action: string) => {
+  switch (action) {
+    case "edit":
+      return "bg-blue-500 hover:bg-blue-600 text-white";
+    case "checker":
+      return "bg-yellow-500 hover:bg-yellow-600 text-white";
+    case "publisher":
+      return "bg-orange-500 hover:bg-orange-600 text-white";
+    case "submit":
+      return "bg-indigo-500 hover:bg-indigo-600 text-white";
+    case "publish":
+      return "bg-green-500 hover:bg-green-600 text-white";
+    case "compare":
+      return "bg-purple-500 hover:bg-purple-600 text-white";
+    default:
+      return "bg-gray-100 hover:bg-gray-200 text-gray-800";
+  }
+};

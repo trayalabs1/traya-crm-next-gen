@@ -1,6 +1,6 @@
 import { cn } from "@utils/shadcn";
 import { Sidebar } from "./Sidebar";
-import { Footer } from "./Footer";
+// import { Footer } from "./Footer";
 import { useStore } from "@hooks/use-store";
 import { useSidebarToggle } from "@hooks/use-sidebar-toggle";
 
@@ -30,7 +30,7 @@ export default function AdminPanelLayout({
           sidebar?.isOpen === false ? "lg:ml-[90px]" : "lg:ml-72",
         )}
       >
-        <Footer />
+        {/* <Footer /> */}
       </footer>
     </>
   );

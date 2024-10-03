@@ -78,6 +78,7 @@ export default function SplitScreen() {
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
 
   const handleApprove = () => {
+    handleItemClick({})
     setIsApproveDialogOpen(false);
     setIsOtpDialogOpen(true);
     toast({
@@ -106,7 +107,7 @@ export default function SplitScreen() {
   return (
     <div className="flex h-screen overflow-hidden">
       <div className={`${isFullScreen ? "hidden" : "flex-1"} overflow-auto`}>
-        <SegmentManager onItemClick={handleItemClick} />
+        <SegmentManager />
       </div>
       <div
         ref={rightComponentRef}
