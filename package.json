@@ -85,10 +85,6 @@
     "vite": "^5.3.3",
     "vite-tsconfig-paths": "^4.3.2"
   },
-  "resolutions": {
-    "glob": "7.2.3",
-    "inflight" : "1.0.6"
-  },
   "engines": {
     "node": ">=16.20.2",
     "npm": ">=8.19.4"
