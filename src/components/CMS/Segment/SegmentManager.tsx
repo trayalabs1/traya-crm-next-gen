@@ -36,10 +36,12 @@ import { get, isArray } from "lodash";
 import {
   formatWithSpaces,
   generateQueryString,
+  getCMSFilterStatusByRole,
   PAGINATION_CONFIG,
   statusList,
 } from "@utils/common";
 import GenericPagination from "@components/ui/GenericPagination";
+import { useAuth } from "src/context/useAuth";
 
 interface SegmentManagerProps {
   onItemClick: (params: object) => void;
@@ -48,7 +50,9 @@ export default function SegmentManager({ onItemClick }: SegmentManagerProps) {
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
   const [limit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
-  const [status, setStatus] = useState<string>("");
+  const { user } = useAuth();
+  const DEFAULT_STATUS = getCMSFilterStatusByRole(user?.role);
+  const [status, setStatus] = useState<string>(DEFAULT_STATUS);
   const [currentVersion, setCurrentVersion] = useState<string>("");
 
   const queryString = generateQueryString({

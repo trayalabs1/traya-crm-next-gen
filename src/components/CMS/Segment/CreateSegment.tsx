@@ -23,12 +23,14 @@ import _ from "lodash";
 import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
 import {
   coins,
+  CustomOptionType,
   daysSinceLatestFormFilled,
   formStatus,
   genderList,
   generateQueryString,
+  mapToSelectOptions,
   phases,
-  stages,
+  stages as stagesList,
   streaks,
 } from "@utils/common";
 import DiffChecker from "../DiffChecker/DiffChecker";
@@ -114,27 +116,78 @@ export default function CreateSegment({
   }, [isNew, refetch, id]);
 
   useEffect(() => {
-    if (segment) {
+    if (segment && components) {
       const data = _.get(segment, ["mainData", 0]);
       const name = _.get(data, ["name"]);
       const gender = genderList.find(
         (gender) => gender.value === _.get(data, ["gender"]),
       );
-      const orderCounts = _.get(data, ["order_counts"]);
+      const orderCounts = _.first(_.get(data, ["order_counts"]));
       const recommendedProducts = _.get(data, ["recommended_products"]) || [];
-      const component_ids = _.get(data, ["data", "components_ids"]) || [];
+
+      let dataKey = "data";
+      if (data.status === "draft") dataKey = "draft_data";
+
+      const component_ids = _.get(data, [dataKey, "component_ids"]) || [];
 
       const selectedProducts = _.map(recommendedProducts, (product) => ({
         label: product,
         value: product,
       }));
-      const selectedComponents = _.map(component_ids, (component) => ({
-        label: component,
-        value: component,
-      }));
 
-      // let dataKey = "data";
-      // if (data.status === "draft") dataKey = "draft_data";
+      // const selectedComponents = _.reduce(
+      //   (_.get(components, "mainData", []) || []) as Component[],
+      //   (result: CustomOptionType[], component) => {
+      //     if (_.includes(component_ids, component.component_id)) {
+      //       result.push({
+      //         label: component.name,
+      //         value: component.component_id,
+      //       });
+      //     }
+      //     return result;
+      //   },
+      //   [],
+      // );
+
+      let selectedComponents: CustomOptionType[] = [];
+
+      if (!_.isEmpty(component_ids)) {
+        selectedComponents = (_.get(components, ["mainData"]) || [])
+          .filter((component) => component_ids.includes(component.component_id))
+          .map((component) => ({
+            label: _.get(component, ["name"]) || "",
+            value: _.get(component, ["component_id"]) || "",
+          }));
+      }
+
+      const formStatus = mapToSelectOptions([_.get(data, ["form_status"])])[0];
+      const haveCoins = coins.find(
+        (coin) => coin.value === (data.have_coins ? "yes" : "no"),
+      );
+
+      let stages: CustomOptionType[] = [];
+
+      if (!_.isEmpty(data.stages)) {
+        stages = stagesList.filter((stage) =>
+          data.stages.includes(Number(stage.value)),
+        );
+      }
+
+      let weeksInProgram: CustomOptionType[] = [];
+
+      if (!_.isEmpty(data.weeks_in_program)) {
+        weeksInProgram = weeks.filter((week) =>
+          data.weeks_in_program.includes(week.value),
+        );
+      }
+
+      let streakLength: CustomOptionType[] = [];
+
+      if (!_.isEmpty(data.streak_length)) {
+        streakLength = streaks.filter((streak) =>
+          data.streak_length.includes(Number(streak.value)),
+        );
+      }
 
       form.reset({
         name,
@@ -142,9 +195,14 @@ export default function CreateSegment({
         recommendedProducts: selectedProducts,
         orderCounts,
         components: selectedComponents,
+        weeksInProgram: weeksInProgram,
+        stages: stages,
+        coins: haveCoins,
+        formStatus,
+        streaks: streakLength,
       });
     }
-  }, [segment, form]);
+  }, [segment, form, components]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -334,8 +392,9 @@ export default function CreateSegment({
                           ref={ref}
                           styles={reactSelectStyles}
                           placeholder="Select Stage"
-                          options={stages}
+                          options={stagesList}
                           value={value || null}
+                          isMulti
                         />
                       </FormControl>
 
@@ -361,6 +420,7 @@ export default function CreateSegment({
                           placeholder="Select streaks"
                           options={streaks}
                           value={value || null}
+                          isMulti
                         />
                       </FormControl>
 
