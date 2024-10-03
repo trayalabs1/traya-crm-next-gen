@@ -28,6 +28,7 @@ import {
   verifyOtp,
 } from "@services/cmsServices";
 import _ from "lodash";
+import { EntityError } from "./EntityError";
 export interface DiffCheckerProps {
   action?: "VIEW" | "CHANGES";
   currentVersion?: object;
@@ -307,12 +308,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
 
   const [progress, setProgress] = useState(0);
 
-  if (!diffEntity)
-    return (
-      <div className="text-red-700 my-10">
-        Diff Entity is required, To show the diff checker
-      </div>
-    );
+  if (!diffEntity) return <EntityError />;
 
   return (
     <>

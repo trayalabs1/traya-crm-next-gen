@@ -1,7 +1,7 @@
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import Select from "react-select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useGetContents } from "src/queries";
 import { useForm } from "react-hook-form";
@@ -18,10 +18,11 @@ import { FormComponentSchema } from "@schemas/cms/components";
 import { ComponentMutationPayload, FormComponentSchemaType } from "cms";
 import { useQuery } from "@tanstack/react-query";
 import { getComponents } from "@services/cmsServices";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
 import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
 import { generateQueryString } from "@utils/common";
+import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
   onBack?: () => void;
@@ -87,23 +88,42 @@ export default function CreateComponent({
     }
   }, [component, form]);
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
   return (
-    <>
-      <div className="flex items-center m-6 ">
+    <div className="w-3/4 mx-auto">
+      <div className="flex flex-wrap justify-between my-6 ">
+        <div className="flex flex-wrap items-center">
+          <Button
+            onClick={onBack}
+            variant="ghost"
+            size="icon"
+            className="mr-2"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h3 className="font-bold text-xl">
+            {isNew ? "Create" : "Edit"} Component
+            {_.get(component, ["mainData", 0, "status"]) == "draft"
+              ? " (Draft Version) "
+              : ""}
+          </h3>
+        </div>
         <Button
-          onClick={onBack}
-          variant="ghost"
-          size="icon"
-          className="mr-2"
-          aria-label="Go back"
+          disabled={!form.formState.isValid}
+          onClick={toggleDrawer}
+          className="bg-green-500 hover:bg-green-700 hover:ease-in"
+          type="button"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <Smartphone className="mr-2 h-4 w-4" /> Phone Screen
         </Button>
-        <h3 className="font-bold text-xl">
-          {isNew ? "Create" : "Edit"} Component
-        </h3>
       </div>
-      <div className="w-3/4 mx-auto">
+      <div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -200,6 +220,13 @@ export default function CreateComponent({
           </form>
         </Form>
       </div>
-    </>
+
+      <DiffCheckerDrawer
+        isDrawerOpen={isDrawerOpen}
+        toggleDrawer={toggleDrawer}
+        currentVersion={isNew ? undefined : {}}
+        newVersion={isNew ? {} : undefined}
+      />
+    </div>
   );
 }

@@ -203,7 +203,7 @@ export default function CreateSegment({
     }
   }, [segment, form, components]);
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);

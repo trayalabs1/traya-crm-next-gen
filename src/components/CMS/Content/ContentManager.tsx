@@ -36,6 +36,7 @@ import { get } from "lodash";
 import {
   generateQueryString,
   getCMSActionButtonColor,
+  getCMSFilterStatusByRole,
   PAGINATION_CONFIG,
 } from "@utils/common";
 import {
@@ -57,10 +58,12 @@ const statusList = [
 ];
 export default function ContentManager() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
   const [limit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
-  const [status, setStatus] = useState<string>("");
+  const DEFAULT_STATUS = getCMSFilterStatusByRole(user?.role);
+  const [status, setStatus] = useState<string>(DEFAULT_STATUS);
   const [currentVersion, setCurrentVersion] = useState<string>("");
 
   const queryString = generateQueryString({
@@ -69,8 +72,6 @@ export default function ContentManager() {
     status,
     current_version: currentVersion,
   });
-
-  const { user } = useAuth();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
