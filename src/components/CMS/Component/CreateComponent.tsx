@@ -27,6 +27,14 @@ type CreateComponentProps = {
   onBack?: () => void;
 };
 
+const defaultValues = {
+  name: "",
+  data: {
+    title: "",
+    description: "",
+    contents: [],
+  },
+};
 export default function CreateComponent({
   onSubmit,
   onBack,
@@ -48,14 +56,7 @@ export default function CreateComponent({
 
   const form = useForm<FormComponentSchemaType>({
     resolver: zodResolver(FormComponentSchema),
-    defaultValues: {
-      name: "",
-      data: {
-        title: "",
-        description: "",
-        contents: [],
-      },
-    },
+    defaultValues,
   });
 
   const queryString = generateQueryString({
@@ -188,7 +189,7 @@ export default function CreateComponent({
                 type="reset"
                 className="w-36"
                 variant="outline"
-                onClick={() => form.reset()}
+                onClick={() => form.reset(defaultValues)}
               >
                 Clear
               </Button>

@@ -1,4 +1,14 @@
-import { get, isArray, isEmpty, replace, startCase } from "lodash";
+import { Roles } from "user";
+import {
+  get,
+  isArray,
+  isEmpty,
+  replace,
+  startCase,
+  map,
+  isObject,
+} from "lodash";
+import { cmsStatusFilter } from "cms";
 /**
  * Safely retrieves a value from an object using a path of keys.
  * @param content - The object to retrieve the value from.
@@ -63,7 +73,7 @@ export function generateQueryString(
   return searchParams.toString() ? `?${searchParams.toString()}` : "";
 }
 
-interface CustomOptionType {
+export interface CustomOptionType {
   label: string;
   value: string;
 }
@@ -80,9 +90,9 @@ export function formatWithSpaces(str: string) {
 }
 
 export const formStatus: CustomOptionType[] = [
-  { label: "Not Started", value: "not_started" },
-  { label: "Started but Not Completed", value: "started_but_not_completed" },
-  { label: "Completed", value: "completed" },
+  { label: "Not Started", value: "NotStarted" },
+  { label: "Started", value: "Started" },
+  { label: "Completed", value: "Completed" },
 ];
 
 export const genderList: CustomOptionType[] = [
@@ -99,9 +109,9 @@ export const stages: CustomOptionType[] = [
 ];
 
 export const streaks: CustomOptionType[] = [
-  { label: "3 Days", value: "3_days" },
-  { label: "7 Days", value: "7_days" },
-  { label: "21 Days", value: "21_days" },
+  { label: "3 Days", value: "3" },
+  { label: "7 Days", value: "7" },
+  { label: "21 Days", value: "21" },
 ];
 
 export const coins: CustomOptionType[] = [
@@ -149,4 +159,50 @@ export const getJsonFromStorage = <T>(
   }
 
   return null;
+};
+
+export function doubleQuotesRemover(str: string) {
+  if (str) return str.replace(/"/g, "");
+}
+
+type SelectOption = {
+  label: string;
+  value: string;
+};
+
+export function mapToSelectOptions<T>(
+  items: T[],
+  valueKey?: keyof T,
+  labelKey?: keyof T,
+): SelectOption[] {
+  return map(items, (item) => {
+    if (isObject(item) && valueKey && labelKey) {
+      return {
+        label: String(get(item, labelKey)) || "",
+        value: String(get(item, valueKey)) || "",
+      };
+    } else {
+      return {
+        label: String(item) || "",
+        value: String(item) || "",
+      };
+    }
+  });
+}
+
+export const getCMSFilterStatusByRole = (role?: Roles) => {
+  let status: cmsStatusFilter = "draft";
+
+  switch (role) {
+    case "checker":
+      status = "submitted";
+      break;
+    case "publisher":
+      status = "approved_by_checker";
+      break;
+    default:
+      break;
+  }
+
+  return status;
 };

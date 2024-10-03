@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import Select from "react-select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getComponents, getSegments } from "@services/cmsServices";
 import { useQuery } from "@tanstack/react-query";
@@ -23,14 +23,19 @@ import _ from "lodash";
 import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
 import {
   coins,
+  CustomOptionType,
   daysSinceLatestFormFilled,
   formStatus,
   genderList,
   generateQueryString,
+  mapToSelectOptions,
   phases,
-  stages,
+  stages as stagesList,
   streaks,
 } from "@utils/common";
+import DiffChecker from "../DiffChecker/DiffChecker";
+import CustomDrawer from "@components/ui/Drawer/CustomDrawer";
+
 type CreateSegmentProps = {
   onSubmit: (content: SegmentMutationPayload) => void;
   onBack?: () => void;
@@ -50,6 +55,20 @@ const weeks = [
   { label: "Week 4", value: "week4" },
 ];
 
+const defaultValues = {
+  name: "",
+  gender: undefined,
+  weeksInProgram: [],
+  orderCounts: "",
+  components: [],
+  recommendedProducts: [],
+  formStatus: undefined,
+  coins: undefined,
+  stages: undefined,
+  streaks: undefined,
+  phases: undefined,
+  daysSinceLatestFormFilled: undefined,
+};
 export default function CreateSegment({
   onSubmit,
   onBack,
@@ -84,19 +103,11 @@ export default function CreateSegment({
 
   const form = useForm<FormSegmentSchemaType>({
     resolver: zodResolver(FormSegmentSchema),
-    defaultValues: {
-      name: "",
-      gender: undefined,
-      weeksInProgram: [],
-      orderCounts: "",
-      components: [],
-      recommendedProducts: [],
-      formStatus: undefined,
-    },
+    defaultValues,
   });
 
   const handleReset = () => {
-    form.reset();
+    form.reset(defaultValues);
   };
   useEffect(() => {
     if (!isNew) {
@@ -105,27 +116,78 @@ export default function CreateSegment({
   }, [isNew, refetch, id]);
 
   useEffect(() => {
-    if (segment) {
+    if (segment && components) {
       const data = _.get(segment, ["mainData", 0]);
       const name = _.get(data, ["name"]);
       const gender = genderList.find(
         (gender) => gender.value === _.get(data, ["gender"]),
       );
-      const orderCounts = _.get(data, ["order_counts"]);
+      const orderCounts = _.first(_.get(data, ["order_counts"]));
       const recommendedProducts = _.get(data, ["recommended_products"]) || [];
-      const component_ids = _.get(data, ["data", "components_ids"]) || [];
+
+      let dataKey = "data";
+      if (data.status === "draft") dataKey = "draft_data";
+
+      const component_ids = _.get(data, [dataKey, "component_ids"]) || [];
 
       const selectedProducts = _.map(recommendedProducts, (product) => ({
         label: product,
         value: product,
       }));
-      const selectedComponents = _.map(component_ids, (component) => ({
-        label: component,
-        value: component,
-      }));
 
-      // let dataKey = "data";
-      // if (data.status === "draft") dataKey = "draft_data";
+      // const selectedComponents = _.reduce(
+      //   (_.get(components, "mainData", []) || []) as Component[],
+      //   (result: CustomOptionType[], component) => {
+      //     if (_.includes(component_ids, component.component_id)) {
+      //       result.push({
+      //         label: component.name,
+      //         value: component.component_id,
+      //       });
+      //     }
+      //     return result;
+      //   },
+      //   [],
+      // );
+
+      let selectedComponents: CustomOptionType[] = [];
+
+      if (!_.isEmpty(component_ids)) {
+        selectedComponents = (_.get(components, ["mainData"]) || [])
+          .filter((component) => component_ids.includes(component.component_id))
+          .map((component) => ({
+            label: _.get(component, ["name"]) || "",
+            value: _.get(component, ["component_id"]) || "",
+          }));
+      }
+
+      const formStatus = mapToSelectOptions([_.get(data, ["form_status"])])[0];
+      const haveCoins = coins.find(
+        (coin) => coin.value === (data.have_coins ? "yes" : "no"),
+      );
+
+      let stages: CustomOptionType[] = [];
+
+      if (!_.isEmpty(data.stages)) {
+        stages = stagesList.filter((stage) =>
+          data.stages.includes(Number(stage.value)),
+        );
+      }
+
+      let weeksInProgram: CustomOptionType[] = [];
+
+      if (!_.isEmpty(data.weeks_in_program)) {
+        weeksInProgram = weeks.filter((week) =>
+          data.weeks_in_program.includes(week.value),
+        );
+      }
+
+      let streakLength: CustomOptionType[] = [];
+
+      if (!_.isEmpty(data.streak_length)) {
+        streakLength = streaks.filter((streak) =>
+          data.streak_length.includes(Number(streak.value)),
+        );
+      }
 
       form.reset({
         name,
@@ -133,30 +195,51 @@ export default function CreateSegment({
         recommendedProducts: selectedProducts,
         orderCounts,
         components: selectedComponents,
+        weeksInProgram: weeksInProgram,
+        stages: stages,
+        coins: haveCoins,
+        formStatus,
+        streaks: streakLength,
       });
     }
-  }, [segment, form]);
+  }, [segment, form, components]);
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
 
   return (
-    <>
-      <div className="flex items-center m-6 ">
+    <div className="w-3/4 mx-auto">
+      <div className="flex flex-wrap justify-between my-6 ">
+        <div className="flex flex-wrap items-center">
+          <Button
+            onClick={onBack}
+            variant="ghost"
+            size="icon"
+            className="mr-2"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h3 className="font-bold text-xl">
+            {isNew ? "Create" : "Edit"} Segment
+            {_.get(segment, ["mainData", 0, "status"]) == "draft"
+              ? " (Draft Version) "
+              : ""}
+          </h3>
+        </div>
         <Button
-          onClick={onBack}
-          variant="ghost"
-          size="icon"
-          className="mr-2"
-          aria-label="Go back"
+          disabled={!form.formState.isValid}
+          onClick={toggleDrawer}
+          className="bg-green-500 hover:bg-green-700 hover:ease-in"
+          type="button"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <Smartphone className="mr-2 h-4 w-4" /> Phone Screen
         </Button>
-        <h3 className="font-bold text-xl">
-          {isNew ? "Create" : "Edit"} Segment
-          {_.get(segment, ["mainData", 0, "status"]) == "draft"
-            ? " (Draft Version) "
-            : ""}
-        </h3>
       </div>
-      <div className="w-3/4 mx-auto">
+      <div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -194,7 +277,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select Gender"
                           options={genderList}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -219,7 +302,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select Form Status"
                           options={formStatus}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -285,7 +368,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select Latest Form Filled"
                           options={daysSinceLatestFormFilled}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -309,8 +392,9 @@ export default function CreateSegment({
                           ref={ref}
                           styles={reactSelectStyles}
                           placeholder="Select Stage"
-                          options={stages}
-                          value={value}
+                          options={stagesList}
+                          value={value || null}
+                          isMulti
                         />
                       </FormControl>
 
@@ -335,7 +419,8 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select streaks"
                           options={streaks}
-                          value={value}
+                          value={value || null}
+                          isMulti
                         />
                       </FormControl>
 
@@ -360,7 +445,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select coins"
                           options={coins}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -385,7 +470,7 @@ export default function CreateSegment({
                           styles={reactSelectStyles}
                           placeholder="Select phases"
                           options={phases}
-                          value={value}
+                          value={value || null}
                         />
                       </FormControl>
 
@@ -453,21 +538,6 @@ export default function CreateSegment({
                 )}
               />
             </div>
-            {/* {showOtpInput && (
-              <div className="space-y-2">
-                <Label htmlFor="otp">Enter OTP</Label>
-                <InputOTP id="otp" maxLength={6} onChange={handleOtpChange}>
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
-              </div>
-            )} */}
             <div className="flex flex-wrap gap-2 justify-end">
               <Button
                 type="reset"
@@ -489,6 +559,18 @@ export default function CreateSegment({
           </form>
         </Form>
       </div>
-    </>
+
+      <CustomDrawer
+        isOpen={isDrawerOpen}
+        onClose={toggleDrawer}
+        direction="right"
+      >
+        <DiffChecker
+          currentVersion={{}}
+          newVersion={{}}
+          toggleDrawer={toggleDrawer}
+        />
+      </CustomDrawer>
+    </div>
   );
 }

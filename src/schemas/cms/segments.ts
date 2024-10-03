@@ -10,13 +10,19 @@ export const segmentSchema = z.object({
   }),
   name: z.string(),
   segment_id: z.string(),
-  gender: z.enum(["male", "female"]),
-  weeks_in_program: z.array(z.number()),
-  order_counts: z.number(),
+  gender: z.enum(["All", "M", "F"]),
+  weeks_in_program: z.array(z.string()),
+  order_counts: z.array(z.number()),
   recommended_products: z.array(z.string()),
   status: z.enum(["published", "draft"]),
   current_version: z.number(),
   draft_version: z.number(),
+  app_page_category: z.array(z.string()),
+  customer_type: z.enum(["All", "Draft", "Lead", "Customer"]),
+  form_status: z.enum(["NotStarted", "Started", "Completed"]),
+  stages: z.array(z.number()),
+  have_coins: z.boolean(),
+  streak_length: z.array(z.number()),
   created_by: z.string(),
   updated_by: z.string(),
   created_at: z.string(),
@@ -33,13 +39,16 @@ export const FormSegmentSchema = z.object({
   name: z
     .string({ message: "Name is required." })
     .min(3, { message: "Name must be at least 3 characters long." }),
-  gender: z.object(
-    { value: z.string(), label: z.string() },
-    { message: "Gender is required" },
-  ),
+  gender: z
+    .object(
+      { value: z.string(), label: z.string() },
+      { message: "Gender is required" },
+    )
+    .optional(),
   weeksInProgram: z
     .array(z.object({ value: z.string(), label: z.string() }))
-    .min(1, { message: "Weeks In Program is required." }),
+    // .min(1, { message: "Weeks In Program is required." })
+    .optional(),
   orderCounts: z
     .union([
       z
@@ -86,9 +95,11 @@ export const FormSegmentSchema = z.object({
     )
     .optional(),
   stages: z
-    .object(
-      { value: z.string(), label: z.string() },
-      { message: "Stages is required." },
+    .array(
+      z.object(
+        { value: z.string(), label: z.string() },
+        { message: "Stages is required." },
+      ),
     )
     .optional(),
   coins: z
@@ -98,9 +109,11 @@ export const FormSegmentSchema = z.object({
     )
     .optional(),
   streaks: z
-    .object(
-      { value: z.string(), label: z.string() },
-      { message: "Steaks is required." },
+    .array(
+      z.object(
+        { value: z.string(), label: z.string() },
+        { message: "Steaks is required." },
+      ),
     )
     .optional(),
   phases: z
@@ -109,10 +122,12 @@ export const FormSegmentSchema = z.object({
       { message: "Phases is required." },
     )
     .optional(),
-  daysSinceLatestFormFilled: z.object(
-    { value: z.string(), label: z.string() },
-    { message: "Days Since Latest Form Filled is required." },
-  ),
+  daysSinceLatestFormFilled: z
+    .object(
+      { value: z.string(), label: z.string() },
+      { message: "Days Since Latest Form Filled is required." },
+    )
+    .optional(),
 });
 
 export const segmentComponentsContentsExpanded = z.array(

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import CreateSegment from "./CreateSegment";
 import { useToast } from "@hooks/use-toast";
-import { SegmentMutationPayload } from "cms";
+import { SegmentMutationBody, SegmentMutationPayload } from "cms";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSegment, updateSegment } from "@services/cmsServices";
 import _ from "lodash";
@@ -28,49 +28,66 @@ function CreateSegmentLayout() {
   };
 
   const createSegmentQuery = useMutation({
-    mutationFn: (payload: SegmentMutationPayload["payload"]) =>
-      createSegment(payload),
+    mutationFn: (payload: SegmentMutationBody) => createSegment(payload),
     onSuccess: () => handleSuccess({ message: "Segmemt Create successfully" }),
     onError: () => handleError({ message: "Unable to create segment" }),
   });
 
   const updateSegmentQuery = useMutation({
-    mutationFn: (payload: SegmentMutationPayload) => updateSegment(payload),
+    mutationFn: (payload: { id?: string; payload: SegmentMutationBody }) =>
+      updateSegment(payload),
     onSuccess: () => handleSuccess({ message: "Segmemt update successfully" }),
     onError: () => handleError({ message: "Unable to update segment" }),
   });
 
   const navigate = useNavigate();
   const onSubmit = async ({ id, payload }: SegmentMutationPayload) => {
+    const body: SegmentMutationBody = {
+      name: "",
+      gender: "",
+      component_ids: [],
+    };
     const component_ids = _.map(payload.components, "value");
     const weeks_in_program = _.map(payload.weeksInProgram, "value");
     const recommended_products = _.map(payload.recommendedProducts, "value");
     const order_counts = _.get(payload, ["orderCounts"]);
 
+    _.set(body, "name", payload.name);
     // Add Keys
-    _.set(payload, "component_ids", component_ids);
-    _.set(payload, "gender", _.get(payload, ["gender", "value"]));
-    _.set(payload, "weeks_in_program", weeks_in_program);
-    _.set(payload, "recommended_products", recommended_products);
-    _.set(payload, "order_counts", order_counts);
+    _.set(body, "component_ids", component_ids);
+    _.set(body, "gender", _.get(payload, ["gender", "value"]));
+    _.set(body, "weeks_in_program", weeks_in_program);
+    _.set(body, "recommended_products", recommended_products);
+    _.set(body, "order_counts", order_counts);
 
-    //Delete Keys
-    _.unset(payload, "components");
-    _.unset(payload, "weeksInProgram");
-    _.unset(payload, "recommendedProducts");
-    _.unset(payload, "orderCounts");
-    //Delete Temp.
-    _.unset(payload, "phases");
-    _.unset(payload, "streaks");
-    _.unset(payload, "coins");
-    _.unset(payload, "formStatus");
-    _.unset(payload, "daysSinceLatestFormFilled");
-    _.unset(payload, "stages");
+    //For Coins
+    if (payload.coins?.value === "yes") {
+      _.set(body, "have_coins", true);
+    } else {
+      _.set(body, "have_coins", false);
+    }
+
+    //For Form Status
+    if (payload.formStatus?.value) {
+      _.set(body, "form_status", payload.formStatus.value);
+    }
+
+    // For Stages
+    if (!_.isEmpty(payload.stages)) {
+      const stages = payload.stages?.map((stage) => Number(stage.value));
+      _.set(body, "stages", stages);
+    }
+
+    //For Streaks
+    if (!_.isEmpty(payload.streaks)) {
+      const streaks = payload.streaks?.map((stage) => Number(stage.value));
+      _.set(body, "streak_length", streaks);
+    }
 
     if (id === "new") {
-      await createSegmentQuery.mutateAsync(payload);
+      await createSegmentQuery.mutateAsync(body);
     } else {
-      await updateSegmentQuery.mutateAsync({ id, payload });
+      await updateSegmentQuery.mutateAsync({ id, payload: body });
     }
   };
   const onBack = () => {
