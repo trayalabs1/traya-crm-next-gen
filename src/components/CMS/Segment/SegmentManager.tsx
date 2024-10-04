@@ -52,7 +52,7 @@ import {
   TooltipTrigger,
 } from "@components/ui/tooltip";
 import { Segment } from "cms";
-
+import { useDiffCheckerStore } from "../store/useCmsStore";
 export default function SegmentManager() {
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
@@ -60,26 +60,50 @@ export default function SegmentManager() {
   const { user } = useAuth();
   const DEFAULT_STATUS = getCMSFilterStatusByRole(user?.role);
   const [status, setStatus] = useState<string>(DEFAULT_STATUS);
-  const [currentVersion, setCurrentVersion] = useState<string>("");
+  const [version, setVersion] = useState<string>("");
   const [selectedSegment, setSelectedSegment] = useState<Segment | null>(null);
 
   const queryString = generateQueryString({
     page_number: String(page),
     page_size: String(limit),
     status,
-    current_version: currentVersion,
+    current_version: version,
   });
   const { data, isLoading } = useQuery({
     queryKey: ["getSegments", queryString],
     queryFn: () => getSegments(queryString),
   });
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const {
+    isDiffCheckerOpen,
+    toggleDiffCheckerDrawer,
+    // changeDiffType,
+    currentVersion,
+    newVersion,
+    // updateDiffStates,
+    fetchDiffSegment,
+    fetchDiffComponentsBulk,
+  } = useDiffCheckerStore();
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
+  const handleDiffChecker = async (segment: Segment) => {
+    await fetchDiffSegment({
+      type: "currentVersion",
+      segmentId: segment.segment_id,
+    });
+
+    // console.log(segment, "segment");
+
+    if (segment.status !== "published") {
+      const componentIds = get(segment, ["draft_data", "component_ids"]);
+
+      await fetchDiffComponentsBulk({
+        type: "newVersion",
+        componentIds: componentIds,
+      });
+    }
+    setSelectedSegment(segment);
+    toggleDiffCheckerDrawer();
   };
-
   if (isLoading) return <TableSkeleton />;
   return (
     <>
@@ -127,10 +151,10 @@ export default function SegmentManager() {
             </Select>
             <Select
               onValueChange={(value) => {
-                setCurrentVersion(value);
+                setVersion(value);
                 setPage(1);
               }}
-              value={currentVersion}
+              value={version}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select a Version" />
@@ -195,10 +219,7 @@ export default function SegmentManager() {
                                   variant="outline"
                                   size="icon"
                                   className={getCMSActionButtonColor("compare")}
-                                  onClick={() => {
-                                    setSelectedSegment(segment);
-                                    toggleDrawer();
-                                  }}
+                                  onClick={() => handleDiffChecker(segment)}
                                 >
                                   <GitCompare className="h-4 w-4" />
                                   <span className="sr-only">View</span>
@@ -252,10 +273,10 @@ export default function SegmentManager() {
         </CardContent>
       </Card>
       <DiffCheckerDrawer
-        isDrawerOpen={isDrawerOpen}
-        toggleDrawer={toggleDrawer}
-        currentVersion={{}}
-        newVersion={{}}
+        isDrawerOpen={isDiffCheckerOpen}
+        toggleDrawer={toggleDiffCheckerDrawer}
+        currentVersion={currentVersion}
+        newVersion={newVersion}
         diffEntity="segment"
         action="CHANGES"
         segment={selectedSegment}

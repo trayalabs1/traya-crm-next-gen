@@ -6,7 +6,7 @@ export const segmentSchema = z.object({
     components_ids: z.array(z.string()),
   }),
   draft_data: z.object({
-    components_ids: z.array(z.string()),
+    component_ids: z.array(z.string()),
   }),
   name: z.string(),
   segment_id: z.string(),

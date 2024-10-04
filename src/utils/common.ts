@@ -9,6 +9,7 @@ import {
   isObject,
 } from "lodash";
 import { cmsStatusFilter } from "cms";
+import axios from "axios";
 /**
  * Safely retrieves a value from an object using a path of keys.
  * @param content - The object to retrieve the value from.
@@ -225,3 +226,22 @@ export const getCMSActionButtonColor = (action: string) => {
       return "bg-gray-100 hover:bg-gray-200 text-gray-800";
   }
 };
+
+export function getErrorMessage(error: unknown): string {
+  const DEFAULT_MESSAGE = "Something went wrong";
+  let errorMessage: string;
+  if (axios.isAxiosError(error)) {
+    errorMessage = get(error, ["message"]);
+    if (error.response) {
+      errorMessage = get(error, ["response", "data", "message"]);
+    } else if (error.request) {
+      errorMessage = get(error, ["request"]);
+    }
+  } else if (error instanceof Error) {
+    errorMessage = get(error, ["message"]);
+  } else {
+    errorMessage = DEFAULT_MESSAGE;
+  }
+
+  return errorMessage || DEFAULT_MESSAGE;
+}

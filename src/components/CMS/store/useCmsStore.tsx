@@ -1,3 +1,7 @@
+import { componentsApi, segmentsApi } from "@api/cmsApi";
+import { axiosClient } from "@utils/axiosInterceptor";
+import { getErrorMessage } from "@utils/common";
+import { AxiosResponse } from "axios";
 import { EntitiyType, MobileComponent } from "cms";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
@@ -17,6 +21,8 @@ interface DiffCheckerActionAndState extends DiffCheckerState {
     key: keyof DiffCheckerState;
     value: DiffCheckerState[keyof DiffCheckerState];
   }) => void;
+  fetchDiffSegment: (data: FetchDiffSegment) => Promise<void>;
+  fetchDiffComponentsBulk: (data: FetchDiffComponentsBulk) => Promise<void>;
 }
 
 interface DiffCheckerState {
@@ -28,7 +34,21 @@ interface DiffCheckerState {
   segment?: object | null;
   component?: object | null;
   content?: object | null;
+  loading: boolean;
+  error: null | string;
+  diffCurrentData: MobileComponent[] | null;
+  diffNewData: MobileComponent[] | null;
 }
+
+interface FetchDiffSegment {
+  segmentId: string;
+  type: "currentVersion" | "newVersion";
+}
+interface FetchDiffComponentsBulk {
+  componentIds: string[];
+  type: "currentVersion" | "newVersion";
+}
+
 export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
   devtools((set, get) => ({
     isDiffCheckerOpen: false,
@@ -39,6 +59,10 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
     segment: null,
     component: null,
     content: null,
+    loading: false,
+    error: null,
+    diffCurrentData: null,
+    diffNewData: null,
 
     toggleDiffCheckerDrawer: () => {
       const { isDiffCheckerOpen } = get();
@@ -60,6 +84,47 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
         ...state,
         [key]: value,
       }));
+    },
+
+    fetchDiffSegment: async ({ segmentId, type }: FetchDiffSegment) => {
+      set({ loading: true, error: null });
+      try {
+        const response: AxiosResponse<MobileComponent[]> =
+          await axiosClient.get(
+            segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, true),
+          );
+
+        const obj = { [type]: response.data };
+        set({ ...obj, loading: false });
+      } catch (error: unknown) {
+        set({
+          error: getErrorMessage(error),
+          loading: false,
+        });
+      }
+    },
+
+    fetchDiffComponentsBulk: async ({
+      componentIds,
+      type,
+    }: FetchDiffComponentsBulk) => {
+      console.log(componentIds, "componentIds");
+      set({ loading: true, error: null });
+      try {
+        const response: AxiosResponse<MobileComponent[]> =
+          await axiosClient.post(
+            componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
+            { componentIds: componentIds },
+          );
+
+        const obj = { [type]: response.data };
+        set({ ...obj, loading: false });
+      } catch (error: unknown) {
+        set({
+          error: getErrorMessage(error),
+          loading: false,
+        });
+      }
     },
   })),
 );
