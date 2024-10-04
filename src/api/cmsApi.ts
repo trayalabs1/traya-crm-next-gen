@@ -9,6 +9,7 @@ export const contentsApi = {
   CREATE_CONTENT: "/v2/cms/content/create",
   UPDATE_CONTENT: (contentId: string | undefined) =>
     "/v2/cms/content/update/" + contentId,
+  GET_CONTENTS_BULK_BY_CONTENT_IDS: "api/content/content/bulk",
 } as const;
 
 export const componentsApi = {
@@ -20,6 +21,7 @@ export const componentsApi = {
     "/v2/cms/component/update/" + componentId,
   GET_COMPONENT_CONTENTS_BY_COMPONENT_ID: (componentId?: string) =>
     "/v2/cms/component/content/" + componentId,
+  GET_COMPONENTS_BULK_BY_COMPONENT_IDS: "/api/component/content/bulk",
 } as const;
 
 export const segmentsApi = {

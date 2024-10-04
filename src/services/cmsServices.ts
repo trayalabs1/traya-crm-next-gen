@@ -174,3 +174,15 @@ export const submitByChecker = async (payload: EntitiyActionBody) => {
   const response = await axiosClient.put(releaseApi.SUBMIT, payload);
   return response.data;
 };
+
+export const getComponentsBulk = async ({
+  componentIds,
+}: {
+  componentIds: string[];
+}) => {
+  const response = await axiosClient.post(
+    componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
+    { componentIds },
+  );
+  return response.data;
+};

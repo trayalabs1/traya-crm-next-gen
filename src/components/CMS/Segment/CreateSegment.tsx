@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import Select from "react-select";
@@ -34,6 +34,9 @@ import {
   streaks,
 } from "@utils/common";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
+import { useDiffCheckerStore } from "../store/useCmsStore";
+import { useSegmentComponentContent } from "src/queries/cms/segments";
+import { useComponentBulk } from "src/queries/cms/component";
 
 type CreateSegmentProps = {
   onSubmit: (content: SegmentMutationPayload) => void;
@@ -82,7 +85,7 @@ export default function CreateSegment({
 
   // const [showOtpInput, setShowOtpInput] = useState(false);
 
-  const { id } = useParams();
+  const { id } = useParams<{ id: string | "new" }>();
 
   const isNew = id === "new";
 
@@ -124,10 +127,14 @@ export default function CreateSegment({
       const orderCounts = _.first(_.get(data, ["order_counts"]));
       const recommendedProducts = _.get(data, ["recommended_products"]) || [];
 
-      let dataKey = "data";
-      if (data.status === "draft") dataKey = "draft_data";
-
-      const component_ids = _.get(data, [dataKey, "component_ids"]) || [];
+      let componentIds: string[] = [];
+      if (data.status === "published") {
+        componentIds =
+          _.map(_.get(data, ["data", "component_ids"], []), "component_id") ||
+          [];
+      } else {
+        componentIds = _.get(data, ["draft_data", "component_ids"]) || [];
+      }
 
       const selectedProducts = _.map(recommendedProducts, (product) => ({
         label: product,
@@ -150,9 +157,9 @@ export default function CreateSegment({
 
       let selectedComponents: CustomOptionType[] = [];
 
-      if (!_.isEmpty(component_ids)) {
+      if (!_.isEmpty(componentIds)) {
         selectedComponents = (_.get(components, ["mainData"]) || [])
-          .filter((component) => component_ids.includes(component.component_id))
+          .filter((component) => componentIds.includes(component.component_id))
           .map((component) => ({
             label: _.get(component, ["name"]) || "",
             value: _.get(component, ["component_id"]) || "",
@@ -203,11 +210,70 @@ export default function CreateSegment({
     }
   }, [segment, form, components]);
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const {
+    isDiffCheckerOpen,
+    toggleDiffCheckerDrawer,
+    changeDiffType,
+    currentVersion,
+    newVersion,
+    updateDiffStates,
+  } = useDiffCheckerStore();
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
+  const { data: segmentExpandedData, refetch: segmentExpandedFetch } =
+    useSegmentComponentContent(
+      {
+        segmentId: id ?? "defaultSegmentId",
+        fetchContents: true,
+      },
+      { enabled: false },
+    );
+
+  const { data: componentsBulks, refetch: componentBulkFetch } =
+    useComponentBulk(
+      {
+        componentIds: _.map(form.getValues("components"), "value"),
+      },
+      { enabled: false },
+    );
+
+  useEffect(() => {
+    if (isDiffCheckerOpen && segment) {
+      changeDiffType({
+        type: isNew ? "new" : "edit",
+        entityType: "segment",
+        segment: segment,
+      });
+    }
+
+    if (!isNew && isDiffCheckerOpen) {
+      segmentExpandedFetch();
+    }
+  }, [
+    isNew,
+    segment,
+    isDiffCheckerOpen,
+    changeDiffType,
+    segmentExpandedData,
+    segmentExpandedFetch,
+  ]);
+
+  const [componentChanged] = form.watch(["components"]);
+
+  useEffect(() => {
+    if (isDiffCheckerOpen && componentChanged) {
+      componentBulkFetch();
+    }
+  }, [isDiffCheckerOpen, componentChanged, componentBulkFetch]);
+  useEffect(() => {
+    if (segmentExpandedData) {
+      updateDiffStates({ key: "currentVersion", value: segmentExpandedData });
+    }
+
+    /// For New Version
+    if (componentsBulks) {
+      updateDiffStates({ key: "newVersion", value: componentsBulks });
+    }
+  }, [segmentExpandedData, componentsBulks, updateDiffStates]);
 
   return (
     <div className="w-3/4 mx-auto">
@@ -230,8 +296,8 @@ export default function CreateSegment({
           </h3>
         </div>
         <Button
-          disabled={!form.formState.isValid}
-          onClick={toggleDrawer}
+          disabled={!form.formState.isValid || !form.formState.isDirty}
+          onClick={toggleDiffCheckerDrawer}
           className="bg-green-500 hover:bg-green-700 hover:ease-in"
           type="button"
         >
@@ -546,7 +612,11 @@ export default function CreateSegment({
               >
                 Clear
               </Button>
-              <Button type="submit" className="w-36">
+              <Button
+                type="submit"
+                className="w-36"
+                disabled={!form.formState.isDirty}
+              >
                 {
                   // showOtpInput
                   //   ? "Verify OTP"
@@ -560,10 +630,11 @@ export default function CreateSegment({
       </div>
 
       <DiffCheckerDrawer
-        isDrawerOpen={isDrawerOpen}
-        toggleDrawer={toggleDrawer}
-        currentVersion={isNew ? undefined : {}}
-        newVersion={isNew ? {} : undefined}
+        diffEntity="segment"
+        isDrawerOpen={isDiffCheckerOpen}
+        toggleDrawer={toggleDiffCheckerDrawer}
+        currentVersion={currentVersion}
+        newVersion={newVersion}
       />
     </div>
   );

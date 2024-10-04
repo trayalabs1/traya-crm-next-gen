@@ -1,10 +1,11 @@
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { memo } from "react";
 
 interface PhoneLayoutProps {
   children: React.ReactNode;
 }
 
-export function PhoneLayout({ children }: PhoneLayoutProps) {
+function PhoneLayout({ children }: PhoneLayoutProps) {
   return (
     <div className="flex-shrink-0 w-[360px] h-[720px] bg-white rounded-[2.5rem] shadow-xl overflow-hidden border-[14px] border-gray-900 flex flex-col relative">
       <div className="bg-black text-white">
@@ -19,3 +20,5 @@ export function PhoneLayout({ children }: PhoneLayoutProps) {
     </div>
   );
 }
+
+export default memo(PhoneLayout);

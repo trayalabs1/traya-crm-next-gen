@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PhoneLayout } from "./PhoneLayout";
+import PhoneLayout from "./PhoneLayout";
 import RenderComponents from "@components/MobileLayout/RenderMobileComponents";
 import CommonDialog from "../Dialogs/CommonDialog";
 import { Button } from "@components/ui/button";
@@ -13,6 +13,7 @@ import {
   Content,
   EntitiyActionBody,
   EntitiyType,
+  MobileComponent,
   Segment,
 } from "cms";
 import { useAuth } from "src/context/useAuth";
@@ -31,8 +32,8 @@ import _ from "lodash";
 import { EntityError } from "./EntityError";
 export interface DiffCheckerProps {
   action?: "VIEW" | "CHANGES";
-  currentVersion?: object;
-  newVersion?: object;
+  currentVersion: MobileComponent[] | null;
+  newVersion: MobileComponent[] | null;
   toggleDrawer: () => void;
   diffEntity?: EntitiyType;
   segment?: Segment | null;
@@ -395,7 +396,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
                   exit={{ opacity: 0, y: 30 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <RenderComponents />
+                  <RenderComponents components={currentVersion} />
                 </motion.div>
               ) : (
                 <div className="flex flex-wrap justify-center mt-80">
@@ -419,7 +420,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
                   exit={{ opacity: 0, y: 30 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <RenderComponents />
+                  <RenderComponents components={newVersion} />
                 </motion.div>
               ) : (
                 <div className="flex flex-wrap justify-center mt-80">

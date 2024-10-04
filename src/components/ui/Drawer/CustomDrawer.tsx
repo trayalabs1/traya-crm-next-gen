@@ -1,10 +1,10 @@
 import {
   useEffect,
   useCallback,
-  useState,
+  // useState,
   useRef,
   memo,
-  useInsertionEffect,
+  // useInsertionEffect,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
@@ -24,12 +24,12 @@ function CustomDrawer({
   children,
   direction = "right",
   className = "",
-  width,
+  // width,
 }: DrawerProps) {
-  const [contentDimensions, setContentDimensions] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
+  // const [contentDimensions, setContentDimensions] = useState<{
+  //   width: number;
+  //   height: number;
+  // } | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,12 +42,12 @@ function CustomDrawer({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  useInsertionEffect(() => {
-    if (isOpen && contentRef.current) {
-      const { scrollWidth, scrollHeight } = contentRef.current;
-      setContentDimensions({ width: scrollWidth, height: scrollHeight });
-    }
-  }, [isOpen, children]);
+  // useEffect(() => {
+  //   if (isOpen && contentRef.current) {
+  //     const { scrollWidth, scrollHeight } = contentRef.current;
+  //     setContentDimensions({ width: scrollWidth, height: scrollHeight });
+  //   }
+  // }, [isOpen, children]);
 
   const getAnimationProps = useCallback(() => {
     switch (direction) {
@@ -76,11 +76,13 @@ function CustomDrawer({
           : "bottom-0 left-0"
   }`;
 
-  const sizeClasses = width
-    ? `w-[${width}]`
-    : direction === "left" || direction === "right"
-      ? `w-[${contentDimensions?.width ? `${contentDimensions.width}px` : "auto"}] max-w-[95vw]`
-      : `h-[${contentDimensions?.height ? `${contentDimensions.height}px` : "auto"}] max-h-[95vh]`;
+  // const sizeClasses = width
+  //   ? `w-[${width}]`
+  //   : direction === "left" || direction === "right"
+  //     ? `w-[${contentDimensions?.width ? `${contentDimensions.width}px` : "auto"}] max-w-[95vw]`
+  //     : `h-[${contentDimensions?.height ? `${contentDimensions.height}px` : "auto"}] max-h-[95vh]`;
+
+  const sizeClasses = "";
 
   useEffect(() => {
     if (isOpen) {
