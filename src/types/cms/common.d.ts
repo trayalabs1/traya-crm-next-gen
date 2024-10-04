@@ -5,3 +5,10 @@ export interface EntitiyActionBody {
   type_id: string;
   user_id: string;
 }
+
+export interface EntitiyActionDiscardBody extends EntitiyActionBody {
+  type: EntitiyType;
+  type_id: string;
+  user_id: string;
+  role: "MAKER" | "CHECKER" | "PUBLISHER";
+}
