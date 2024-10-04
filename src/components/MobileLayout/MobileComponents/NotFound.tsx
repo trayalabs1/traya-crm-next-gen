@@ -8,7 +8,9 @@ const NotFound: React.FC<NotFoundProps> = ({ title, name }) => {
       <AlertOctagon className="w-5 h-5 text-amber-500 mr-2 flex-shrink-0" />
       <div className="flex-grow min-w-0">
         <p className="text-xs font-medium text-gray-600 truncate">
-          <span className="text-xs text-gray-500 mt-1">{title ? title : name}</span>
+          <span className="text-xs text-gray-500 mt-1">
+            {title ? title : name}
+          </span>
         </p>
         <p className="text-xs text-gray-400">Not Found Mobile Component</p>
       </div>
