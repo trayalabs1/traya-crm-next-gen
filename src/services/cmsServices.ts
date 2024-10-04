@@ -21,6 +21,7 @@ import {
   approvalApi,
   releaseApi,
   mediaApi,
+  discardApi,
 } from "src/api";
 import { EntitiyActionBody } from "cms";
 import { AxiosResponse } from "axios";
@@ -198,4 +199,9 @@ export const uploadMedia = async (file: File) => {
   } catch (error) {
     return getErrorMessage(error);
   }
+};
+
+export const discard = async (data: object) => {
+  const response = await axiosClient.post(discardApi.DISCARD, data);
+  return response.data;
 };

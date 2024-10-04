@@ -26,17 +26,14 @@ export const componentsSchema = z.object({
 });
 
 export const FormComponentSchema = z.object({
-  name: z
-    .string({ message: "Name is required." })
-    .min(3, { message: "Name must be at least 3 characters long." }),
+  name: z.string({ message: "Name is required." }).optional(),
+  // .min(3, { message: "Name must be at least 3 characters long." }),
   data: z.object({
-    title: z
-      .string({ message: "Title is required." })
-      .min(3, { message: "Title must be at least 3 characters long." }),
-    description: z
-      .string({ message: "Description is required." })
-      // .min(3, { message: "Description must be at least 3 characters long." })
-      .optional(),
+    title: z.string({ message: "Title is required." }).optional(),
+    // .min(3, { message: "Title must be at least 3 characters long." }),
+    description: z.string({ message: "Description is required." }).optional(),
+    // .min(3, { message: "Description must be at least 3 characters long." })
+    // .optional(),
     contents: z
       .array(z.object({ value: z.string(), label: z.string() }))
       .min(1, { message: "Content is required." }),

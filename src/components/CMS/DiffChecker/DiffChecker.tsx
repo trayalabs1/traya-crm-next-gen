@@ -12,6 +12,7 @@ import {
   Component,
   Content,
   EntitiyActionBody,
+  EntitiyActionDiscardBody,
   EntitiyType,
   MobileComponent,
   Segment,
@@ -22,6 +23,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   approvalByChecker,
   approvalByPublisher,
+  discard,
   generateOtp,
   publishByPublisher,
   retryOtp,
@@ -144,13 +146,51 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     setIsOtpDialogOpen(false);
   };
 
-  const handleDiscard = () => {
+  const discardMutation = useMutation({
+    mutationFn: (data: EntitiyActionDiscardBody) => discard(data),
+    onSuccess: () => {
+      toggleDrawer();
+      //Hide Drawer
+      toast({
+        variant: "success",
+        title: _.startCase(diffEntity) + " is discard",
+      });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: `Unable to discard the ${_.startCase(diffEntity)}`,
+        description: "Please try again.",
+      });
+    },
+  });
+
+  const handleDiscard = async () => {
+    const body: EntitiyActionDiscardBody = {
+      type: "segment",
+      type_id: "",
+      user_id: "",
+      role: "MAKER",
+    };
+
+    let typeId: string;
+    if (diffEntity === "segment" && segment) {
+      typeId = segment.segment_id;
+    } else if (diffEntity === "component" && component) {
+      typeId = component.component_id;
+    } else if (diffEntity === "content" && content) {
+      typeId = content.content_id;
+    } else {
+      typeId = "InvalidID";
+    }
+
+    if (_.isNil(diffEntity) || _.isEmpty(user)) return;
+    body.type = diffEntity;
+    body.type_id = typeId;
+    body.user_id = user.user_id;
+    body.role = _.toUpper(user.role);
+    await discardMutation.mutateAsync(body);
     setIsDiscardDialogOpen(false);
-    toast({
-      title: "Changes Discarded",
-      variant: "success",
-      description: "The new version has been discarded.",
-    });
   };
 
   const userId = user?.user_id || ":userId";
