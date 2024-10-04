@@ -11,12 +11,10 @@ const Maker = () => {
   //   queryFn: () => getSegments(),
   // });
 
-  const handleItemClick = () => {};
-
   return (
     <div>
       {/* <Component /> */}
-      <Segment onItemClick={handleItemClick} />
+      <Segment />
     </div>
   );
 };
