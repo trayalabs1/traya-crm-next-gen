@@ -46,7 +46,7 @@ export default function LoginPage() {
       const user = find(SAMPLE_USERS, { email });
       if (user && password === DEFAULT_PASSWORD) {
         login(user);
-        navigate("/");
+        navigate("/cms/segments");
         toast({
           description: "Login Successfully",
           variant: "success",

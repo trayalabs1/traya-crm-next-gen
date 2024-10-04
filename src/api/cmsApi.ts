@@ -9,6 +9,7 @@ export const contentsApi = {
   CREATE_CONTENT: "/v2/cms/content/create",
   UPDATE_CONTENT: (contentId: string | undefined) =>
     "/v2/cms/content/update/" + contentId,
+  GET_CONTENTS_BULK_BY_CONTENT_IDS: "api/content/content/bulk",
 } as const;
 
 export const componentsApi = {
@@ -20,6 +21,7 @@ export const componentsApi = {
     "/v2/cms/component/update/" + componentId,
   GET_COMPONENT_CONTENTS_BY_COMPONENT_ID: (componentId?: string) =>
     "/v2/cms/component/content/" + componentId,
+  GET_COMPONENTS_BULK_BY_COMPONENT_IDS: "/api/component/content/bulk",
 } as const;
 
 export const segmentsApi = {
@@ -33,3 +35,28 @@ export const segmentsApi = {
     fetchContents: boolean,
   ) => `v2/cms/segment/component/content/${segmentId}/${fetchContents}`,
 } as const;
+
+export const OTPApi = {
+  GENERATE: (userId: string) => `/v2/cms/otp/generate/${userId}`,
+  VERIFY: (userId: string, otp: string) =>
+    `/v2/cms/otp/validate/${userId}/${otp}`,
+  RETRY: (userId: string) => `/v2/cms/otp/retry/${userId}`,
+} as const;
+
+export const approvalApi = {
+  APPROVAL_BY_CHECKER: "/api/approve/approvalByChecker",
+  APPROVAL_BY_PUBLISHER: "/api/approve/approvalByPublisher",
+};
+
+export const releaseApi = {
+  SUBMIT: "/api/submit",
+  PUBLISH: "/api/publish",
+};
+
+export const mediaApi = {
+  UPLOAD: "/v2/cms/s3/upload",
+};
+
+export const discardApi = {
+  DISCARD: "/api/discard",
+};

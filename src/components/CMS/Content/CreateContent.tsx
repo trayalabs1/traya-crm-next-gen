@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ChevronRight,
   Plus,
+  Smartphone,
   Trash2,
   UploadIcon,
   X,
@@ -23,7 +24,9 @@ import { useGetContents } from "src/queries";
 import { get } from "lodash";
 import { ContentMutationPayload } from "cms";
 import { generateQueryString } from "@utils/common";
-
+import _ from "lodash";
+import { uploadMedia } from "@services/cmsServices";
+// import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 const contentTypes = [
   "banner",
   "cta",
@@ -109,11 +112,15 @@ const DataField = ({
       });
     }
   };
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       console.log("Selected file:", file); // Debugging
-      onUpdate({ ...item, value: file.name, file: file });
+      const uploadedMedia = await uploadMedia(file);
+      if (uploadedMedia?.success) {
+        const URL = uploadedMedia?.url;
+        onUpdate({ ...item, value: URL, file: file });
+      }
     }
   };
 
@@ -362,23 +369,43 @@ export default function CreateContent({
     }
   }, [content]);
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
   return (
-    <>
-      <div className="flex items-center m-6 ">
+    <div className="w-3/4 mx-auto">
+      <div className="flex flex-wrap justify-between my-6 ">
+        <div className="flex flex-wrap items-center">
+          <Button
+            onClick={onBack}
+            variant="ghost"
+            size="icon"
+            className="mr-2"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h3 className="font-bold text-xl">
+            {isNew ? "Create" : "Edit"} Content
+            {_.get(content, ["mainData", 0, "status"]) == "draft"
+              ? " (Draft Version) "
+              : ""}
+          </h3>
+        </div>
         <Button
-          onClick={onBack}
-          variant="ghost"
-          size="icon"
-          className="mr-2"
-          aria-label="Go back"
+          // disabled={!form.formState.isValid}
+          disabled
+          onClick={toggleDrawer}
+          className="bg-green-500 hover:bg-green-700 hover:ease-in"
+          type="button"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <Smartphone className="mr-2 h-4 w-4" /> Phone Screen
         </Button>
-        <h3 className="font-bold text-xl">
-          {isNew ? "Create" : "Edit"} Content
-        </h3>
       </div>
-      <div className="w-3/4 mx-auto">
+      <div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
@@ -438,6 +465,12 @@ export default function CreateContent({
           </div>
         </form>
       </div>
-    </>
+      {/* <DiffCheckerDrawer
+        isDrawerOpen={isDrawerOpen}
+        toggleDrawer={toggleDrawer}
+        currentVersion={isNew ? undefined : {}}
+        newVersion={isNew ? {} : undefined}
+      /> */}
+    </div>
   );
 }

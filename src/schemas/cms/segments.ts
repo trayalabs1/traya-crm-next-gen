@@ -6,7 +6,7 @@ export const segmentSchema = z.object({
     components_ids: z.array(z.string()),
   }),
   draft_data: z.object({
-    components_ids: z.array(z.string()),
+    component_ids: z.array(z.string()),
   }),
   name: z.string(),
   segment_id: z.string(),
@@ -14,7 +14,13 @@ export const segmentSchema = z.object({
   weeks_in_program: z.array(z.string()),
   order_counts: z.array(z.number()),
   recommended_products: z.array(z.string()),
-  status: z.enum(["published", "draft"]),
+  status: z.enum([
+    "draft",
+    "submitted",
+    "approved_by_checker",
+    "approved_by_publisher",
+    "published",
+  ]),
   current_version: z.number(),
   draft_version: z.number(),
   app_page_category: z.array(z.string()),
@@ -36,9 +42,8 @@ export const segmentsSchema = z.object({
 });
 
 export const FormSegmentSchema = z.object({
-  name: z
-    .string({ message: "Name is required." })
-    .min(3, { message: "Name must be at least 3 characters long." }),
+  name: z.string({ message: "Name is required." }).optional(),
+  // .min(3, { message: "Name must be at least 3 characters long." }),
   gender: z
     .object(
       { value: z.string(), label: z.string() },
@@ -49,34 +54,31 @@ export const FormSegmentSchema = z.object({
     .array(z.object({ value: z.string(), label: z.string() }))
     // .min(1, { message: "Weeks In Program is required." })
     .optional(),
-  orderCounts: z
-    .union([
-      z
-        .number()
-        .min(0, { message: "Order count cannot be negative" })
-        .max(1000, { message: "Order count cannot exceed 1000" })
-        .refine((val) => val !== null && val !== undefined, {
-          message: "Order Count is required",
-        }),
-      z
-        .string()
-        .refine(
-          (val) => {
-            const numVal = Number(val);
-            return !isNaN(numVal) && numVal >= 0;
-          },
-          {
-            message:
-              "Order count should be a valid number as a string and cannot be negative",
-          },
-        )
-        .refine((val) => val.trim() !== "", {
-          message: "Order Count is required",
-        }),
-    ])
-    .refine((value) => value !== null && value !== undefined, {
-      message: "Order Count is required",
-    }),
+  orderCounts: z.union([
+    z.number().optional(),
+    // .min(0, { message: "Order count cannot be negative" })
+    // .max(1000, { message: "Order count cannot exceed 1000" })
+    // .refine((val) => val !== null && val !== undefined, {
+    //   message: "Order Count is required",
+    // }),
+    z.string().optional(),
+    // .refine(
+    //   (val) => {
+    //     const numVal = Number(val);
+    //     return !isNaN(numVal) && numVal >= 0;
+    //   },
+    //   {
+    //     message:
+    //       "Order count should be a valid number as a string and cannot be negative",
+    //   },
+    // )
+    // .refine((val) => val.trim() !== "", {
+    //   message: "Order Count is required",
+    // }),
+  ]),
+  // .refine((value) => value !== null && value !== undefined, {
+  //   message: "Order Count is required",
+  // }),
   recommendedProducts: z
     .array(
       z.object(

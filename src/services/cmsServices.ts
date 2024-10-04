@@ -13,7 +13,18 @@ import {
   SegmentMutationBody,
 } from "cms";
 import { axiosClient } from "@utils/axiosInterceptor";
-import { contentsApi, componentsApi, segmentsApi } from "src/api";
+import {
+  contentsApi,
+  componentsApi,
+  segmentsApi,
+  OTPApi,
+  approvalApi,
+  releaseApi,
+  mediaApi,
+} from "src/api";
+import { EntitiyActionBody } from "cms";
+import { AxiosResponse } from "axios";
+import { getErrorMessage } from "@utils/common";
 
 export const getContents = async (queryString?: string): Promise<Contents> => {
   const response = await axiosClient.get(contentsApi.GET_CONTENTS(queryString));
@@ -23,7 +34,10 @@ export const getContents = async (queryString?: string): Promise<Contents> => {
 export const createContent = async (
   data: ContentMutationPayload["payload"],
 ): Promise<Content[]> => {
-  const response = await axiosClient.post(contentsApi.CREATE_CONTENT, data);
+  const response = await axiosClient.post(contentsApi.CREATE_CONTENT, {
+    ...data,
+    user_id: "f7ad2907-c411-40d2-9c56-6cd607eaeeaf",
+  });
   return response.data;
 };
 
@@ -107,4 +121,81 @@ export const getContentsComponentsFromSegment = async (
     segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, fetchContents),
   );
   return response.data;
+};
+
+export const generateOtp = async (
+  userId: string,
+): Promise<{ status: string; otp: string }> => {
+  const response = await axiosClient.get(OTPApi.GENERATE(userId));
+  return response.data;
+};
+
+export const verifyOtp = async (
+  userId: string,
+  otp: string,
+): Promise<{ isValid: boolean }> => {
+  const response: AxiosResponse<{ isValid: boolean }> = await axiosClient.get(
+    OTPApi.VERIFY(userId, otp),
+  );
+
+  if (!response?.data?.isValid) {
+    throw new Error("Invalid OTP");
+  }
+  return response.data;
+};
+
+export const retryOtp = async (
+  userId: string,
+): Promise<{ status: string; otp: string }> => {
+  const response = await axiosClient.get(OTPApi.RETRY(userId));
+  return response.data;
+};
+
+export const approvalByChecker = async (payload: EntitiyActionBody) => {
+  const response = await axiosClient.put(
+    approvalApi.APPROVAL_BY_CHECKER,
+    payload,
+  );
+  return response.data;
+};
+
+export const approvalByPublisher = async (payload: EntitiyActionBody) => {
+  const response = await axiosClient.put(
+    approvalApi.APPROVAL_BY_PUBLISHER,
+    payload,
+  );
+  return response.data;
+};
+
+export const publishByPublisher = async (payload: EntitiyActionBody) => {
+  const response = await axiosClient.put(releaseApi.PUBLISH, payload);
+  return response.data;
+};
+
+export const submitByChecker = async (payload: EntitiyActionBody) => {
+  const response = await axiosClient.put(releaseApi.SUBMIT, payload);
+  return response.data;
+};
+
+export const getComponentsBulk = async ({
+  componentIds,
+}: {
+  componentIds: string[];
+}) => {
+  const response = await axiosClient.post(
+    componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
+    { componentIds },
+  );
+  return response.data;
+};
+
+export const uploadMedia = async (file: File) => {
+  try {
+    const form = new FormData();
+    form.append("file", file);
+    const response = await axiosClient.post(mediaApi.UPLOAD, form);
+    return response.data;
+  } catch (error) {
+    return getErrorMessage(error);
+  }
 };

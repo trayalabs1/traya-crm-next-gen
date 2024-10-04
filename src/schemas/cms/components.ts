@@ -5,6 +5,7 @@ export const componentSchema = z.object({
   data: z.object({
     title: z.string().nullable(),
     description: z.string().nullable(),
+    content_ids: z.array(z.string()),
   }),
   draft_data: z.object({
     content_ids: z.array(z.string()),

@@ -6,101 +6,73 @@ import HowTrayaWorks from "./MobileComponents/HowTrayaWorks/HowTrayaWorks";
 import TrayaHeroesScreen from "./MobileComponents/TrayaHeroesScreen/TrayaHeroesScreen";
 import WhyTrustTraya from "./MobileComponents/WhyTrustTraya/WhyTrustTraya";
 import HairTest from "./MobileComponents/HairTest/HairTest";
+import { MobileComponent, MobileContent } from "cms";
+import NotFound from "./MobileComponents/NotFound";
+import { memo } from "react";
 export interface GetStartedV2Props {
-  contents: Content[];
+  contents: MobileContent[];
 }
 
 export interface HowTrayaWorksProps {
   title: string;
-  contents: Content[];
+  contents: MobileContent[];
 }
 
 export interface TrayaHeroesScreenProps {
   title: string;
-  contents: Content[];
+  contents: MobileContent[];
 }
 
 export interface WhyTrustTrayaProps {
-  contents: Content[];
+  contents: MobileContent[];
 }
 export interface GoogleReviewsProps {
-  contents: Content[];
+  contents: MobileContent[];
   title: string;
 }
 
 export interface TrayaDoctorsProps {
-  contents: Content[];
+  contents: MobileContent[];
   title: string;
 }
 
 export interface HairTestProps {
-  contents: Content[];
+  contents: MobileContent[];
   // title: string;
 }
 
-interface ContentData {
-  img?: string;
-  h1?: string;
-  h2?: string;
-  cta?: string;
-  prefix?: string;
-  doctor_name?: string;
-  profile_image?: string;
-  doctor_specialization?: string;
-  experience?: string;
-  description?: string;
-  mainText?: string;
-  subtext?: string;
-  thumbnail?: string;
-  videoId?: string;
-  step_text?: string;
-  title?: string;
-  h1_text?: string;
-  cta_upper_text?: string;
-  icon?: string;
-  is_active?: boolean;
-  reviewer_name?: string;
-  rating?: number;
-  language_based_description?: { [key: string]: string };
-  h1Text?: string;
-  h2Ttext?: string[];
-}
-
-interface Content {
-  content_id: string;
-  content_data: ContentData;
-}
-
-interface Component {
-  componentId: string;
+export interface NotFoundProps {
+  contents: MobileContent[];
   name: string;
-  title?: string;
-  description?: string;
-  contents: Content[];
+  title: string;
 }
-
 interface RenderComponentsProps {
-  components?: Component[];
+  components?: MobileComponent[];
 }
 
-export default function RenderComponents({
-  components,
-}: RenderComponentsProps) {
+function RenderComponents({ components }: RenderComponentsProps) {
   if (!components) components = componentsList;
-  const renderComponent = (item: Component) => {
+  const renderComponent = (item: MobileComponent) => {
     const { name = "", contents = [], title = "" } = item;
 
     const componentsMap: Record<string, React.ReactNode> = {
-      namedraft: <GetStartedv2 contents={contents} />,
-      howTrayaWorks: <HowTrayaWorks contents={contents} title={title} />,
-      trayaheros: <TrayaHeroesScreen contents={contents} title={title} />,
-      whytrusttraya: <WhyTrustTraya contents={contents} />,
-      userreview: <GoogleReview contents={contents} title={title} />,
-      meetourteamdoctors: <TrayaDoctors contents={contents} title={title} />,
-      takehairtest: <HairTest contents={contents} />,
+      name_draft: <GetStartedv2 contents={contents} />,
+      how_traya_works: <HowTrayaWorks contents={contents} title={title} />,
+      traya_heroes: <TrayaHeroesScreen contents={contents} title={title} />,
+      why_trust_traya: <WhyTrustTraya contents={contents} />,
+      user_review: <GoogleReview contents={contents} title={title} />,
+      meet_our_team_doctors: <TrayaDoctors contents={contents} title={title} />,
+      meet_our_team_of_doctors: (
+        <TrayaDoctors contents={contents} title={title} />
+      ),
+      take_hair_test: <HairTest contents={contents} />,
     };
 
-    return componentsMap[name] || null; // Return null if the component is not found
+    return (
+      componentsMap[name] || (
+        <NotFound contents={contents} title={title} name={name} />
+      )
+    );
   };
 
   return (
@@ -112,3 +84,5 @@ export default function RenderComponents({
     </div>
   );
 }
+
+export default memo(RenderComponents);

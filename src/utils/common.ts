@@ -9,6 +9,7 @@ import {
   isObject,
 } from "lodash";
 import { cmsStatusFilter } from "cms";
+import axios from "axios";
 /**
  * Safely retrieves a value from an object using a path of keys.
  * @param content - The object to retrieve the value from.
@@ -206,3 +207,41 @@ export const getCMSFilterStatusByRole = (role?: Roles) => {
 
   return status;
 };
+
+export const getCMSActionButtonColor = (action: string) => {
+  switch (action) {
+    case "edit":
+      return "bg-blue-500 hover:bg-blue-600 text-white";
+    case "checker":
+      return "bg-yellow-500 hover:bg-yellow-600 text-white";
+    case "publisher":
+      return "bg-orange-500 hover:bg-orange-600 text-white";
+    case "submit":
+      return "bg-indigo-500 hover:bg-indigo-600 text-white";
+    case "publish":
+      return "bg-green-500 hover:bg-green-600 text-white";
+    case "compare":
+      return "bg-purple-500 hover:bg-purple-600 text-white";
+    default:
+      return "bg-gray-100 hover:bg-gray-200 text-gray-800";
+  }
+};
+
+export function getErrorMessage(error: unknown): string {
+  const DEFAULT_MESSAGE = "Something went wrong";
+  let errorMessage: string;
+  if (axios.isAxiosError(error)) {
+    errorMessage = get(error, ["message"]);
+    if (error.response) {
+      errorMessage = get(error, ["response", "data", "message"]);
+    } else if (error.request) {
+      errorMessage = get(error, ["request"]);
+    }
+  } else if (error instanceof Error) {
+    errorMessage = get(error, ["message"]);
+  } else {
+    errorMessage = DEFAULT_MESSAGE;
+  }
+
+  return errorMessage || DEFAULT_MESSAGE;
+}
