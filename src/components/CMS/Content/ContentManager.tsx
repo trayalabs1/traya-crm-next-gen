@@ -49,6 +49,7 @@ import { ROLES } from "@utils/user";
 import { useAuth } from "src/context/useAuth";
 import { Content } from "cms";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
+import { useDiffCheckerStore } from "../store/useCmsStore";
 const statusList = [
   { label: "Draft", value: "draft" },
   { label: "Submitted", value: "submitted" },
@@ -64,25 +65,34 @@ export default function ContentManager() {
   const [limit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
   const DEFAULT_STATUS = getCMSFilterStatusByRole(user?.role);
   const [status, setStatus] = useState<string>(DEFAULT_STATUS);
-  const [currentVersion, setCurrentVersion] = useState<string>("");
+  const [version, setVersion] = useState<string>("");
 
   const queryString = generateQueryString({
     page_number: String(page),
     page_size: String(limit),
     status,
-    current_version: currentVersion,
+    current_version: version,
   });
-
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const [selectedContent, setSelectedContent] = useState<Content | null>(null);
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
+  const {
+    isDiffCheckerOpen,
+    toggleDiffCheckerDrawer,
+    // changeDiffType,
+    currentVersion,
+    newVersion,
+    // updateDiffStates,
+
+    // fetchDiffComponentsBulk,
+    // fetchDiffContentsBulk,
+  } = useDiffCheckerStore();
 
   const { data, isLoading } = useGetContents(queryString);
 
+  const handleDiffChecker = (content: Content) => {
+    setSelectedContent(content);
+  };
   if (isLoading) return <TableSkeleton />;
   return (
     <>
@@ -124,10 +134,10 @@ export default function ContentManager() {
             </Select>
             <Select
               onValueChange={(value) => {
-                setCurrentVersion(value);
+                setVersion(value);
                 setPage(1);
               }}
-              value={currentVersion}
+              value={version}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select a Version" />
@@ -201,11 +211,9 @@ export default function ContentManager() {
                               <Button
                                 variant="outline"
                                 size="icon"
+                                disabled
                                 className={getCMSActionButtonColor("compare")}
-                                onClick={() => {
-                                  setSelectedContent(content);
-                                  toggleDrawer();
-                                }}
+                                onClick={() => handleDiffChecker(content)}
                               >
                                 <GitCompare className="h-4 w-4" />
                                 <span className="sr-only">View</span>
@@ -259,10 +267,10 @@ export default function ContentManager() {
         </CardContent>
       </Card>
       <DiffCheckerDrawer
-        isDrawerOpen={isDrawerOpen}
-        toggleDrawer={toggleDrawer}
-        currentVersion={{}}
-        newVersion={{}}
+        isDrawerOpen={isDiffCheckerOpen}
+        toggleDrawer={toggleDiffCheckerDrawer}
+        currentVersion={currentVersion}
+        newVersion={newVersion}
         diffEntity="content"
         action="CHANGES"
         content={selectedContent}

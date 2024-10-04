@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import _ from "lodash";
 import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
 import { generateQueryString } from "@utils/common";
-import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
+// import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
   onBack?: () => void;
@@ -133,6 +133,7 @@ export default function CreateComponent({
               <FormField
                 control={form.control}
                 name="name"
+                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
@@ -150,6 +151,7 @@ export default function CreateComponent({
               <FormField
                 control={form.control}
                 name="data.title"
+                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Title</FormLabel>
@@ -166,6 +168,7 @@ export default function CreateComponent({
               <FormField
                 control={form.control}
                 name="data.description"
+                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
@@ -221,12 +224,12 @@ export default function CreateComponent({
         </Form>
       </div>
 
-      <DiffCheckerDrawer
+      {/* <DiffCheckerDrawer
         isDrawerOpen={isDrawerOpen}
         toggleDrawer={toggleDrawer}
         currentVersion={isNew ? undefined : {}}
         newVersion={isNew ? {} : undefined}
-      />
+      /> */}
     </div>
   );
 }

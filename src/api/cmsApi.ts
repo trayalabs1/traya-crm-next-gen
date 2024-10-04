@@ -52,3 +52,11 @@ export const releaseApi = {
   SUBMIT: "/api/submit",
   PUBLISH: "/api/publish",
 };
+
+export const mediaApi = {
+  UPLOAD: "/v2/cms/s3/upload",
+};
+
+export const discardApi = {
+  DISCARD: "/api/discard",
+};

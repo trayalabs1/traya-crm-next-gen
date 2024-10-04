@@ -32,7 +32,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Edit, GitCompare, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { get } from "lodash";
+import { get, map } from "lodash";
 import {
   generateQueryString,
   getCMSActionButtonColor,
@@ -50,6 +50,7 @@ import { ROLES } from "@utils/user";
 import { useAuth } from "src/context/useAuth";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { Component } from "cms";
+import { useDiffCheckerStore } from "../store/useCmsStore";
 const statusList = [
   { label: "Draft", value: "draft" },
   { label: "Submitted", value: "submitted" },
@@ -64,13 +65,17 @@ export default function ComponentManager() {
   const [limit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
   const DEFAULT_STATUS = getCMSFilterStatusByRole(user?.role);
   const [status, setStatus] = useState<string>(DEFAULT_STATUS);
-  const [currentVersion, setCurrentVersion] = useState<string>("");
+  const [version, setVersion] = useState<string>("");
+
+  const [selectedComponent, setSelectedComponent] = useState<Component | null>(
+    null,
+  );
 
   const queryString = generateQueryString({
     page_number: String(page),
     page_size: String(limit),
     status,
-    current_version: currentVersion,
+    current_version: version,
   });
 
   const { data, isLoading } = useQuery({
@@ -78,14 +83,50 @@ export default function ComponentManager() {
     queryFn: () => getComponents(queryString),
   });
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const {
+    isDiffCheckerOpen,
+    toggleDiffCheckerDrawer,
+    // changeDiffType,
+    currentVersion,
+    newVersion,
+    updateDiffStates,
 
-  const [selectedComponent, setSelectedComponent] = useState<Component | null>(
-    null,
-  );
+    fetchDiffComponentsBulk,
+    fetchDiffContentsBulk,
+  } = useDiffCheckerStore();
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
+  const handleDiffChecker = async (component: Component) => {
+    await fetchDiffComponentsBulk({
+      type: "currentVersion",
+      componentIds: [component.component_id],
+    });
+
+    let contentIds: string[];
+    if (component.status !== "published") {
+      contentIds = get(component, ["draft_data", "content_ids"]);
+    } else {
+      contentIds = map(get(component, ["data", "content_ids"]), "content_id");
+    }
+
+    await fetchDiffContentsBulk({
+      type: "newVersion",
+      contentIds: contentIds,
+    });
+
+    const componentData = {
+      component_id: component.component_id,
+      component_type: "Component_Type",
+      contents: newVersion ? newVersion : [],
+      current_version: 1,
+      description: component,
+      name: component.name,
+      status: component.status,
+      title: component.data.title,
+    };
+
+    updateDiffStates({ key: "newVersion", value: componentData });
+    setSelectedComponent(component);
+    toggleDiffCheckerDrawer();
   };
 
   if (isLoading) return <TableSkeleton />;
@@ -136,10 +177,10 @@ export default function ComponentManager() {
             </Select>
             <Select
               onValueChange={(value) => {
-                setCurrentVersion(value);
+                setVersion(value);
                 setPage(1);
               }}
-              value={currentVersion}
+              value={version}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select a Version" />
@@ -214,10 +255,7 @@ export default function ComponentManager() {
                                 variant="outline"
                                 size="icon"
                                 className={getCMSActionButtonColor("compare")}
-                                onClick={() => {
-                                  setSelectedComponent(component);
-                                  toggleDrawer();
-                                }}
+                                onClick={() => handleDiffChecker(component)}
                               >
                                 <GitCompare className="h-4 w-4" />
                                 <span className="sr-only">View</span>
@@ -271,10 +309,10 @@ export default function ComponentManager() {
         </CardContent>
       </Card>
       <DiffCheckerDrawer
-        isDrawerOpen={isDrawerOpen}
-        toggleDrawer={toggleDrawer}
-        currentVersion={{}}
-        newVersion={{}}
+        isDrawerOpen={isDiffCheckerOpen}
+        toggleDrawer={toggleDiffCheckerDrawer}
+        currentVersion={currentVersion}
+        newVersion={newVersion}
         diffEntity="component"
         action="CHANGES"
         component={selectedComponent}

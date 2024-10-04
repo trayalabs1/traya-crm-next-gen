@@ -20,9 +20,11 @@ import {
   OTPApi,
   approvalApi,
   releaseApi,
+  mediaApi,
 } from "src/api";
 import { EntitiyActionBody } from "cms";
 import { AxiosResponse } from "axios";
+import { getErrorMessage } from "@utils/common";
 
 export const getContents = async (queryString?: string): Promise<Contents> => {
   const response = await axiosClient.get(contentsApi.GET_CONTENTS(queryString));
@@ -185,4 +187,15 @@ export const getComponentsBulk = async ({
     { componentIds },
   );
   return response.data;
+};
+
+export const uploadMedia = async (file: File) => {
+  try {
+    const form = new FormData();
+    form.append("file", file);
+    const response = await axiosClient.post(mediaApi.UPLOAD, form);
+    return response.data;
+  } catch (error) {
+    return getErrorMessage(error);
+  }
 };

@@ -1,4 +1,4 @@
-import { componentsApi, segmentsApi } from "@api/cmsApi";
+import { componentsApi, contentsApi, segmentsApi } from "@api/cmsApi";
 import { axiosClient } from "@utils/axiosInterceptor";
 import { getErrorMessage } from "@utils/common";
 import { AxiosResponse } from "axios";
@@ -23,6 +23,7 @@ interface DiffCheckerActionAndState extends DiffCheckerState {
   }) => void;
   fetchDiffSegment: (data: FetchDiffSegment) => Promise<void>;
   fetchDiffComponentsBulk: (data: FetchDiffComponentsBulk) => Promise<void>;
+  fetchDiffContentsBulk: (data: FetchDiffContentsBulk) => Promise<void>;
 }
 
 interface DiffCheckerState {
@@ -46,6 +47,11 @@ interface FetchDiffSegment {
 }
 interface FetchDiffComponentsBulk {
   componentIds: string[];
+  type: "currentVersion" | "newVersion";
+}
+
+interface FetchDiffContentsBulk {
+  contentIds: string[];
   type: "currentVersion" | "newVersion";
 }
 
@@ -116,6 +122,27 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
             componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
             { componentIds: componentIds },
           );
+
+        const obj = { [type]: response.data };
+        set({ ...obj, loading: false });
+      } catch (error: unknown) {
+        set({
+          error: getErrorMessage(error),
+          loading: false,
+        });
+      }
+    },
+    fetchDiffContentsBulk: async ({
+      contentIds,
+      type,
+    }: FetchDiffContentsBulk) => {
+      console.log(contentIds, "contentIds");
+      set({ loading: true, error: null });
+      try {
+        const response: AxiosResponse<MobileComponent[]> =
+          await axiosClient.post(contentsApi.GET_CONTENTS_BULK_BY_CONTENT_IDS, {
+            contentIds: contentIds,
+          });
 
         const obj = { [type]: response.data };
         set({ ...obj, loading: false });

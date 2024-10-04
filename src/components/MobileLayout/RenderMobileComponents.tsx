@@ -56,13 +56,16 @@ function RenderComponents({ components }: RenderComponentsProps) {
     const { name = "", contents = [], title = "" } = item;
 
     const componentsMap: Record<string, React.ReactNode> = {
-      namedraft: <GetStartedv2 contents={contents} />,
-      howTrayaWorks: <HowTrayaWorks contents={contents} title={title} />,
-      trayaheros: <TrayaHeroesScreen contents={contents} title={title} />,
-      whytrusttraya: <WhyTrustTraya contents={contents} />,
-      userreview: <GoogleReview contents={contents} title={title} />,
-      meetourteamdoctors: <TrayaDoctors contents={contents} title={title} />,
-      takehairtest: <HairTest contents={contents} />,
+      name_draft: <GetStartedv2 contents={contents} />,
+      how_traya_works: <HowTrayaWorks contents={contents} title={title} />,
+      traya_heroes: <TrayaHeroesScreen contents={contents} title={title} />,
+      why_trust_traya: <WhyTrustTraya contents={contents} />,
+      user_review: <GoogleReview contents={contents} title={title} />,
+      meet_our_team_doctors: <TrayaDoctors contents={contents} title={title} />,
+      meet_our_team_of_doctors: (
+        <TrayaDoctors contents={contents} title={title} />
+      ),
+      take_hair_test: <HairTest contents={contents} />,
     };
 
     return (

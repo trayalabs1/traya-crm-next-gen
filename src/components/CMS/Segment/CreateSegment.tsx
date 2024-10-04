@@ -313,6 +313,7 @@ export default function CreateSegment({
             <div className="space-y-2">
               <FormField
                 control={form.control}
+                disabled={!isNew}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
@@ -339,6 +340,7 @@ export default function CreateSegment({
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          isDisabled={!isNew}
                           styles={reactSelectStyles}
                           placeholder="Select Gender"
                           options={genderList}
@@ -364,6 +366,7 @@ export default function CreateSegment({
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          isDisabled={!isNew}
                           styles={reactSelectStyles}
                           placeholder="Select Form Status"
                           options={formStatus}
@@ -389,6 +392,7 @@ export default function CreateSegment({
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          isDisabled={!isNew}
                           styles={reactSelectStyles}
                           placeholder="Select weeks..."
                           options={weeks}
@@ -406,6 +410,7 @@ export default function CreateSegment({
                 <FormField
                   control={form.control}
                   name="orderCounts"
+                  disabled={!isNew}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Orders Count</FormLabel>
@@ -430,6 +435,7 @@ export default function CreateSegment({
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          isDisabled={!isNew}
                           styles={reactSelectStyles}
                           placeholder="Select Latest Form Filled"
                           options={daysSinceLatestFormFilled}
@@ -445,6 +451,7 @@ export default function CreateSegment({
               <div className="space-y-2">
                 <FormField
                   control={form.control}
+                  disabled={!isNew}
                   name="stages"
                   render={({ field: { onChange, onBlur, ref, value } }) => (
                     <FormItem>
@@ -455,6 +462,7 @@ export default function CreateSegment({
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          isDisabled={!isNew}
                           styles={reactSelectStyles}
                           placeholder="Select Stage"
                           options={stagesList}
@@ -481,6 +489,7 @@ export default function CreateSegment({
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          isDisabled={!isNew}
                           styles={reactSelectStyles}
                           placeholder="Select streaks"
                           options={streaks}
@@ -507,6 +516,7 @@ export default function CreateSegment({
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          isDisabled={!isNew}
                           styles={reactSelectStyles}
                           placeholder="Select coins"
                           options={coins}
@@ -532,6 +542,7 @@ export default function CreateSegment({
                           onBlur={onBlur}
                           onChange={onChange}
                           ref={ref}
+                          isDisabled={!isNew}
                           styles={reactSelectStyles}
                           placeholder="Select phases"
                           options={phases}
@@ -558,6 +569,7 @@ export default function CreateSegment({
                         onBlur={onBlur}
                         onChange={onChange}
                         ref={ref}
+                        isDisabled={!isNew}
                         styles={reactSelectStyles}
                         placeholder="Select Recommended Products..."
                         options={products}

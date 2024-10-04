@@ -25,7 +25,8 @@ import { get } from "lodash";
 import { ContentMutationPayload } from "cms";
 import { generateQueryString } from "@utils/common";
 import _ from "lodash";
-import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
+import { uploadMedia } from "@services/cmsServices";
+// import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 const contentTypes = [
   "banner",
   "cta",
@@ -111,11 +112,15 @@ const DataField = ({
       });
     }
   };
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       console.log("Selected file:", file); // Debugging
-      onUpdate({ ...item, value: file.name, file: file });
+      const uploadedMedia = await uploadMedia(file);
+      if (uploadedMedia?.success) {
+        const URL = uploadedMedia?.url;
+        onUpdate({ ...item, value: URL, file: file });
+      }
     }
   };
 
@@ -392,7 +397,7 @@ export default function CreateContent({
         </div>
         <Button
           // disabled={!form.formState.isValid}
-          // disabled
+          disabled
           onClick={toggleDrawer}
           className="bg-green-500 hover:bg-green-700 hover:ease-in"
           type="button"
@@ -460,12 +465,12 @@ export default function CreateContent({
           </div>
         </form>
       </div>
-      <DiffCheckerDrawer
+      {/* <DiffCheckerDrawer
         isDrawerOpen={isDrawerOpen}
         toggleDrawer={toggleDrawer}
         currentVersion={isNew ? undefined : {}}
         newVersion={isNew ? {} : undefined}
-      />
+      /> */}
     </div>
   );
 }
