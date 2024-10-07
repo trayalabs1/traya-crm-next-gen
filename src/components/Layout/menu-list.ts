@@ -1,4 +1,4 @@
-import { Users, Settings, SquarePen, LucideIcon } from "lucide-react";
+import { Users, Settings, SquarePen, LucideIcon, Images } from "lucide-react";
 
 type Submenu = {
   href: string;
@@ -46,6 +46,13 @@ export function getMenuList(pathname: string): Group[] {
               active: pathname === "cms/contents",
             },
           ],
+        },
+        {
+          href: "/media-manager",
+          label: "Media Manager",
+          active: pathname.includes("/media-manager"),
+          icon: Images,
+          submenus: [],
         },
       ],
     },

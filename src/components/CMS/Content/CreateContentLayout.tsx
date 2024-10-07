@@ -44,6 +44,7 @@ function CreateContentLayout() {
   });
 
   const onSubmit = async ({ id, payload }: ContentMutationPayload) => {
+    console.log(payload, "payload");
     if (id === "new") {
       await createContentQuery.mutateAsync(payload);
     } else {

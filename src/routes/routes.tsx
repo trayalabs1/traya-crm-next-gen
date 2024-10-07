@@ -1,28 +1,46 @@
 import { lazy } from "react";
+import { useAuth } from "src/context/useAuth";
 import { RouteObject } from "react-router-dom";
-// import Maker from "@components/CMS/Maker";
 import PrivateRoute from "./PrivateRoute";
 import GuestRoute from "./GuestRoute";
 import Login from "@components/Login/Login";
 import NotFound from "@components/NotFound/NotFound";
-import { useAuth } from "src/context/useAuth";
 import ForgotPasswordPage from "@components/ForgetPassword/ForgetPassword";
-// import ApprovalLogUI from "@components/CMS/ApprovalLogs";
 const SegmentManager = lazy(
   () => import("@components/CMS/Segment/SegmentManager"),
 );
 const ComponentManager = lazy(
   () => import("@components/CMS/Component/ComponentManager"),
 );
-import CreateContentLayout from "@components/CMS/Content/CreateContentLayout";
-import CreateComponentLayout from "@components/CMS/Component/CreateComponentLayout";
-import CreateSegmentLayout from "@components/CMS/Segment/CreateSegmentLayout";
-import SegmentComponents from "@components/CMS/Segment/SegmentComponents";
-import ComponentContents from "@components/CMS/Component/ComponentContents";
-// import SplitScreen from "@components/CMS/Segment/SplitScreen";
-import RenderComponents from "@components/MobileLayout/RenderMobileComponents";
+const CreateContentLayout = lazy(
+  () => import("@components/CMS/Content/CreateContentLayout"),
+);
+const CreateComponentLayout = lazy(
+  () => import("@components/CMS/Component/CreateComponentLayout"),
+);
+const CreateSegmentLayout = lazy(
+  () => import("@components/CMS/Segment/CreateSegmentLayout"),
+);
+const SegmentComponents = lazy(
+  () => import("@components/CMS/Segment/SegmentComponents"),
+);
+const ComponentContents = lazy(
+  () => import("@components/CMS/Component/ComponentContents"),
+);
+const RenderComponents = lazy(
+  () => import("@components/MobileLayout/RenderMobileComponents"),
+);
+const AccountPage = lazy(() => import("@components/Account/Account"));
+const Users = lazy(() => import("@components/Users/Users"));
+const UserForm = lazy(() => import("@components/Users/UserForm"));
+const MediaManager = lazy(
+  () => import("@components/CMS/MediaManager/MediaManager"),
+);
 const ContentManager = lazy(
   () => import("@components/CMS/Content/ContentManager"),
+);
+const MediaCreate = lazy(
+  () => import("@components/CMS/MediaManager/MediaCreate"),
 );
 
 const AppRoutesConfig = (): RouteObject[] => {
@@ -36,6 +54,35 @@ const AppRoutesConfig = (): RouteObject[] => {
           <RenderComponents />
         </PrivateRoute>
       ),
+    },
+    {
+      path: "/account",
+      element: (
+        <PrivateRoute isAuthenticated={isAuthenticated}>
+          <AccountPage />
+        </PrivateRoute>
+      ),
+    },
+    {
+      path: "/users",
+      children: [
+        {
+          index: true,
+          element: (
+            <PrivateRoute isAuthenticated={isAuthenticated}>
+              <Users />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: ":type",
+          element: (
+            <PrivateRoute isAuthenticated={isAuthenticated}>
+              <UserForm />
+            </PrivateRoute>
+          ),
+        },
+      ],
     },
     {
       path: "/cms",
@@ -101,6 +148,27 @@ const AppRoutesConfig = (): RouteObject[] => {
           element: (
             <PrivateRoute isAuthenticated={isAuthenticated}>
               <CreateContentLayout />
+            </PrivateRoute>
+          ),
+        },
+      ],
+    },
+    {
+      path: "/media-manager",
+      children: [
+        {
+          index: true,
+          element: (
+            <PrivateRoute isAuthenticated={isAuthenticated}>
+              <MediaManager />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: "create",
+          element: (
+            <PrivateRoute isAuthenticated={isAuthenticated}>
+              <MediaCreate />
             </PrivateRoute>
           ),
         },

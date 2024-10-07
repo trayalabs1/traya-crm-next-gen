@@ -278,23 +278,15 @@ export default function CreateSegment({
   return (
     <div className="w-3/4 mx-auto">
       <div className="flex flex-wrap justify-between my-6 ">
-        <div className="flex flex-wrap items-center">
-          <Button
-            onClick={onBack}
-            variant="ghost"
-            size="icon"
-            className="mr-2"
-            aria-label="Go back"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+        <Button onClick={onBack} variant="ghost" aria-label="Go back">
+          <ArrowLeft className="h-4 w-4 mr-4" />
           <h3 className="font-bold text-xl">
             {isNew ? "Create" : "Edit"} Segment
             {_.get(segment, ["mainData", 0, "status"]) == "draft"
               ? " (Draft Version) "
               : ""}
           </h3>
-        </div>
+        </Button>
         <Button
           disabled={!form.formState.isValid || !form.formState.isDirty}
           onClick={toggleDiffCheckerDrawer}
