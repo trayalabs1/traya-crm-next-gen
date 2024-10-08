@@ -1,12 +1,13 @@
 import type { User } from "user";
 import React, { createContext, useEffect, useState } from "react";
-import { getJsonFromStorage } from "@utils/common";
+import { useAuthStore } from "@components/Login/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 export interface AuthContextProps {
   isAuthenticated: boolean;
   user: User | null;
-  login: (userData: User) => void;
-  logout: () => void;
+  handleLogin: (userData: User) => void;
+  handleLogout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(
@@ -16,32 +17,35 @@ export const AuthContext = createContext<AuthContextProps | undefined>(
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    localStorage.getItem("isAuthenticated") === "true",
-  );
+  const { isAuthenticated: isAuth, logout } = useAuthStore();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(isAuth);
 
-  useEffect(() => {
-    localStorage.setItem("isAuthenticated", isAuthenticated ? "true" : "false");
-  }, [isAuthenticated]);
-
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    setUser(getJsonFromStorage("user"));
+    if (isAuthenticated) {
+      const { user } = useAuthStore.getState();
+      setUser(user);
+    }
   }, [isAuthenticated]);
-  const login = (userData: User) => {
+  const handleLogin = (userData: User) => {
     setIsAuthenticated(true);
-    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
+    navigate("/cms/segments");
   };
 
-  const logout = () => {
+  const handleLogout = async () => {
     setIsAuthenticated(false);
     setUser(null);
+    await logout();
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, handleLogin, handleLogout }}
+    >
       {children}
     </AuthContext.Provider>
   );

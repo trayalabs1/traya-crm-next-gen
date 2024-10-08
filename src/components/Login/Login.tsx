@@ -22,14 +22,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@components/ui/form";
-import { useAuth } from "src/context/useAuth";
-import { SAMPLE_USERS } from "@utils/user";
-import { find } from "lodash";
 import { useToast } from "@hooks/use-toast";
-const DEFAULT_PASSWORD = "password";
+import { useAuthStore } from "./store/useAuthStore";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login } = useAuthStore();
   const navigate = useNavigate();
 
   const { toast } = useToast();
@@ -41,28 +38,24 @@ export default function LoginPage() {
     },
   });
 
-  const handleSubmit = async ({ email, password }: LoginSchemaType) => {
+  const handleSubmit = async (data: LoginSchemaType) => {
     try {
-      const user = find(SAMPLE_USERS, { email });
-      if (user && password === DEFAULT_PASSWORD) {
-        login(user);
-        navigate("/cms/segments");
-        toast({
-          description: "Login Successfully",
-          variant: "success",
-          duration: 1000,
-        });
-      } else {
-        toast({
-          description: "Invalid email or password",
-          variant: "destructive",
-          duration: 1000,
-        });
+      await login(data);
+      const { error } = useAuthStore.getState();
+      if (error) {
+        throw new Error(error);
       }
-    } catch (error) {
-      console.error("Login failed:", error);
       toast({
-        description: "Invalid email or password",
+        description: "OTP send to your email.",
+        duration: 1000,
+      });
+      navigate("/verify-account", { state: { ...data } });
+    } catch (error: unknown) {
+      console.error("Login failed:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Login failed";
+      toast({
+        description: errorMessage,
         variant: "destructive",
         duration: 1000,
       });
@@ -70,7 +63,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
@@ -135,18 +128,20 @@ export default function LoginPage() {
               </span>
             </div>
           </div>
-          <Button variant="outline" className="w-full">
+          <Button disabled variant="outline" className="w-full">
             <Mail className="w-4 h-4 mr-2" />
             Google
           </Button>
         </CardContent>
         <CardFooter className="flex flex-wrap items-center justify-end gap-2">
-          <Link
-            to="/forget-password"
-            className="text-sm text-primary hover:underline"
-          >
-            Forgot password?
-          </Link>
+          <Button variant="link" disabled>
+            <Link
+              to="/forget-password"
+              className="text-sm text-primary hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </Button>
         </CardFooter>
       </Card>
     </div>

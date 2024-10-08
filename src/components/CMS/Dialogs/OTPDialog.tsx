@@ -76,8 +76,10 @@ export function OTPDialog({
   }, [isOpen, countdown]);
 
   useEffect(() => {
-    if (otp) {
-      form.setValue("otp", otp, { shouldValidate: true });
+    if (import.meta.env.DEV) {
+      if (otp) {
+        form.setValue("otp", otp, { shouldValidate: true });
+      }
     }
   }, [otp, form]);
   const handleResend = async () => {

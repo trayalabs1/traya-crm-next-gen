@@ -16,7 +16,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@components/ui/form";
-import { Component, FormSegmentSchemaType, SegmentMutationPayload } from "cms";
+import {
+  ComponentOrder,
+  FormSegmentSchemaType,
+  SegmentMutationPayload,
+} from "cms";
 import { FormSegmentSchema } from "@schemas/cms/segments";
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
@@ -37,6 +41,7 @@ import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import { useSegmentComponentContent } from "src/queries/cms/segments";
 import { useComponentBulk } from "src/queries/cms/component";
+import ComponentOrders from "./ComponentReOrders";
 
 type CreateSegmentProps = {
   onSubmit: (content: SegmentMutationPayload) => void;
@@ -103,6 +108,7 @@ export default function CreateSegment({
     queryFn: () => getComponents(),
   });
 
+  const componentsData = _.get(components, ["mainData"]) || [];
   const form = useForm<FormSegmentSchemaType>({
     resolver: zodResolver(FormSegmentSchema),
     defaultValues,
@@ -127,11 +133,9 @@ export default function CreateSegment({
       const orderCounts = _.first(_.get(data, ["order_counts"]));
       const recommendedProducts = _.get(data, ["recommended_products"]) || [];
 
-      let componentIds: string[] = [];
+      let componentIds: ComponentOrder[] = [];
       if (data.status === "published") {
-        componentIds =
-          _.map(_.get(data, ["data", "component_ids"], []), "component_id") ||
-          [];
+        componentIds = _.get(data, ["data", "component_ids"]) || [];
       } else {
         componentIds = _.get(data, ["draft_data", "component_ids"]) || [];
       }
@@ -141,6 +145,8 @@ export default function CreateSegment({
         value: product,
       }));
 
+      // Set the order of components
+      componentIds = _.orderBy(componentIds, "order", "asc");
       // const selectedComponents = _.reduce(
       //   (_.get(components, "mainData", []) || []) as Component[],
       //   (result: CustomOptionType[], component) => {
@@ -154,17 +160,6 @@ export default function CreateSegment({
       //   },
       //   [],
       // );
-
-      let selectedComponents: CustomOptionType[] = [];
-
-      if (!_.isEmpty(componentIds)) {
-        selectedComponents = (_.get(components, ["mainData"]) || [])
-          .filter((component) => componentIds.includes(component.component_id))
-          .map((component) => ({
-            label: _.get(component, ["name"]) || "",
-            value: _.get(component, ["component_id"]) || "",
-          }));
-      }
 
       const formStatus = mapToSelectOptions([_.get(data, ["form_status"])])[0];
       const haveCoins = coins.find(
@@ -195,18 +190,21 @@ export default function CreateSegment({
         );
       }
 
-      form.reset({
-        name,
-        gender,
-        recommendedProducts: selectedProducts,
-        orderCounts,
-        components: selectedComponents,
-        weeksInProgram: weeksInProgram,
-        stages: stages,
-        coins: haveCoins,
-        formStatus,
-        streaks: streakLength,
-      });
+      form.reset(
+        {
+          name,
+          gender,
+          recommendedProducts: selectedProducts,
+          orderCounts,
+          components: componentIds,
+          weeksInProgram: weeksInProgram,
+          stages: stages,
+          coins: haveCoins,
+          formStatus,
+          streaks: streakLength,
+        },
+        { keepTouched: true },
+      );
     }
   }, [segment, form, components]);
 
@@ -278,23 +276,15 @@ export default function CreateSegment({
   return (
     <div className="w-3/4 mx-auto">
       <div className="flex flex-wrap justify-between my-6 ">
-        <div className="flex flex-wrap items-center">
-          <Button
-            onClick={onBack}
-            variant="ghost"
-            size="icon"
-            className="mr-2"
-            aria-label="Go back"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+        <Button onClick={onBack} variant="ghost" aria-label="Go back">
+          <ArrowLeft className="h-4 w-4 mr-4" />
           <h3 className="font-bold text-xl">
             {isNew ? "Create" : "Edit"} Segment
             {_.get(segment, ["mainData", 0, "status"]) == "draft"
               ? " (Draft Version) "
               : ""}
           </h3>
-        </div>
+        </Button>
         <Button
           disabled={!form.formState.isValid || !form.formState.isDirty}
           onClick={toggleDiffCheckerDrawer}
@@ -313,13 +303,16 @@ export default function CreateSegment({
             <div className="space-y-2">
               <FormField
                 control={form.control}
-                disabled={!isNew}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Name" {...field} />
+                      <Input
+                        placeholder="Enter Name"
+                        {...field}
+                        disabled={!isNew}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -410,12 +403,15 @@ export default function CreateSegment({
                 <FormField
                   control={form.control}
                   name="orderCounts"
-                  disabled={!isNew}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Orders Count</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter orders count" {...field} />
+                        <Input
+                          placeholder="Enter orders count"
+                          {...field}
+                          disabled={!isNew}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -451,7 +447,6 @@ export default function CreateSegment({
               <div className="space-y-2">
                 <FormField
                   control={form.control}
-                  disabled={!isNew}
                   name="stages"
                   render={({ field: { onChange, onBlur, ref, value } }) => (
                     <FormItem>
@@ -588,26 +583,14 @@ export default function CreateSegment({
               <FormField
                 control={form.control}
                 name="components"
-                render={({ field: { onChange, onBlur, ref, value } }) => (
+                render={({ field: { onChange, value } }) => (
                   <FormItem>
                     <FormLabel>Select Components</FormLabel>
                     <FormControl>
-                      <Select
-                        id="components"
-                        onBlur={onBlur}
+                      <ComponentOrders
                         onChange={onChange}
-                        ref={ref}
-                        styles={reactSelectStyles}
-                        placeholder="Select components..."
-                        options={_.map(
-                          _.get(components, ["mainData"], []),
-                          (item: Component) => ({
-                            label: item.name,
-                            value: item.component_id,
-                          }),
-                        )}
-                        value={value}
-                        isMulti
+                        availableComponents={componentsData}
+                        selectedComponents={value}
                       />
                     </FormControl>
                     <FormMessage />

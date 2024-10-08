@@ -32,7 +32,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Edit, GitCompare, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { get, isArray } from "lodash";
+import { get, isArray, map } from "lodash";
 import {
   formatWithSpaces,
   generateQueryString,
@@ -94,7 +94,10 @@ export default function SegmentManager() {
     // console.log(segment, "segment");
 
     if (segment.status !== "published") {
-      const componentIds = get(segment, ["draft_data", "component_ids"]);
+      const componentIds = map(
+        get(segment, ["draft_data", "component_ids"]),
+        "component_id",
+      );
 
       await fetchDiffComponentsBulk({
         type: "newVersion",
