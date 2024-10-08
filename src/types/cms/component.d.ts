@@ -19,3 +19,9 @@ interface ComponentPayload {
 export type ComponentMutationPayload = ComponentPayload;
 
 export type ComponentContentsType = z.infer<typeof ComponentContentsSchema>;
+
+export interface ComponentOrder {
+  component_id: string;
+  name: string;
+  order: number;
+}

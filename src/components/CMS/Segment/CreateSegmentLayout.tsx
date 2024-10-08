@@ -47,14 +47,14 @@ function CreateSegmentLayout() {
       gender: "",
       component_ids: [],
     };
-    const component_ids = _.map(payload.components, "value");
+    const components = _.get(payload, ["components"]);
     const weeks_in_program = _.map(payload.weeksInProgram, "value");
     const recommended_products = _.map(payload.recommendedProducts, "value");
     const order_counts = _.get(payload, ["orderCounts"]);
 
     _.set(body, "name", payload.name);
     // Add Keys
-    _.set(body, "component_ids", component_ids);
+    _.set(body, "component_ids", components);
     _.set(body, "gender", _.get(payload, ["gender", "value"]));
     _.set(body, "weeks_in_program", weeks_in_program);
     _.set(body, "recommended_products", recommended_products);

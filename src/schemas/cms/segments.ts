@@ -3,10 +3,22 @@ import { z } from "zod";
 export const segmentSchema = z.object({
   _id: z.string(),
   data: z.object({
-    components_ids: z.array(z.string()),
+    components_ids: z.array(
+      z.object({
+        component_id: z.string(),
+        name: z.string(),
+        order: z.number(),
+      }),
+    ),
   }),
   draft_data: z.object({
-    component_ids: z.array(z.string()),
+    component_ids: z.array(
+      z.object({
+        component_id: z.string(),
+        name: z.string(),
+        order: z.number(),
+      }),
+    ),
   }),
   name: z.string(),
   segment_id: z.string(),
@@ -42,8 +54,9 @@ export const segmentsSchema = z.object({
 });
 
 export const FormSegmentSchema = z.object({
-  name: z.string({ message: "Name is required." }).optional(),
-  // .min(3, { message: "Name must be at least 3 characters long." }),
+  name: z
+    .string({ message: "Name is required." })
+    .min(3, { message: "Name must be at least 3 characters long." }),
   gender: z
     .object(
       { value: z.string(), label: z.string() },
@@ -88,7 +101,13 @@ export const FormSegmentSchema = z.object({
     )
     .optional(),
   components: z
-    .array(z.object({ value: z.string(), label: z.string() }))
+    .array(
+      z.object({
+        component_id: z.string(),
+        name: z.string(),
+        order: z.number(),
+      }),
+    )
     .min(1, { message: "Component is required." }),
   formStatus: z
     .object(
