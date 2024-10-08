@@ -57,12 +57,10 @@ export const FormSegmentSchema = z.object({
   name: z
     .string({ message: "Name is required." })
     .min(3, { message: "Name must be at least 3 characters long." }),
-  gender: z
-    .object(
-      { value: z.string(), label: z.string() },
-      { message: "Gender is required" },
-    )
-    .optional(),
+  gender: z.object(
+    { value: z.string(), label: z.string() },
+    { message: "Gender is required" },
+  ),
   weeksInProgram: z
     .array(z.object({ value: z.string(), label: z.string() }))
     // .min(1, { message: "Weeks In Program is required." })
