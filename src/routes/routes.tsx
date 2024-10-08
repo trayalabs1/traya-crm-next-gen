@@ -6,6 +6,7 @@ import GuestRoute from "./GuestRoute";
 import Login from "@components/Login/Login";
 import NotFound from "@components/NotFound/NotFound";
 import ForgotPasswordPage from "@components/ForgetPassword/ForgetPassword";
+import OtpVerification from "@components/Login/OTPVerification";
 const SegmentManager = lazy(
   () => import("@components/CMS/Segment/SegmentManager"),
 );
@@ -187,6 +188,14 @@ const AppRoutesConfig = (): RouteObject[] => {
       element: (
         <GuestRoute isAuthenticated={isAuthenticated}>
           <ForgotPasswordPage />
+        </GuestRoute>
+      ),
+    },
+    {
+      path: "/verify-account",
+      element: (
+        <GuestRoute isAuthenticated={isAuthenticated}>
+          <OtpVerification />
         </GuestRoute>
       ),
     },

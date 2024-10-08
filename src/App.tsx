@@ -25,8 +25,8 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
           <QueryErrorResetBoundary>
             {({ reset }) => (
               <ErrorBoundary
@@ -44,8 +44,8 @@ export default function App() {
           </QueryErrorResetBoundary>
           <ReactQueryDevtools initialIsOpen={false} />
           <Toaster />
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }

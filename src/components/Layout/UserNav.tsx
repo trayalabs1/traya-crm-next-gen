@@ -17,17 +17,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "src/context/useAuth";
 import { getInitials } from "@utils/user";
 
 export function UserNav() {
-  const navigate = useNavigate();
-  const { logout, user } = useAuth();
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+  const { handleLogout, user } = useAuth();
+
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -41,7 +37,7 @@ export function UserNav() {
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="#" alt="Avatar" />
                   <AvatarFallback className="bg-transparent">
-                    {getInitials(user?.name || "")}
+                    {getInitials(user?.email || "")}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -54,7 +50,7 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.name}</p>
+            <p className="text-sm font-medium leading-none">{user?.email}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email}
             </p>

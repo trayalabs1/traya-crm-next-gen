@@ -1,3 +1,4 @@
+import { useAuthStore } from "@components/Login/store/useAuthStore";
 import { DEFAULT_AXIOS_TIMEOUT } from "@constants/constants";
 import axios, {
   AxiosError,
@@ -21,10 +22,7 @@ const onRequest = (
   const { method, url } = config;
 
   logOnDev(`🚀 [API] ${method?.toUpperCase()} ${url} | Request`);
-
-  // const accessToken = localStorage.getItem("token")
-  const accessToken = import.meta.env.VITE_TEMPORARY_TOKEN;
-
+  const { accessToken } = useAuthStore.getState();
   if (accessToken) config.headers.setAuthorization("Bearer " + accessToken);
 
   if (method === "get") {
@@ -42,7 +40,9 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
   return response;
 };
 
-const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
+const onErrorResponse = async (
+  error: AxiosError | Error,
+): Promise<AxiosError> => {
   if (axios.isAxiosError(error)) {
     const { message } = error;
     const { method, url } = error.config as AxiosRequestConfig;
@@ -52,8 +52,9 @@ const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
       `🚨 [API] ${method?.toUpperCase()} ${url} | Error ${status} ${message}`,
     );
 
+    const { logout } = useAuthStore.getState();
     if (status === 401) {
-      // Delete Token & Go To Login Page if you required.
+      await logout();
     }
   } else {
     logOnDev(`🚨 [API] | Error ${error.message}`);
@@ -69,5 +70,7 @@ const setupInterceptors = (instance: AxiosInstance): AxiosInstance => {
   return instance;
 };
 
-const client = axios.create({ baseURL: import.meta.env.VITE_API_URL });
+const client = axios.create({
+  baseURL: import.meta.env.VITE_API_SERVICE_BASE_URL,
+});
 export const axiosClient = setupInterceptors(client);

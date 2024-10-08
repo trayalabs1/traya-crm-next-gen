@@ -19,7 +19,6 @@ function CreateSegmentLayout() {
     onBack();
   };
 
-  
   const handleError = ({ duration = 1000, message = "Error" } = {}) => {
     toast({
       description: message,

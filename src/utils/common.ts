@@ -229,23 +229,46 @@ export const getCMSActionButtonColor = (action: string) => {
 
 export function getErrorMessage(error: unknown): string {
   const DEFAULT_MESSAGE = "Something went wrong";
-  let errorMessage: string;
+  let errorMessage: string = DEFAULT_MESSAGE;
+
   if (axios.isAxiosError(error)) {
-    errorMessage = get(error, ["message"]);
+    const contentType = get(error, ["response", "headers", "content-type"], "");
+
     if (error.response) {
-      errorMessage = get(error, ["response", "data", "message"]);
+      if (["text/plain", "text/html"].includes(contentType.split(";")[0])) {
+        errorMessage = get(error, ["response", "data"], DEFAULT_MESSAGE);
+      } else {
+        errorMessage = get(
+          error,
+          ["response", "data", "message"],
+          DEFAULT_MESSAGE,
+        );
+      }
     } else if (error.request) {
-      errorMessage = get(error, ["request"]);
+      errorMessage = "No response received from the server.";
     }
   } else if (error instanceof Error) {
-    errorMessage = get(error, ["message"]);
-  } else {
-    errorMessage = DEFAULT_MESSAGE;
+    errorMessage = error.message;
   }
 
-  return errorMessage || DEFAULT_MESSAGE;
+  return errorMessage;
 }
-
 export const delay = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export const ROLES_NAME = {
+  ADMIN: "admin",
+  SUPER_ADMIN: "super_admin",
+  MAKER: "maker",
+  CHECKER: "checker",
+  PUBLISHER: "publisher",
+};
+
+export const ROLES_IDS: { [key: string]: string } = {
+  "00000000-0000-0000-0000-000000000001": ROLES_NAME.ADMIN,
+  "00000000-0000-0000-0000-000000000026": ROLES_NAME.SUPER_ADMIN,
+  "00000000-0000-0000-0000-000000000039": ROLES_NAME.MAKER,
+  "00000000-0000-0000-0000-000000000040": ROLES_NAME.CHECKER,
+  "00000000-0000-0000-0000-000000000038": ROLES_NAME.PUBLISHER,
 };

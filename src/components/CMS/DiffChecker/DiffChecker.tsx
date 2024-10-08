@@ -127,7 +127,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     if (_.isNil(diffEntity) || _.isEmpty(user)) return;
     body.type = diffEntity;
     body.type_id = typeId;
-    body.user_id = user.user_id;
+    body.user_id = user.id;
 
     if (user?.role === "maker") {
       await submitMutation.mutateAsync(body);
@@ -187,13 +187,13 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     if (_.isNil(diffEntity) || _.isEmpty(user)) return;
     body.type = diffEntity;
     body.type_id = typeId;
-    body.user_id = user.user_id;
+    body.user_id = user.id;
     body.role = _.toUpper(user.role);
     await discardMutation.mutateAsync(body);
     setIsDiscardDialogOpen(false);
   };
 
-  const userId = user?.user_id || ":userId";
+  const userId = user?.id || ":userId";
 
   const generateOtpMutation = useMutation({
     mutationFn: (userId: string) => generateOtp(userId),

@@ -11,6 +11,7 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@utils/shadcn";
 import { CollapseMenuButton } from "./CollapseMenuButton";
 import { Ellipsis, LogOut } from "lucide-react";
+import { useAuth } from "src/context/useAuth";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -19,7 +20,7 @@ interface MenuProps {
 export function Menu({ isOpen }: MenuProps) {
   const { pathname } = useLocation();
   const menuList = getMenuList(pathname);
-
+  const { handleLogout } = useAuth();
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
       <nav className="mt-8 h-full w-full">
@@ -104,7 +105,7 @@ export function Menu({ isOpen }: MenuProps) {
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={() => {}}
+                    onClick={handleLogout}
                     variant="outline"
                     className="w-full justify-center h-10 mt-5"
                   >
