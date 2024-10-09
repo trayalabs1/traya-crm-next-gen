@@ -1,4 +1,5 @@
 import { useAuthStore } from "@components/Login/store/useAuthStore";
+import { API_BASE_URL } from "@config/config";
 import { DEFAULT_AXIOS_TIMEOUT } from "@constants/constants";
 import axios, {
   AxiosError,
@@ -10,7 +11,7 @@ import axios, {
 
 // For Make Log on Develop Mode
 const logOnDev = (message: string) => {
-  if (import.meta.env.MODE === "development") {
+  if (import.meta.env.DEV) {
     console.log(message);
   }
 };
@@ -71,6 +72,6 @@ const setupInterceptors = (instance: AxiosInstance): AxiosInstance => {
 };
 
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_SERVICE_BASE_URL,
+  baseURL: API_BASE_URL,
 });
 export const axiosClient = setupInterceptors(client);

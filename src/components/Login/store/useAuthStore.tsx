@@ -4,6 +4,7 @@ import { loginApi } from "@api/userApi";
 import { getErrorMessage, ROLES_IDS } from "@utils/common";
 import axios, { AxiosResponse } from "axios";
 import { Roles, User } from "user";
+import { API_BASE_URL } from "@config/config";
 
 interface VerifyOTPResponse {
   user: User;
@@ -49,7 +50,7 @@ export const useAuthStore = create<AuthStoreStates & AuthStoreActions>()(
           set({ error: null });
           try {
             const response = await axios.post(
-              import.meta.env.VITE_API_SERVICE_BASE_URL + loginApi.LOGIN,
+              API_BASE_URL + loginApi.LOGIN,
               payload,
             );
 
@@ -72,7 +73,7 @@ export const useAuthStore = create<AuthStoreStates & AuthStoreActions>()(
           set(initialStates);
           try {
             const response: AxiosResponse<VerifyOTPResponse> = await axios.post(
-              import.meta.env.VITE_API_SERVICE_BASE_URL + loginApi.VERIFY_OTP,
+              API_BASE_URL + loginApi.VERIFY_OTP,
               payload,
             );
 
