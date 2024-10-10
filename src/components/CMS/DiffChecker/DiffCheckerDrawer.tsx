@@ -11,13 +11,6 @@ const DiffCheckerDrawer = ({
   isDrawerOpen,
   toggleDrawer,
   direction = "right",
-  currentVersion,
-  newVersion,
-  action,
-  diffEntity,
-  segment,
-  component,
-  content,
 }: DiffCheckerDrawerProps) => {
   return (
     <CustomDrawer
@@ -25,16 +18,7 @@ const DiffCheckerDrawer = ({
       onClose={toggleDrawer}
       direction={direction}
     >
-      <DiffChecker
-        currentVersion={currentVersion}
-        newVersion={newVersion}
-        toggleDrawer={toggleDrawer}
-        action={action}
-        diffEntity={diffEntity}
-        segment={segment}
-        component={component}
-        content={content}
-      />
+      <DiffChecker toggleDrawer={toggleDrawer} />
     </CustomDrawer>
   );
 };

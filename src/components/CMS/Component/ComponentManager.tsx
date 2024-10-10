@@ -29,11 +29,13 @@ import {
 } from "@components/ui/table";
 import { getComponents } from "@services/cmsServices";
 import { useQuery } from "@tanstack/react-query";
-import { Edit, GitCompare, Plus } from "lucide-react";
+import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get, map } from "lodash";
 import {
+  formatWithSpaces,
+  genderList,
   generateQueryString,
   getCMSActionButtonColor,
   getCMSFilterStatusByRole,
@@ -49,7 +51,7 @@ import {
 import { ROLES } from "@utils/user";
 import { useAuth } from "src/context/useAuth";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
-import { Component } from "cms";
+import { Component, MobileComponent } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 const statusList = [
   { label: "Draft", value: "draft" },
@@ -62,11 +64,11 @@ export default function ComponentManager() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
-  const [limit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
+  const [limit, setLimit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
   const DEFAULT_STATUS = getCMSFilterStatusByRole(user?.role);
   const [status, setStatus] = useState<string>(DEFAULT_STATUS);
+  const [gender, setGender] = useState<string>("");
   const [version, setVersion] = useState<string>("");
-
   const [selectedComponent, setSelectedComponent] = useState<Component | null>(
     null,
   );
@@ -76,6 +78,7 @@ export default function ComponentManager() {
     page_size: String(limit),
     status,
     current_version: version,
+    gender,
   });
 
   const { data, isLoading } = useQuery({
@@ -86,48 +89,75 @@ export default function ComponentManager() {
   const {
     isDiffCheckerOpen,
     toggleDiffCheckerDrawer,
-    // changeDiffType,
-    currentVersion,
-    newVersion,
     updateDiffStates,
-
     fetchDiffComponentsBulk,
     fetchDiffContentsBulk,
+    resetDiffCheckerStates,
   } = useDiffCheckerStore();
 
   const handleDiffChecker = async (component: Component) => {
+    resetDiffCheckerStates();
+    updateDiffStates({
+      entityType: "component",
+      currentVersion: null,
+      newVersion: null,
+    });
+
     await fetchDiffComponentsBulk({
       type: "currentVersion",
       componentIds: [component.component_id],
     });
 
-    let contentIds: string[];
-    if (component.status !== "published") {
-      contentIds = get(component, ["draft_data", "content_ids"]);
-    } else {
-      contentIds = map(get(component, ["data", "content_ids"]), "content_id");
+    let dataKey = "data";
+    if (component.status === "draft") {
+      dataKey = "draft_data";
     }
 
-    await fetchDiffContentsBulk({
-      type: "newVersion",
-      contentIds: contentIds,
-    });
+    const contentIds = map(
+      get(component, [dataKey, "content_ids"]),
+      "content_id",
+    );
 
-    const componentData = {
-      component_id: component.component_id,
-      component_type: "Component_Type",
-      contents: newVersion ? newVersion : [],
-      current_version: 1,
-      description: component,
-      name: component.name,
-      status: component.status,
-      title: component.data.title,
-    };
+    if (component.status !== "published") {
+      const response = await fetchDiffContentsBulk({
+        contentIds: contentIds,
+      });
 
-    updateDiffStates({ key: "newVersion", value: componentData });
+      if (response?.status === 200 && response.data) {
+        const transformComponentData: MobileComponent[] = [
+          {
+            componentId: component.component_id,
+            name: component.name,
+            title: get(
+              component,
+              component.status === "draft" ? "draft_data.title" : "data.title",
+              "",
+            ),
+            description: get(
+              component,
+              component.status === "draft"
+                ? "draft_data.description"
+                : "data.description",
+              "",
+            ),
+            contents: response.data,
+          },
+        ];
+
+        updateDiffStates({ newVersion: transformComponentData });
+      }
+    }
     setSelectedComponent(component);
     toggleDiffCheckerDrawer();
   };
+
+  function handleClearFilter() {
+    setPage(PAGINATION_CONFIG.DEFAULT_PAGE);
+    setLimit(PAGINATION_CONFIG.DEFAULT_LIMIT);
+    setStatus(DEFAULT_STATUS);
+    setVersion("");
+    setGender("");
+  }
 
   if (isLoading) return <TableSkeleton />;
 
@@ -139,68 +169,98 @@ export default function ComponentManager() {
           <CardDescription>Manage your components</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={() => {
-                navigate("new");
-              }}
-              className="mb-4"
-            >
-              <Plus className="mr-2 h-4 w-4" /> Create Component
-            </Button>
-            {/* <Button onClick={() => {}} className="mb-4">
-            <Plus className="mr-2 h-4 w-4" /> Add Component
-          </Button>
-          <Button onClick={() => {}} className="mb-4">
-            <Plus className="mr-2 h-4 w-4" /> Add Content
-          </Button> */}
-            <Select
-              onValueChange={(value) => {
-                setStatus(value);
-                setPage(1);
-              }}
-              value={status}
-            >
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select a Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Status</SelectLabel>
-                  {statusList.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Select
-              onValueChange={(value) => {
-                setVersion(value);
-                setPage(1);
-              }}
-              value={version}
-            >
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select a Version" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Version</SelectLabel>
-                  {Array.from({ length: 5 }, (_, index) =>
-                    (index + 1).toString(),
-                  ).map((version, index) => (
-                    <SelectItem key={index} value={version}>
-                      {version}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <ScrollArea>
-            <TooltipProvider>
+          <TooltipProvider>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                onClick={() => {
+                  navigate("new");
+                }}
+                className="mb-4"
+                disabled={user?.role !== "maker"}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Create Component
+              </Button>
+              <Select
+                onValueChange={(value) => {
+                  setStatus(value);
+                  setPage(1);
+                }}
+                value={status}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select a Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Status</SelectLabel>
+                    {statusList.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) => {
+                  setGender(value);
+                  setPage(1);
+                }}
+                value={gender}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select a Gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Gender</SelectLabel>
+                    {genderList.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) => {
+                  setVersion(value);
+                  setPage(1);
+                }}
+                value={version}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select a Version" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Version</SelectLabel>
+                    {Array.from({ length: 5 }, (_, index) =>
+                      (index + 1).toString(),
+                    ).map((version, index) => (
+                      <SelectItem key={index} value={version}>
+                        {version}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleClearFilter}
+                  >
+                    <FilterX className="h-4 w-4 text-red-600" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clear Filter</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <ScrollArea>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -208,8 +268,9 @@ export default function ComponentManager() {
                     <TableHead className="w-[100px]">Name</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead>Current Version</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Gender</TableHead>
+                    <TableHead>Current Version</TableHead>
                     <TableHead className="text-center">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -219,7 +280,10 @@ export default function ComponentManager() {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell className="font-medium">
                         <Button asChild variant="link" className="no-underline">
-                          <Link to={`${component.component_id}/contents`}>
+                          <Link
+                            // to={`${component.component_id}/contents`}
+                            to="#"
+                          >
                             {get(component, ["name"], "-") || "-"}
                           </Link>
                         </Button>
@@ -228,11 +292,13 @@ export default function ComponentManager() {
                         {get(component, ["data", "title"], "-") || "-"}
                       </TableCell>
                       <TableCell>
-                        {" "}
                         {get(component, ["data", "description"], "-") || "-"}
                       </TableCell>
+                      <TableCell>
+                        {formatWithSpaces(component.status) || "-"}
+                      </TableCell>
+                      <TableCell> {get(component, "gender") || "-"}</TableCell>
                       <TableCell>{component.current_version}</TableCell>
-                      <TableCell>{component.status}</TableCell>
                       {/* <TableCell className="text-center">
                     <Button
                       variant="outline"
@@ -304,16 +370,13 @@ export default function ComponentManager() {
                   </TableRow>
                 </TableFooter>
               </Table>
-            </TooltipProvider>
-          </ScrollArea>
+            </ScrollArea>
+          </TooltipProvider>
         </CardContent>
       </Card>
       <DiffCheckerDrawer
         isDrawerOpen={isDiffCheckerOpen}
         toggleDrawer={toggleDiffCheckerDrawer}
-        currentVersion={currentVersion}
-        newVersion={newVersion}
-        diffEntity="component"
         action="CHANGES"
         component={selectedComponent}
       />

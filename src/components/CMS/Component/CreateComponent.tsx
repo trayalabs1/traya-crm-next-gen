@@ -3,7 +3,7 @@ import { Input } from "@components/ui/input";
 import Select from "react-select";
 import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { useGetContents } from "src/queries";
+import { useContentBulk, useGetContents } from "src/queries";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -15,13 +15,29 @@ import {
   FormMessage,
 } from "@components/ui/form";
 import { FormComponentSchema } from "@schemas/cms/components";
-import { ComponentMutationPayload, FormComponentSchemaType } from "cms";
-import { useQuery } from "@tanstack/react-query";
+import {
+  ComponentMutationPayload,
+  FormComponentSchemaType,
+  MobileComponent,
+  MobileContent,
+} from "cms";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { getComponents } from "@services/cmsServices";
 import { useEffect, useState } from "react";
 import _ from "lodash";
 import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
-import { generateQueryString } from "@utils/common";
+import {
+  componentTypeList,
+  genderList,
+  generateQueryString,
+  getErrorMessage,
+  languageList,
+} from "@utils/common";
+import ContentReOrders from "./ContentReOrders";
+import { useDiffCheckerStore } from "../store/useCmsStore";
+import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
+import { useComponentBulk } from "src/queries/cms/component";
+import { toast } from "@hooks/use-toast";
 // import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
@@ -30,6 +46,9 @@ type CreateComponentProps = {
 
 const defaultValues = {
   name: "",
+  gender: undefined,
+  language: undefined,
+  componentType: undefined,
   data: {
     title: "",
     description: "",
@@ -41,22 +60,19 @@ export default function CreateComponent({
   onBack,
 }: CreateComponentProps) {
   const { id } = useParams();
-
+  const [isDynamicType, setIsDynamicType] = useState<boolean>(false);
   const isNew = id === "new";
 
   const handleSubmit = (data: FormComponentSchemaType) => {
     onSubmit({ payload: data, id });
   };
   const { data: contents } = useGetContents();
-  const { mainData } = contents || { mainData: [] };
 
-  const contentsOptions = mainData.map((content) => ({
-    value: content.content_id,
-    label: content.name,
-  }));
+  const contentsData = _.get(contents, ["mainData"]) || [];
 
   const form = useForm<FormComponentSchemaType>({
     resolver: zodResolver(FormComponentSchema),
+    mode: "onChange",
     defaultValues,
   });
 
@@ -78,22 +94,95 @@ export default function CreateComponent({
 
   useEffect(() => {
     if (component) {
-      const data = _.get(component, ["mainData", 0]);
-      const name = _.get(data, ["name"]);
-      let dataKey = "data";
-      if (data.status === "draft") dataKey = "draft_data";
-      const title = _.get(data, [dataKey, "title"], "") || "";
-      const description = _.get(data, [dataKey, "description"], "") || "";
-      form.reset({ name, data: { title, description, contents: [] } });
+      const componentData = _.get(component, ["mainData", 0]);
+      // if (!componentData) return;
+
+      const dataKey = componentData.status === "draft" ? "draft_data" : "data";
+      const formData: Partial<FormComponentSchemaType> = {
+        name: componentData.name || "",
+        gender: componentData.gender
+          ? { label: componentData.gender, value: componentData.gender }
+          : undefined,
+        language: componentData.language
+          ? { label: componentData.language, value: componentData.language }
+          : undefined,
+        componentType: componentData.component_type
+          ? {
+              label: componentData.component_type,
+              value: componentData.component_type,
+            }
+          : undefined,
+        data: {
+          title: _.get(componentData, [dataKey, "title"]) || "",
+          description: _.get(componentData, [dataKey, "description"]) || "",
+          contents: _.get(componentData, [dataKey, "content_ids"]),
+        },
+      };
+
+      form.reset(formData);
+      setIsDynamicType(componentData.component_type === "Dynamic");
     }
   }, [component, form]);
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const {
+    isDiffCheckerOpen,
+    toggleDiffCheckerDrawer,
+    updateDiffStates,
+    resetDiffCheckerStates,
+  } = useDiffCheckerStore();
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
+  const componentBulkQuery = useComponentBulk(
+    { componentIds: [id ?? "defaultId"] },
+    { enabled: false },
+  );
 
+  const contentBulkQuery = useContentBulk(
+    { contentIds: _.map(form.getValues("data.contents"), "content_id") },
+    { enabled: false },
+  );
+
+  async function handlePhoneView() {
+    resetDiffCheckerStates();
+
+    let componentsBulkData: UseQueryResult<MobileComponent[]> | null = null;
+    let contentsBulkData: UseQueryResult<MobileContent[]> | null = null;
+
+    componentsBulkData = await componentBulkQuery.refetch();
+    contentsBulkData = await contentBulkQuery.refetch();
+    const componentData = _.get(component, ["mainData", 0]);
+    const newComponentData = form.getValues();
+    const newVersiontransformedData: MobileComponent[] | null = [
+      {
+        componentId: componentData?.component_id || "",
+        name: newComponentData.name,
+        title: newComponentData.data.title,
+        description: newComponentData.data.description,
+        contents: contentsBulkData?.data || [],
+      },
+    ];
+
+    updateDiffStates({
+      entityType: "component",
+      currentVersion: componentsBulkData.data,
+      newVersion: newVersiontransformedData,
+    });
+
+    if (componentsBulkData && componentsBulkData.isError) {
+      toast({
+        variant: "destructive",
+        duration: 1000,
+        description: getErrorMessage(componentsBulkData.error),
+      });
+    }
+    if (contentsBulkData && contentsBulkData.isError) {
+      toast({
+        variant: "destructive",
+        duration: 1000,
+        description: getErrorMessage(contentsBulkData.error),
+      });
+    }
+    toggleDiffCheckerDrawer();
+  }
   return (
     <div className="w-3/4 mx-auto">
       <div className="flex flex-wrap justify-between my-6 ">
@@ -108,8 +197,7 @@ export default function CreateComponent({
         </Button>
 
         <Button
-          disabled={!form.formState.isValid}
-          onClick={toggleDrawer}
+          onClick={handlePhoneView}
           className="bg-green-500 hover:bg-green-700 hover:ease-in"
           type="button"
         >
@@ -126,12 +214,15 @@ export default function CreateComponent({
               <FormField
                 control={form.control}
                 name="name"
-                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Name" {...field} />
+                      <Input
+                        placeholder="Enter Name"
+                        {...field}
+                        disabled={!isNew || isDynamicType}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -139,17 +230,19 @@ export default function CreateComponent({
                 )}
               />
             </div>
-
             <div className="space-y-2">
               <FormField
                 control={form.control}
                 name="data.title"
-                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter title" {...field} />
+                      <Input
+                        placeholder="Enter title"
+                        {...field}
+                        disabled={isDynamicType}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -161,12 +254,15 @@ export default function CreateComponent({
               <FormField
                 control={form.control}
                 name="data.description"
-                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter description" {...field} />
+                      <Input
+                        placeholder="Enter description"
+                        {...field}
+                        disabled={isDynamicType}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -174,27 +270,101 @@ export default function CreateComponent({
                 )}
               />
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field: { onChange, onBlur, ref, value } }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <FormControl>
+                        <Select
+                          id="gender"
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          isDisabled={!isNew || isDynamicType}
+                          styles={reactSelectStyles}
+                          placeholder="Select Gender"
+                          options={genderList}
+                          value={value || null}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="language"
+                  render={({ field: { onChange, onBlur, ref, value } }) => (
+                    <FormItem>
+                      <FormLabel>Language</FormLabel>
+                      <FormControl>
+                        <Select
+                          id="language"
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          isDisabled={!isNew || isDynamicType}
+                          styles={reactSelectStyles}
+                          placeholder="Select Language"
+                          options={languageList}
+                          value={value || null}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="componentType"
+                  render={({ field: { onChange, onBlur, ref, value } }) => (
+                    <FormItem>
+                      <FormLabel>Component Type</FormLabel>
+                      <FormControl>
+                        <Select
+                          id="componentType"
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          isDisabled={!isNew || isDynamicType}
+                          styles={reactSelectStyles}
+                          placeholder="Select Component Type"
+                          options={componentTypeList}
+                          value={value || null}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
             <div className="space-y-2">
               <FormField
                 control={form.control}
                 name="data.contents"
-                render={({ field: { onChange, onBlur, ref, value } }) => (
+                render={({ field: { onChange, value } }) => (
                   <FormItem>
-                    <FormLabel>Contents</FormLabel>
+                    <FormLabel>Select Content</FormLabel>
                     <FormControl>
-                      <Select
-                        id="data.contents"
-                        onBlur={onBlur}
+                      <ContentReOrders
                         onChange={onChange}
-                        ref={ref}
-                        styles={reactSelectStyles}
-                        isMulti
-                        placeholder="Select contents..."
-                        options={contentsOptions}
-                        value={value}
+                        availableContents={contentsData}
+                        selectedContents={value}
+                        isDisabled={isDynamicType}
                       />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}
@@ -217,12 +387,10 @@ export default function CreateComponent({
         </Form>
       </div>
 
-      {/* <DiffCheckerDrawer
-        isDrawerOpen={isDrawerOpen}
-        toggleDrawer={toggleDrawer}
-        currentVersion={isNew ? undefined : {}}
-        newVersion={isNew ? {} : undefined}
-      /> */}
+      <DiffCheckerDrawer
+        isDrawerOpen={isDiffCheckerOpen}
+        toggleDrawer={toggleDiffCheckerDrawer}
+      />
     </div>
   );
 }

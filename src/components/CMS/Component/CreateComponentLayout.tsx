@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import CreateComponent from "./CreateComponent";
 import { useToast } from "@hooks/use-toast";
-import { ComponentMutationPayload } from "cms";
+import { ComponentMutationBody, ComponentMutationPayload } from "cms";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createComponent, updateComponent } from "@services/cmsServices";
 import _ from "lodash";
+import { getErrorMessage } from "@utils/common";
 function CreateComponentLayout() {
   const { toast } = useToast();
 
@@ -31,28 +32,47 @@ function CreateComponentLayout() {
   };
 
   const createComponentQuery = useMutation({
-    mutationFn: (payload: ComponentMutationPayload["payload"]) =>
-      createComponent(payload),
+    mutationFn: (payload: ComponentMutationBody) => createComponent(payload),
     onSuccess: () =>
       handleSuccess({ message: "Component created successfully." }),
-    onError: () => handleError({ message: "Unable to create Component." }),
+    onError: (error) => handleError({ message: getErrorMessage(error) }),
   });
 
   const updateComponentQuery = useMutation({
-    mutationFn: (data: ComponentMutationPayload) => updateComponent(data),
+    mutationFn: (data: { id?: string; payload: ComponentMutationBody }) =>
+      updateComponent(data),
     onSuccess: () =>
       handleSuccess({ message: "Component updated successfully." }),
     onError: () => handleError({ message: "Unable to update Component." }),
   });
 
   const onSubmit = async ({ id, payload }: ComponentMutationPayload) => {
-    const content_ids = _.map(payload.data.contents, "value");
-    _.set(payload, "data.content_ids", content_ids);
-    _.unset(payload, "data.contents");
+    const body: ComponentMutationBody = {
+      name: "",
+      gender: "",
+    };
+
+    console.log(payload);
+    _.set(body, "name", payload.name);
+    _.set(body, "gender", _.get(payload, ["gender", "value"]) || "");
+    _.set(body, "language", _.get(payload, ["language", "value"]) || "");
+    _.set(
+      body,
+      "component_type",
+      _.get(payload, ["componentType", "value"]) || "",
+    );
+    _.set(body, "data.title", _.get(payload, ["data", "title"]) || "");
+    _.set(
+      body,
+      "data.description",
+      _.get(payload, ["data", "description"]) || "",
+    );
+    _.set(body, "data.contents", _.get(payload, ["data", "contents"]));
+
     if (id === "new") {
-      await createComponentQuery.mutateAsync(payload);
+      await createComponentQuery.mutateAsync(body);
     } else {
-      await updateComponentQuery.mutateAsync({ id, payload });
+      await updateComponentQuery.mutateAsync({ id, payload: body });
     }
   };
   const onBack = () => {

@@ -1,6 +1,6 @@
-import { getContents } from "@services/cmsServices";
+import { getContents, getContentsBulk } from "@services/cmsServices";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
-import { Contents } from "cms";
+import { Contents, MobileContent } from "cms";
 
 export function useGetContents(
   queryString?: string,
@@ -11,4 +11,20 @@ export function useGetContents(
     queryFn: () => getContents(queryString),
     ...options,
   });
+}
+interface ContentBulk {
+  contentIds: string[];
+}
+
+export function useContentBulk(
+  { contentIds }: ContentBulk,
+  options?: Omit<UseQueryOptions<MobileContent[]>, "queryKey" | "queryFn">,
+) {
+  const query = useQuery({
+    queryKey: ["getContentsBulk", contentIds],
+    queryFn: () => getContentsBulk({ contentIds }),
+    ...options,
+  });
+
+  return { ...query };
 }

@@ -14,7 +14,6 @@ import {
   EntitiyActionBody,
   EntitiyActionDiscardBody,
   EntitiyType,
-  MobileComponent,
   Segment,
 } from "cms";
 import { useAuth } from "src/context/useAuth";
@@ -32,12 +31,10 @@ import {
 } from "@services/cmsServices";
 import _ from "lodash";
 import { EntityError } from "./EntityError";
+import { useDiffCheckerStore } from "../store/useCmsStore";
 export interface DiffCheckerProps {
   action?: "VIEW" | "CHANGES";
-  currentVersion: MobileComponent[] | null;
-  newVersion: MobileComponent[] | null;
   toggleDrawer: () => void;
-  diffEntity?: EntitiyType;
   segment?: Segment | null;
   component?: Component | null;
   content?: Content | null;
@@ -65,21 +62,18 @@ interface Entities {
   content?: Content | null;
 }
 
-function getEntity(entities: Entities, diffEntity?: EntitiyType) {
+function getEntity(entities: Entities, diffEntity: EntitiyType | null) {
   if (!diffEntity) return;
 
   return entities[diffEntity] ?? null;
 }
 
 const DiffChecker: React.FC<DiffCheckerProps> = ({
-  currentVersion,
-  newVersion,
   toggleDrawer,
   action = "VIEW",
   segment,
   component,
   content,
-  diffEntity,
 }) => {
   const { user } = useAuth();
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false);
@@ -89,11 +83,18 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const {
+    currentVersion,
+    newVersion,
+    entityType: diffEntity,
+  } = useDiffCheckerStore();
+
   const handleApprove = async () => {
     await generateOtpMutation.mutateAsync(userId);
 
     setIsApproveDialogOpen(false);
     setIsOtpDialogOpen(true);
+    await invalidateQueries();
   };
 
   const entities: Entities = {
@@ -153,13 +154,13 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
       //Hide Drawer
       toast({
         variant: "success",
-        title: _.startCase(diffEntity) + " is discard",
+        title: _.startCase(diffEntity || "unknown") + " is discard",
       });
     },
     onError: () => {
       toast({
         variant: "destructive",
-        title: `Unable to discard the ${_.startCase(diffEntity)}`,
+        title: `Unable to discard the ${_.startCase(diffEntity || "unknown")}`,
         description: "Please try again.",
       });
     },
@@ -191,6 +192,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     body.role = _.toUpper(user.role);
     await discardMutation.mutateAsync(body);
     setIsDiscardDialogOpen(false);
+    await invalidateQueries();
   };
 
   const userId = user?.id || ":userId";
@@ -283,13 +285,13 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
 
       toast({
         variant: "success",
-        title: _.startCase(diffEntity) + " is approved",
+        title: _.startCase(diffEntity || "unknown") + " is approved",
       });
     },
     onError: () => {
       toast({
         variant: "destructive",
-        title: `Unable to approve the ${_.startCase(diffEntity)}`,
+        title: `Unable to approve the ${_.startCase(diffEntity || "unknown")}`,
         description: "Please try again.",
       });
     },
@@ -302,13 +304,13 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
       //Hide Drawer
       toast({
         variant: "success",
-        title: _.startCase(diffEntity) + " is approved",
+        title: _.startCase(diffEntity || "unknown") + " is approved",
       });
     },
     onError: () => {
       toast({
         variant: "destructive",
-        title: `Unable to approve the ${_.startCase(diffEntity)}`,
+        title: `Unable to approve the ${_.startCase(diffEntity || "unknown")}`,
         description: "Please try again.",
       });
     },
@@ -319,13 +321,13 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     onSuccess: () => {
       toast({
         variant: "success",
-        title: _.startCase(diffEntity) + " is published.",
+        title: _.startCase(diffEntity || "unknown") + " is published.",
       });
     },
     onError: () => {
       toast({
         variant: "destructive",
-        title: `Unable to publish the ${_.startCase(diffEntity)}`,
+        title: `Unable to publish the ${_.startCase(diffEntity || "unknown")}`,
         description: "Please try again.",
       });
     },

@@ -16,3 +16,9 @@ interface ContentPayload {
 }
 
 export type ContentMutationPayload = ContentPayload;
+
+export interface ContentOrder {
+  content_id: string;
+  name: string;
+  order: number;
+}
