@@ -80,8 +80,7 @@ export default function ContentManager() {
     isDiffCheckerOpen,
     toggleDiffCheckerDrawer,
     // changeDiffType,
-    currentVersion,
-    newVersion,
+
     // updateDiffStates,
 
     // fetchDiffComponentsBulk,
@@ -108,8 +107,7 @@ export default function ContentManager() {
                 navigate("new");
               }}
               className="mb-4"
-              disabled={user?.role !== 'maker'}
-
+              disabled={user?.role !== "maker"}
             >
               <Plus className="mr-2 h-4 w-4" /> Create Content
             </Button>
@@ -271,9 +269,6 @@ export default function ContentManager() {
       <DiffCheckerDrawer
         isDrawerOpen={isDiffCheckerOpen}
         toggleDrawer={toggleDiffCheckerDrawer}
-        currentVersion={currentVersion}
-        newVersion={newVersion}
-        diffEntity="content"
         action="CHANGES"
         content={selectedContent}
       />
