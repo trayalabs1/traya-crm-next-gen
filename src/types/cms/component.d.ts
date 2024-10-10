@@ -5,6 +5,7 @@ import {
   FormComponentSchema,
 } from "@schemas/cms/components";
 import { z } from "zod";
+import { ContentOrder } from "./content";
 
 export type Components = z.infer<typeof componentsSchema>;
 export type Component = z.infer<typeof componentSchema>;
@@ -18,6 +19,17 @@ interface ComponentPayload {
 
 export type ComponentMutationPayload = ComponentPayload;
 
+export type ComponentMutationBody = {
+  name: string;
+  gender: string;
+  language?: string;
+  componentType?: string;
+  data?: {
+    title?: string;
+    description?: string;
+    contents?: ContentOrder[];
+  };
+};
 export type ComponentContentsType = z.infer<typeof ComponentContentsSchema>;
 
 export interface ComponentOrder {

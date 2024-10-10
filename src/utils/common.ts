@@ -99,6 +99,14 @@ export const formStatus: CustomOptionType[] = [
 export const genderList: CustomOptionType[] = [
   { label: "Male", value: "M" },
   { label: "Female", value: "F" },
+  { label: "All", value: "All" },
+];
+
+export const customerTypeList: CustomOptionType[] = [
+  { label: "All", value: "All" },
+  { label: "Draft", value: "Draft" },
+  { label: "Lead", value: "Lead" },
+  { label: "Customer", value: "Customer" },
 ];
 
 export const stages: CustomOptionType[] = [
@@ -141,6 +149,17 @@ export const daysSinceLatestFormFilled: CustomOptionType[] = [
   { label: "D16-D30", value: "D16-D30" },
   { label: "D31-D45", value: "D31-D45" },
   { label: "D45+", value: "D45+" },
+];
+
+export const languageList = [
+  { label: "All", value: "All" },
+  { label: "ENGLISH", value: "ENGLISH" },
+  { label: "HINDI", value: "HINDI" },
+];
+
+export const componentTypeList = [
+  { label: "Static", value: "Static" },
+  { label: "Dynamic", value: "Dynamic" },
 ];
 
 export const getJsonFromStorage = <T>(
@@ -241,7 +260,7 @@ export function getErrorMessage(error: unknown): string {
         errorMessage = get(
           error,
           ["response", "data", "message"],
-          DEFAULT_MESSAGE,
+          get(error, ["response", "data", "error"], DEFAULT_MESSAGE),
         );
       }
     } else if (error.request) {

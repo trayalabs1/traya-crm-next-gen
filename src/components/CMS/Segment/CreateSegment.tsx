@@ -5,7 +5,7 @@ import Select from "react-select";
 import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getComponents, getSegments } from "@services/cmsServices";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
 import {
@@ -19,19 +19,25 @@ import {
 import {
   ComponentOrder,
   FormSegmentSchemaType,
+  MobileComponent,
   SegmentMutationPayload,
 } from "cms";
 import { FormSegmentSchema } from "@schemas/cms/segments";
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
-import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
+import {
+  reactSelectSingleStyles,
+  reactSelectStyles,
+} from "@components/ui/ReactSelect/reactSelect";
 import {
   coins,
+  customerTypeList,
   CustomOptionType,
   daysSinceLatestFormFilled,
   formStatus,
   genderList,
   generateQueryString,
+  getErrorMessage,
   mapToSelectOptions,
   phases,
   stages as stagesList,
@@ -42,6 +48,7 @@ import { useDiffCheckerStore } from "../store/useCmsStore";
 import { useSegmentComponentContent } from "src/queries/cms/segments";
 import { useComponentBulk } from "src/queries/cms/component";
 import ComponentOrders from "./ComponentReOrders";
+import { toast } from "@hooks/use-toast";
 
 type CreateSegmentProps = {
   onSubmit: (content: SegmentMutationPayload) => void;
@@ -74,6 +81,7 @@ const defaultValues = {
   stages: undefined,
   streaks: undefined,
   phases: undefined,
+  customerType: undefined,
   daysSinceLatestFormFilled: undefined,
 };
 export default function CreateSegment({
@@ -82,13 +90,7 @@ export default function CreateSegment({
 }: CreateSegmentProps) {
   const handleSubmit = (data: FormSegmentSchemaType) => {
     onSubmit({ payload: data, id });
-    // setShowOtpInput(true);
   };
-
-  // const [otp, setOtp] = useState<string>("");
-  // const handleOtpChange = () => {};
-
-  // const [showOtpInput, setShowOtpInput] = useState(false);
 
   const { id } = useParams<{ id: string | "new" }>();
 
@@ -147,19 +149,6 @@ export default function CreateSegment({
 
       // Set the order of components
       componentIds = _.orderBy(componentIds, "order", "asc");
-      // const selectedComponents = _.reduce(
-      //   (_.get(components, "mainData", []) || []) as Component[],
-      //   (result: CustomOptionType[], component) => {
-      //     if (_.includes(component_ids, component.component_id)) {
-      //       result.push({
-      //         label: component.name,
-      //         value: component.component_id,
-      //       });
-      //     }
-      //     return result;
-      //   },
-      //   [],
-      // );
 
       const formStatus = mapToSelectOptions([_.get(data, ["form_status"])])[0];
       const haveCoins = coins.find(
@@ -190,89 +179,99 @@ export default function CreateSegment({
         );
       }
 
-      form.reset(
-        {
-          name,
-          gender,
-          recommendedProducts: selectedProducts,
-          orderCounts,
-          components: componentIds,
-          weeksInProgram: weeksInProgram,
-          stages: stages,
-          coins: haveCoins,
-          formStatus,
-          streaks: streakLength,
-        },
-        { keepTouched: true },
-      );
+      const customerType = _.get(data, ["customer_type"]);
+
+      const selectedCustomerType: CustomOptionType | undefined = customerType
+        ? { label: customerType, value: customerType }
+        : undefined;
+      form.reset({
+        name,
+        gender,
+        recommendedProducts: selectedProducts,
+        orderCounts,
+        components: componentIds,
+        weeksInProgram: weeksInProgram,
+        stages: stages,
+        coins: haveCoins,
+        formStatus,
+        customerType: selectedCustomerType,
+        streaks: streakLength,
+      });
     }
   }, [segment, form, components]);
 
   const {
     isDiffCheckerOpen,
     toggleDiffCheckerDrawer,
-    changeDiffType,
-    currentVersion,
-    newVersion,
     updateDiffStates,
+    resetDiffCheckerStates,
   } = useDiffCheckerStore();
 
-  const { data: segmentExpandedData, refetch: segmentExpandedFetch } =
-    useSegmentComponentContent(
-      {
-        segmentId: id ?? "defaultSegmentId",
-        fetchContents: true,
-      },
-      { enabled: false },
-    );
+  const componentBulkQuery = useComponentBulk(
+    { componentIds: _.map(form.getValues("components"), "component_id") },
+    { enabled: false },
+  );
+  const segmentComponentContentQuery = useSegmentComponentContent(
+    {
+      segmentId: id ?? "defaultSegmentId",
+      fetchContents: true,
+    },
+    { enabled: false },
+  );
+  async function handlePhoneView() {
+    resetDiffCheckerStates();
+    const segmentComponentContentData =
+      await segmentComponentContentQuery.refetch();
 
-  const { data: componentsBulks, refetch: componentBulkFetch } =
-    useComponentBulk(
-      {
-        componentIds: _.map(form.getValues("components"), "value"),
-      },
-      { enabled: false },
-    );
+    // Done for the TS
+    const currentVersiontransformedData: MobileComponent[] | null =
+      segmentComponentContentData?.data
+        ? segmentComponentContentData.data.map((item) => ({
+            status: item.status,
+            componentId: item.componentId,
+            name: item.name,
+            title: item.title,
+            description: item.description,
+            current_version: item.current_version,
+            contents: item.contents
+              ? item.contents.map((content) => ({
+                  content_id: content.content_id,
+                  content_name: content.content_name,
+                  content_type: content.content_type,
+                  content_data: content.content_data,
+                }))
+              : [],
+          }))
+        : null;
 
-  useEffect(() => {
-    if (isDiffCheckerOpen && segment) {
-      changeDiffType({
-        type: isNew ? "new" : "edit",
-        entityType: "segment",
-        segment: segment,
+    let componentsBulkData: UseQueryResult<MobileComponent[]> | null = null;
+    if (form.formState.isDirty) {
+      componentsBulkData = await componentBulkQuery.refetch();
+    }
+
+    updateDiffStates({
+      entityType: "segment",
+      currentVersion: currentVersiontransformedData,
+      newVersion: componentsBulkData?.data ?? null,
+    });
+    toggleDiffCheckerDrawer();
+
+    if (componentsBulkData && componentsBulkData.isError) {
+      toast({
+        variant: "destructive",
+        duration: 1000,
+        description: getErrorMessage(componentsBulkData.error),
       });
     }
 
-    if (!isNew && isDiffCheckerOpen) {
-      segmentExpandedFetch();
+    if (segmentComponentContentQuery.isError) {
+      toast({
+        variant: "destructive",
+        duration: 1000,
+        description: getErrorMessage(segmentComponentContentQuery.error),
+      });
     }
-  }, [
-    isNew,
-    segment,
-    isDiffCheckerOpen,
-    changeDiffType,
-    segmentExpandedData,
-    segmentExpandedFetch,
-  ]);
-
-  const [componentChanged] = form.watch(["components"]);
-
-  useEffect(() => {
-    if (isDiffCheckerOpen && componentChanged) {
-      componentBulkFetch();
-    }
-  }, [isDiffCheckerOpen, componentChanged, componentBulkFetch]);
-  useEffect(() => {
-    if (segmentExpandedData) {
-      updateDiffStates({ key: "currentVersion", value: segmentExpandedData });
-    }
-
-    /// For New Version
-    if (componentsBulks) {
-      updateDiffStates({ key: "newVersion", value: componentsBulks });
-    }
-  }, [segmentExpandedData, componentsBulks, updateDiffStates]);
-
+  }
   return (
     <div className="w-3/4 mx-auto">
       <div className="flex flex-wrap justify-between my-6 ">
@@ -286,8 +285,7 @@ export default function CreateSegment({
           </h3>
         </Button>
         <Button
-          disabled={!form.formState.isValid || !form.formState.isDirty}
-          onClick={toggleDiffCheckerDrawer}
+          onClick={handlePhoneView}
           className="bg-green-500 hover:bg-green-700 hover:ease-in"
           type="button"
         >
@@ -551,32 +549,62 @@ export default function CreateSegment({
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <FormField
-                control={form.control}
-                name="recommendedProducts"
-                render={({ field: { onChange, onBlur, ref, value } }) => (
-                  <FormItem>
-                    <FormLabel>Select Recommended Products</FormLabel>
-                    <FormControl>
-                      <Select
-                        id="recommendedProducts"
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        ref={ref}
-                        isDisabled={!isNew}
-                        styles={reactSelectStyles}
-                        placeholder="Select Recommended Products..."
-                        options={products}
-                        value={value}
-                        isMulti
-                      />
-                    </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="customerType"
+                  render={({ field: { onChange, onBlur, ref, value } }) => (
+                    <FormItem>
+                      <FormLabel>Select Customer Type</FormLabel>
+                      <FormControl>
+                        <Select
+                          id="customerType"
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          isDisabled={!isNew}
+                          styles={reactSelectSingleStyles}
+                          placeholder="Select Customer Type"
+                          options={customerTypeList}
+                          value={value}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="recommendedProducts"
+                  render={({ field: { onChange, onBlur, ref, value } }) => (
+                    <FormItem>
+                      <FormLabel>Select Recommended Products</FormLabel>
+                      <FormControl>
+                        <Select
+                          id="recommendedProducts"
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          isDisabled={!isNew}
+                          styles={reactSelectStyles}
+                          placeholder="Select Recommended Products..."
+                          options={products}
+                          value={value}
+                          isMulti
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -612,12 +640,7 @@ export default function CreateSegment({
                 className="w-36"
                 disabled={!form.formState.isDirty}
               >
-                {
-                  // showOtpInput
-                  //   ? "Verify OTP"
-                  //   :
-                  isNew ? "Create Segment" : "Save Segment"
-                }
+                {isNew ? "Create Segment" : "Save Segment"}
               </Button>
             </div>
           </form>
@@ -625,11 +648,8 @@ export default function CreateSegment({
       </div>
 
       <DiffCheckerDrawer
-        diffEntity="segment"
         isDrawerOpen={isDiffCheckerOpen}
         toggleDrawer={toggleDiffCheckerDrawer}
-        currentVersion={currentVersion}
-        newVersion={newVersion}
       />
     </div>
   );

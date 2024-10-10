@@ -5,15 +5,32 @@ export const componentSchema = z.object({
   data: z.object({
     title: z.string().nullable(),
     description: z.string().nullable(),
-    content_ids: z.array(z.string()),
+    content_ids: z.array(
+      z.object({
+        content_id: z.string(),
+        name: z.string(),
+        order: z.number(),
+      }),
+    ),
   }),
   draft_data: z.object({
-    content_ids: z.array(z.string()),
+    title: z.string().nullable(),
+    description: z.string().nullable(),
+    content_ids: z.array(
+      z.object({
+        content_id: z.string(),
+        name: z.string(),
+        order: z.number(),
+      }),
+    ),
   }),
   _id: z.string(),
   component_id: z.string(),
   name: z.string(),
   status: z.enum(["draft", "published"]),
+  gender: z.enum(["All", "M", "F"]),
+  language: z.enum(["All", "ENGLISH", "HINDI"]),
+  component_type: z.enum(["Static", "Dynamic"]),
   current_version: z.number().int().positive(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -26,17 +43,36 @@ export const componentsSchema = z.object({
 });
 
 export const FormComponentSchema = z.object({
-  name: z.string({ message: "Name is required." }).optional(),
-  // .min(3, { message: "Name must be at least 3 characters long." }),
+  name: z
+    .string({ message: "Name is required." })
+    .min(3, { message: "Name must be at least 3 characters long." }),
+  gender: z.object(
+    { value: z.string(), label: z.string() },
+    { message: "Gender is required" },
+  ),
+  language: z.object(
+    { value: z.string(), label: z.string() },
+    { message: "Language is required" },
+  ),
+  componentType: z.object(
+    { value: z.string(), label: z.string() },
+    { message: "Component Type is required" },
+  ),
   data: z.object({
-    title: z.string({ message: "Title is required." }).optional(),
-    // .min(3, { message: "Title must be at least 3 characters long." }),
+    title: z
+      .string({ message: "Title is required." })
+      .min(3, { message: "Title must be at least 3 characters long." }),
     description: z.string({ message: "Description is required." }).optional(),
-    // .min(3, { message: "Description must be at least 3 characters long." })
-    // .optional(),
+    // .min(3, { message: "Description must be at least 3 characters long." }),
     contents: z
-      .array(z.object({ value: z.string(), label: z.string() }))
-      .min(1, { message: "Content is required." }),
+      .array(
+        z.object({
+          content_id: z.string(),
+          name: z.string(),
+          order: z.number(),
+        }),
+      )
+      .min(1, { message: "Contents is required." }),
   }),
 });
 

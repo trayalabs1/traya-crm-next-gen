@@ -21,7 +21,13 @@ import { getComponents } from "@services/cmsServices";
 import { useEffect, useState } from "react";
 import _ from "lodash";
 import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
-import { generateQueryString } from "@utils/common";
+import {
+  componentTypeList,
+  genderList,
+  generateQueryString,
+  languageList,
+} from "@utils/common";
+import ContentReOrders from "./ContentReOrders";
 // import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
@@ -30,6 +36,9 @@ type CreateComponentProps = {
 
 const defaultValues = {
   name: "",
+  gender: undefined,
+  language: undefined,
+  componentType: undefined,
   data: {
     title: "",
     description: "",
@@ -41,19 +50,15 @@ export default function CreateComponent({
   onBack,
 }: CreateComponentProps) {
   const { id } = useParams();
-
+  const [isDynamicType, setIsDynamicType] = useState<boolean>(false);
   const isNew = id === "new";
 
   const handleSubmit = (data: FormComponentSchemaType) => {
     onSubmit({ payload: data, id });
   };
   const { data: contents } = useGetContents();
-  const { mainData } = contents || { mainData: [] };
 
-  const contentsOptions = mainData.map((content) => ({
-    value: content.content_id,
-    label: content.name,
-  }));
+  const contentsData = _.get(contents, ["mainData"]) || [];
 
   const form = useForm<FormComponentSchemaType>({
     resolver: zodResolver(FormComponentSchema),
@@ -67,7 +72,7 @@ export default function CreateComponent({
   const { refetch, data: component } = useQuery({
     queryKey: ["getComponent", queryString],
     queryFn: () => getComponents(queryString),
-    enabled: false,
+    enabled: !isNew,
   });
 
   useEffect(() => {
@@ -78,13 +83,33 @@ export default function CreateComponent({
 
   useEffect(() => {
     if (component) {
-      const data = _.get(component, ["mainData", 0]);
-      const name = _.get(data, ["name"]);
-      let dataKey = "data";
-      if (data.status === "draft") dataKey = "draft_data";
-      const title = _.get(data, [dataKey, "title"], "") || "";
-      const description = _.get(data, [dataKey, "description"], "") || "";
-      form.reset({ name, data: { title, description, contents: [] } });
+      const componentData = _.get(component, ["mainData", 0]);
+      if (!componentData) return;
+
+      const dataKey = componentData.status === "draft" ? "draft_data" : "data";
+      const formData: Partial<FormComponentSchemaType> = {
+        name: componentData.name || "",
+        gender: componentData.gender
+          ? { label: componentData.gender, value: componentData.gender }
+          : undefined,
+        language: componentData.language
+          ? { label: componentData.language, value: componentData.language }
+          : undefined,
+        componentType: componentData.component_type
+          ? {
+              label: componentData.component_type,
+              value: componentData.component_type,
+            }
+          : undefined,
+        data: {
+          title: _.get(componentData, [dataKey, "title"]) || "",
+          description: _.get(componentData, [dataKey, "description"]) || "",
+          contents: _.get(componentData, [dataKey, "content_ids"]),
+        },
+      };
+
+      form.reset(formData);
+      setIsDynamicType(componentData.component_type === "Dynamic");
     }
   }, [component, form]);
 
@@ -126,12 +151,15 @@ export default function CreateComponent({
               <FormField
                 control={form.control}
                 name="name"
-                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Name" {...field} />
+                      <Input
+                        placeholder="Enter Name"
+                        {...field}
+                        disabled={!isNew || isDynamicType}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -139,17 +167,19 @@ export default function CreateComponent({
                 )}
               />
             </div>
-
             <div className="space-y-2">
               <FormField
                 control={form.control}
                 name="data.title"
-                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter title" {...field} />
+                      <Input
+                        placeholder="Enter title"
+                        {...field}
+                        disabled={isDynamicType}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -161,12 +191,15 @@ export default function CreateComponent({
               <FormField
                 control={form.control}
                 name="data.description"
-                disabled={!isNew}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter description" {...field} />
+                      <Input
+                        placeholder="Enter description"
+                        {...field}
+                        disabled={isDynamicType}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -174,27 +207,101 @@ export default function CreateComponent({
                 )}
               />
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field: { onChange, onBlur, ref, value } }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <FormControl>
+                        <Select
+                          id="gender"
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          isDisabled={!isNew || isDynamicType}
+                          styles={reactSelectStyles}
+                          placeholder="Select Gender"
+                          options={genderList}
+                          value={value || null}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="language"
+                  render={({ field: { onChange, onBlur, ref, value } }) => (
+                    <FormItem>
+                      <FormLabel>Language</FormLabel>
+                      <FormControl>
+                        <Select
+                          id="language"
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          isDisabled={!isNew || isDynamicType}
+                          styles={reactSelectStyles}
+                          placeholder="Select Language"
+                          options={languageList}
+                          value={value || null}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="componentType"
+                  render={({ field: { onChange, onBlur, ref, value } }) => (
+                    <FormItem>
+                      <FormLabel>Component Type</FormLabel>
+                      <FormControl>
+                        <Select
+                          id="componentType"
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          ref={ref}
+                          isDisabled={!isNew || isDynamicType}
+                          styles={reactSelectStyles}
+                          placeholder="Select Component Type"
+                          options={componentTypeList}
+                          value={value || null}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
             <div className="space-y-2">
               <FormField
                 control={form.control}
                 name="data.contents"
-                render={({ field: { onChange, onBlur, ref, value } }) => (
+                render={({ field: { onChange, value } }) => (
                   <FormItem>
-                    <FormLabel>Contents</FormLabel>
+                    <FormLabel>Select Content</FormLabel>
                     <FormControl>
-                      <Select
-                        id="data.contents"
-                        onBlur={onBlur}
+                      <ContentReOrders
                         onChange={onChange}
-                        ref={ref}
-                        styles={reactSelectStyles}
-                        isMulti
-                        placeholder="Select contents..."
-                        options={contentsOptions}
-                        value={value}
+                        availableContents={contentsData}
+                        selectedContents={value}
+                        isDisabled={isDynamicType}
                       />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}

@@ -3,7 +3,6 @@ import {
   Content,
   ContentMutationPayload,
   Components,
-  ComponentMutationPayload,
   Component,
   Segments,
   // SegmentMutationPayload,
@@ -11,6 +10,7 @@ import {
   ComponentContentsType,
   SegmentComponentsContentsExpandedType,
   SegmentMutationBody,
+  ComponentMutationBody,
 } from "cms";
 import { axiosClient } from "@utils/axiosInterceptor";
 import {
@@ -62,7 +62,7 @@ export const getComponents = async (
 };
 
 export const createComponent = async (
-  data: ComponentMutationPayload["payload"],
+  data: ComponentMutationBody,
 ): Promise<Components[]> => {
   const response = await axiosClient.post(componentsApi.CREATE_COMPONENT, data);
   return response.data;
@@ -71,7 +71,10 @@ export const createComponent = async (
 export const updateComponent = async ({
   id,
   payload,
-}: ComponentMutationPayload): Promise<Component> => {
+}: {
+  id?: string;
+  payload: ComponentMutationBody;
+}): Promise<Component> => {
   const response = await axiosClient.put(
     componentsApi.UPDATE_COMPONENT(id),
     payload,

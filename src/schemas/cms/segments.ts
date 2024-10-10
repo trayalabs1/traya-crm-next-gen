@@ -61,6 +61,13 @@ export const FormSegmentSchema = z.object({
     { value: z.string(), label: z.string() },
     { message: "Gender is required" },
   ),
+  customerType: z.object(
+    {
+      value: z.string(),
+      label: z.string(),
+    },
+    { message: "Customer Type is required" },
+  ),
   weeksInProgram: z
     .array(z.object({ value: z.string(), label: z.string() }))
     // .min(1, { message: "Weeks In Program is required." })

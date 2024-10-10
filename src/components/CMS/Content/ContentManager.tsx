@@ -108,6 +108,8 @@ export default function ContentManager() {
                 navigate("new");
               }}
               className="mb-4"
+              disabled={user?.role !== 'maker'}
+
             >
               <Plus className="mr-2 h-4 w-4" /> Create Content
             </Button>

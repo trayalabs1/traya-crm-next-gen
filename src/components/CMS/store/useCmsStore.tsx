@@ -1,33 +1,23 @@
 import { componentsApi, contentsApi, segmentsApi } from "@api/cmsApi";
+import { toast } from "@hooks/use-toast";
 import { axiosClient } from "@utils/axiosInterceptor";
 import { getErrorMessage } from "@utils/common";
 import { AxiosResponse } from "axios";
-import { EntitiyType, MobileComponent } from "cms";
+import { EntitiyType, MobileComponent, MobileContent } from "cms";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-type ChangeType = "new" | "edit";
 interface DiffCheckerActionAndState extends DiffCheckerState {
   toggleDiffCheckerDrawer: () => void;
-  changeDiffType: (
-    data: Pick<
-      DiffCheckerState,
-      "entityType" | "type" | "segment" | "component" | "content"
-    >,
-  ) => void;
-  updateDiffStates: ({
-    key,
-    value,
-  }: {
-    key: keyof DiffCheckerState;
-    value: DiffCheckerState[keyof DiffCheckerState];
-  }) => void;
+  updateDiffStates: (data: Partial<DiffCheckerState>) => void;
   fetchDiffSegment: (data: FetchDiffSegment) => Promise<void>;
   fetchDiffComponentsBulk: (data: FetchDiffComponentsBulk) => Promise<void>;
-  fetchDiffContentsBulk: (data: FetchDiffContentsBulk) => Promise<void>;
+  fetchDiffContentsBulk: (
+    data: FetchDiffContentsBulk,
+  ) => Promise<AxiosResponse<MobileContent[]> | undefined>;
+  resetDiffCheckerStates: () => void;
 }
 
 interface DiffCheckerState {
-  type: ChangeType | null;
   entityType: EntitiyType | null;
   isDiffCheckerOpen: boolean;
   currentVersion: MobileComponent[] | null;
@@ -37,8 +27,6 @@ interface DiffCheckerState {
   content?: object | null;
   loading: boolean;
   error: null | string;
-  diffCurrentData: MobileComponent[] | null;
-  diffNewData: MobileComponent[] | null;
 }
 
 interface FetchDiffSegment {
@@ -52,43 +40,34 @@ interface FetchDiffComponentsBulk {
 
 interface FetchDiffContentsBulk {
   contentIds: string[];
-  type: "currentVersion" | "newVersion";
 }
 
+const initialStates: DiffCheckerState = {
+  isDiffCheckerOpen: false,
+  entityType: null,
+  currentVersion: null,
+  newVersion: null,
+  segment: null,
+  component: null,
+  content: null,
+  loading: false,
+  error: null,
+};
 export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
   devtools((set, get) => ({
-    isDiffCheckerOpen: false,
-    entityType: null,
-    type: null,
-    currentVersion: null,
-    newVersion: null,
-    segment: null,
-    component: null,
-    content: null,
-    loading: false,
-    error: null,
-    diffCurrentData: null,
-    diffNewData: null,
-
+    ...initialStates,
     toggleDiffCheckerDrawer: () => {
       const { isDiffCheckerOpen } = get();
       set({ isDiffCheckerOpen: !isDiffCheckerOpen });
     },
 
-    changeDiffType: ({ type, entityType, segment }) => {
-      set({ entityType, type, segment });
+    resetDiffCheckerStates: () => {
+      set(initialStates);
     },
-
-    updateDiffStates: ({
-      key,
-      value,
-    }: {
-      key: keyof DiffCheckerState;
-      value: DiffCheckerState[keyof DiffCheckerState];
-    }) => {
+    updateDiffStates: (newState: Partial<DiffCheckerState>) => {
       set((state) => ({
         ...state,
-        [key]: value,
+        ...newState,
       }));
     },
 
@@ -114,7 +93,6 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
       componentIds,
       type,
     }: FetchDiffComponentsBulk) => {
-      console.log(componentIds, "componentIds");
       set({ loading: true, error: null });
       try {
         const response: AxiosResponse<MobileComponent[]> =
@@ -134,23 +112,23 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
     },
     fetchDiffContentsBulk: async ({
       contentIds,
-      type,
-    }: FetchDiffContentsBulk) => {
-      console.log(contentIds, "contentIds");
-      set({ loading: true, error: null });
+    }: FetchDiffContentsBulk): Promise<
+      AxiosResponse<MobileContent[]> | undefined
+    > => {
       try {
-        const response: AxiosResponse<MobileComponent[]> =
-          await axiosClient.post(contentsApi.GET_CONTENTS_BULK_BY_CONTENT_IDS, {
-            contentIds: contentIds,
-          });
+        const response: AxiosResponse<MobileContent[]> = await axiosClient.post(
+          contentsApi.GET_CONTENTS_BULK_BY_CONTENT_IDS,
+          { contentIds },
+        );
 
-        const obj = { [type]: response.data };
-        set({ ...obj, loading: false });
-      } catch (error: unknown) {
-        set({
-          error: getErrorMessage(error),
-          loading: false,
+        return response;
+      } catch (error) {
+        toast({
+          description: getErrorMessage(error),
+          variant: "destructive",
+          duration: 1000,
         });
+        return undefined;
       }
     },
   })),
