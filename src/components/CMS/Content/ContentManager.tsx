@@ -28,16 +28,19 @@ import {
   TableHeader,
   TableRow,
 } from "@components/ui/table";
-import { Edit, GitCompare, Plus } from "lucide-react";
+import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetContents } from "src/queries";
 import { get } from "lodash";
 import {
+  contentTypeList,
+  formatWithSpaces,
   generateQueryString,
   getCMSActionButtonColor,
   getCMSFilterStatusByRole,
   PAGINATION_CONFIG,
+  statusList,
 } from "@utils/common";
 import {
   Tooltip,
@@ -50,28 +53,24 @@ import { useAuth } from "src/context/useAuth";
 import { Content } from "cms";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useDiffCheckerStore } from "../store/useCmsStore";
-const statusList = [
-  { label: "Draft", value: "draft" },
-  { label: "Submitted", value: "submitted" },
-  { label: "Approved By Checker", value: "approved_by_checker" },
-  { label: "Approved By Publisher", value: "approved_by_publisher" },
-  { label: "Published", value: "published" },
-];
+
 export default function ContentManager() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
-  const [limit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
+  const [limit, setLimit] = useState<number>(PAGINATION_CONFIG.DEFAULT_LIMIT);
   const DEFAULT_STATUS = getCMSFilterStatusByRole(user?.role);
   const [status, setStatus] = useState<string>(DEFAULT_STATUS);
   const [version, setVersion] = useState<string>("");
+  const [contentType, setContentType] = useState<string>("");
 
   const queryString = generateQueryString({
     page_number: String(page),
     page_size: String(limit),
     status,
     current_version: version,
+    type: contentType,
   });
 
   const [selectedContent, setSelectedContent] = useState<Content | null>(null);
@@ -92,6 +91,15 @@ export default function ContentManager() {
   const handleDiffChecker = (content: Content) => {
     setSelectedContent(content);
   };
+
+  function handleClearFilter() {
+    setPage(PAGINATION_CONFIG.DEFAULT_PAGE);
+    setLimit(PAGINATION_CONFIG.DEFAULT_LIMIT);
+    setStatus(DEFAULT_STATUS);
+    setVersion("");
+    setContentType("");
+  }
+
   if (isLoading) return <TableSkeleton />;
   return (
     <>
@@ -101,63 +109,98 @@ export default function ContentManager() {
           <CardDescription>Manage your contents</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={() => {
-                navigate("new");
-              }}
-              className="mb-4"
-              disabled={user?.role !== "maker"}
-            >
-              <Plus className="mr-2 h-4 w-4" /> Create Content
-            </Button>
-            <Select
-              onValueChange={(value) => {
-                setStatus(value);
-                setPage(1);
-              }}
-              value={status}
-            >
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select a Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Status</SelectLabel>
-                  {statusList.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Select
-              onValueChange={(value) => {
-                setVersion(value);
-                setPage(1);
-              }}
-              value={version}
-            >
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select a Version" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Version</SelectLabel>
-                  {Array.from({ length: 5 }, (_, index) =>
-                    (index + 1).toString(),
-                  ).map((version, index) => (
-                    <SelectItem key={index} value={version}>
-                      {version}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <ScrollArea>
-            <TooltipProvider>
+          <TooltipProvider>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                onClick={() => {
+                  navigate("new");
+                }}
+                className="mb-4"
+                disabled={user?.role !== "maker"}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Create Content
+              </Button>
+              <Select
+                onValueChange={(value) => {
+                  setStatus(value);
+                  setPage(1);
+                }}
+                value={status}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select a Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Status</SelectLabel>
+                    {statusList.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) => {
+                  setContentType(value);
+                  setPage(1);
+                }}
+                value={contentType}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select a Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Type</SelectLabel>
+                    {contentTypeList.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) => {
+                  setVersion(value);
+                  setPage(1);
+                }}
+                value={version}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select a Version" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Version</SelectLabel>
+                    {Array.from({ length: 5 }, (_, index) =>
+                      (index + 1).toString(),
+                    ).map((version, index) => (
+                      <SelectItem key={index} value={version}>
+                        {version}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleClearFilter}
+                  >
+                    <FilterX className="h-4 w-4 text-red-600" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clear Filter</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <ScrollArea>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -183,7 +226,9 @@ export default function ContentManager() {
                       </TableCell>
                       <TableCell>{content.type}</TableCell>
                       <TableCell>{content.current_version}</TableCell>
-                      <TableCell>{content.status}</TableCell>
+                      <TableCell>
+                        {formatWithSpaces(content.status) || "-"}
+                      </TableCell>
                       {/* <TableCell className="text-center">
                     <Button
                       variant="outline"
@@ -262,8 +307,8 @@ export default function ContentManager() {
                   </TableRow>
                 </TableFooter>
               </Table>
-            </TooltipProvider>
-          </ScrollArea>
+            </ScrollArea>
+          </TooltipProvider>
         </CardContent>
       </Card>
       <DiffCheckerDrawer

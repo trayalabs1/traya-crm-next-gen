@@ -3,7 +3,7 @@ import { Input } from "@components/ui/input";
 import Select from "react-select";
 import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { useGetContents } from "src/queries";
+import { useContentBulk, useGetContents } from "src/queries";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -15,8 +15,13 @@ import {
   FormMessage,
 } from "@components/ui/form";
 import { FormComponentSchema } from "@schemas/cms/components";
-import { ComponentMutationPayload, FormComponentSchemaType } from "cms";
-import { useQuery } from "@tanstack/react-query";
+import {
+  ComponentMutationPayload,
+  FormComponentSchemaType,
+  MobileComponent,
+  MobileContent,
+} from "cms";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { getComponents } from "@services/cmsServices";
 import { useEffect, useState } from "react";
 import _ from "lodash";
@@ -25,9 +30,14 @@ import {
   componentTypeList,
   genderList,
   generateQueryString,
+  getErrorMessage,
   languageList,
 } from "@utils/common";
 import ContentReOrders from "./ContentReOrders";
+import { useDiffCheckerStore } from "../store/useCmsStore";
+import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
+import { useComponentBulk } from "src/queries/cms/component";
+import { toast } from "@hooks/use-toast";
 // import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
@@ -62,6 +72,7 @@ export default function CreateComponent({
 
   const form = useForm<FormComponentSchemaType>({
     resolver: zodResolver(FormComponentSchema),
+    mode: "onChange",
     defaultValues,
   });
 
@@ -72,7 +83,7 @@ export default function CreateComponent({
   const { refetch, data: component } = useQuery({
     queryKey: ["getComponent", queryString],
     queryFn: () => getComponents(queryString),
-    enabled: !isNew,
+    enabled: false,
   });
 
   useEffect(() => {
@@ -84,7 +95,7 @@ export default function CreateComponent({
   useEffect(() => {
     if (component) {
       const componentData = _.get(component, ["mainData", 0]);
-      if (!componentData) return;
+      // if (!componentData) return;
 
       const dataKey = componentData.status === "draft" ? "draft_data" : "data";
       const formData: Partial<FormComponentSchemaType> = {
@@ -113,12 +124,65 @@ export default function CreateComponent({
     }
   }, [component, form]);
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const {
+    isDiffCheckerOpen,
+    toggleDiffCheckerDrawer,
+    updateDiffStates,
+    resetDiffCheckerStates,
+  } = useDiffCheckerStore();
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
+  const componentBulkQuery = useComponentBulk(
+    { componentIds: [id ?? "defaultId"] },
+    { enabled: false },
+  );
 
+  const contentBulkQuery = useContentBulk(
+    { contentIds: _.map(form.getValues("data.contents"), "content_id") },
+    { enabled: false },
+  );
+
+  async function handlePhoneView() {
+    resetDiffCheckerStates();
+
+    let componentsBulkData: UseQueryResult<MobileComponent[]> | null = null;
+    let contentsBulkData: UseQueryResult<MobileContent[]> | null = null;
+
+    componentsBulkData = await componentBulkQuery.refetch();
+    contentsBulkData = await contentBulkQuery.refetch();
+    const componentData = _.get(component, ["mainData", 0]);
+    const newComponentData = form.getValues();
+    const newVersiontransformedData: MobileComponent[] | null = [
+      {
+        componentId: componentData?.component_id || "",
+        name: newComponentData.name,
+        title: newComponentData.data.title,
+        description: newComponentData.data.description,
+        contents: contentsBulkData?.data || [],
+      },
+    ];
+
+    updateDiffStates({
+      entityType: "component",
+      currentVersion: componentsBulkData.data,
+      newVersion: newVersiontransformedData,
+    });
+
+    if (componentsBulkData && componentsBulkData.isError) {
+      toast({
+        variant: "destructive",
+        duration: 1000,
+        description: getErrorMessage(componentsBulkData.error),
+      });
+    }
+    if (contentsBulkData && contentsBulkData.isError) {
+      toast({
+        variant: "destructive",
+        duration: 1000,
+        description: getErrorMessage(contentsBulkData.error),
+      });
+    }
+    toggleDiffCheckerDrawer();
+  }
   return (
     <div className="w-3/4 mx-auto">
       <div className="flex flex-wrap justify-between my-6 ">
@@ -133,8 +197,7 @@ export default function CreateComponent({
         </Button>
 
         <Button
-          disabled={!form.formState.isValid}
-          onClick={toggleDrawer}
+          onClick={handlePhoneView}
           className="bg-green-500 hover:bg-green-700 hover:ease-in"
           type="button"
         >
@@ -324,12 +387,10 @@ export default function CreateComponent({
         </Form>
       </div>
 
-      {/* <DiffCheckerDrawer
-        isDrawerOpen={isDrawerOpen}
-        toggleDrawer={toggleDrawer}
-        currentVersion={isNew ? undefined : {}}
-        newVersion={isNew ? {} : undefined}
-      /> */}
+      <DiffCheckerDrawer
+        isDrawerOpen={isDiffCheckerOpen}
+        toggleDrawer={toggleDiffCheckerDrawer}
+      />
     </div>
   );
 }

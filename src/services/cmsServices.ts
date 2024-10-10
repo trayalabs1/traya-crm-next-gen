@@ -193,6 +193,18 @@ export const getComponentsBulk = async ({
   return response.data;
 };
 
+export const getContentsBulk = async ({
+  contentIds,
+}: {
+  contentIds: string[];
+}) => {
+  const response = await axiosClient.post(
+    contentsApi.GET_CONTENTS_BULK_BY_CONTENT_IDS,
+    { contentIds },
+  );
+  return response.data;
+};
+
 export const uploadMedia = async (file: File) => {
   try {
     const form = new FormData();

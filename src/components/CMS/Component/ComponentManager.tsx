@@ -34,6 +34,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get, map } from "lodash";
 import {
+  formatWithSpaces,
   genderList,
   generateQueryString,
   getCMSActionButtonColor,
@@ -293,7 +294,9 @@ export default function ComponentManager() {
                       <TableCell>
                         {get(component, ["data", "description"], "-") || "-"}
                       </TableCell>
-                      <TableCell>{component.status}</TableCell>
+                      <TableCell>
+                        {formatWithSpaces(component.status) || "-"}
+                      </TableCell>
                       <TableCell> {get(component, "gender") || "-"}</TableCell>
                       <TableCell>{component.current_version}</TableCell>
                       {/* <TableCell className="text-center">

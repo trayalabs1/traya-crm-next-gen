@@ -127,7 +127,7 @@ export default function CreateSegment({
 
   useEffect(() => {
     if (segment && components) {
-      const data = _.get(segment, ["mainData", 0]);
+      const data = _.get(segment, ["mainData", 0]) || {};
       const name = _.get(data, ["name"]);
       const gender = genderList.find(
         (gender) => gender.value === _.get(data, ["gender"]),

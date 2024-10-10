@@ -162,6 +162,30 @@ export const componentTypeList = [
   { label: "Dynamic", value: "Dynamic" },
 ];
 
+export const contentTypeList: CustomOptionType[] = [
+  { label: "Banner", value: "banner" },
+  { label: "Cta", value: "cta" },
+  { label: "Name", value: "name" },
+  { label: "Cta button", value: "cta_button" },
+  { label: "Custom", value: "custom" },
+  { label: "Full image", value: "full_image" },
+  { label: "Carousel item", value: "carousel_item" },
+  { label: "Image", value: "image" },
+  { label: "Video", value: "video" },
+  { label: "Community card", value: "community_card" },
+  { label: "Playlist", value: "playlist" },
+  { label: "Hair solution", value: "hair_solution" },
+  { label: "Step", value: "step" },
+  { label: "Retake hair test", value: "retake_hair_test" },
+  { label: "Holistic plan", value: "holistic_plan" },
+  { label: "Support card", value: "support_card" },
+  { label: "Full width image", value: "full_width_image" },
+  { label: "Lottie", value: "lottie" },
+  { label: "Video card", value: "video_card" },
+  { label: "Chat male", value: "chat_male" },
+  { label: "Chat female", value: "chat_female" },
+];
+
 export const getJsonFromStorage = <T>(
   key: string,
   storageType: "local" | "session" = "local",
