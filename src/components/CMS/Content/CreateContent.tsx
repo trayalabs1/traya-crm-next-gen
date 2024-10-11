@@ -30,12 +30,12 @@ import {
   X,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { useGetContents } from "src/queries";
 import { get } from "lodash";
 import { ContentMutationPayload } from "cms";
 import { generateQueryString } from "@utils/common";
 import _ from "lodash";
 import { uploadMedia } from "@services/cmsServices";
+import { useGetContents } from "@queries/cms/contents";
 
 const contentTypes = [
   "banner",

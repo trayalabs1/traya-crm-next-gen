@@ -31,7 +31,6 @@ import {
 import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetContents } from "src/queries";
 import { get } from "lodash";
 import {
   contentTypeList,
@@ -53,6 +52,7 @@ import { useAuth } from "src/context/useAuth";
 import { Content } from "cms";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useDiffCheckerStore } from "../store/useCmsStore";
+import { useGetContents } from "@queries/cms/contents";
 
 export default function ContentManager() {
   const navigate = useNavigate();

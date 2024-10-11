@@ -3,7 +3,6 @@ import { Input } from "@components/ui/input";
 import Select from "react-select";
 import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { useContentBulk, useGetContents } from "src/queries";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -38,6 +37,7 @@ import { useDiffCheckerStore } from "../store/useCmsStore";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useComponentBulk } from "src/queries/cms/component";
 import { toast } from "@hooks/use-toast";
+import { useContentBulk, useGetContents } from "@queries/cms/contents";
 // import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
