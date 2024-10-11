@@ -222,13 +222,13 @@ export function mapToSelectOptions<T>(
   return map(items, (item) => {
     if (isObject(item) && valueKey && labelKey) {
       return {
-        label: String(get(item, labelKey)) || "",
-        value: String(get(item, valueKey)) || "",
+        label: String(get(item, labelKey) ?? "NA"),
+        value: String(get(item, valueKey) ?? "NA"),
       };
     } else {
       return {
-        label: String(item) || "",
-        value: String(item) || "",
+        label: String(item ?? "NA"),
+        value: String(item ?? "NA"),
       };
     }
   });

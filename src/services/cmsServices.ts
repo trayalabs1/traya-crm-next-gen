@@ -207,6 +207,20 @@ export const getContentsBulk = async ({
   return response.data;
 };
 
+export const getPublishedContents = async (): Promise<Content[]> => {
+  const response = await axiosClient.get(contentsApi.GET_PUBLISHED_CONTENTS);
+  return response.data;
+};
+
+export const getPublishedComponents = async (
+  queryString?: string,
+): Promise<Component[]> => {
+  const response = await axiosClient.get(
+    componentsApi.GET_PUBLISHED_COMPONENTS(queryString),
+  );
+  return response.data;
+};
+
 export const uploadMedia = async (file: File) => {
   try {
     const form = new FormData();

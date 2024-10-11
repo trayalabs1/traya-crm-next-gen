@@ -10,6 +10,7 @@ export const contentsApi = {
   UPDATE_CONTENT: (contentId: string | undefined) =>
     "/v2/cms/content/update/" + contentId,
   GET_CONTENTS_BULK_BY_CONTENT_IDS: "api/content/content/bulk",
+  GET_PUBLISHED_CONTENTS: "api/getpublishedContents",
 } as const;
 
 export const componentsApi = {
@@ -22,6 +23,8 @@ export const componentsApi = {
   GET_COMPONENT_CONTENTS_BY_COMPONENT_ID: (componentId?: string) =>
     "/v2/cms/component/content/" + componentId,
   GET_COMPONENTS_BULK_BY_COMPONENT_IDS: "/api/component/content/bulk",
+  GET_PUBLISHED_COMPONENTS: (queryString?: string) =>
+    "api/getpublishComponents" + (queryString ? queryString : ""),
 } as const;
 
 export const segmentsApi = {

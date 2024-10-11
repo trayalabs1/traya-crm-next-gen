@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import Select from "react-select";
 import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { getComponents, getSegments } from "@services/cmsServices";
+import { getSegments } from "@services/cmsServices";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
@@ -46,7 +46,10 @@ import {
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import { useSegmentComponentContent } from "src/queries/cms/segments";
-import { useComponentBulk } from "src/queries/cms/component";
+import {
+  useComponentBulk,
+  useGetPublishedComponents,
+} from "src/queries/cms/component";
 import ComponentOrders from "./ComponentReOrders";
 import { toast } from "@hooks/use-toast";
 
@@ -94,6 +97,10 @@ export default function CreateSegment({
 
   const { id } = useParams<{ id: string | "new" }>();
 
+  const form = useForm<FormSegmentSchemaType>({
+    resolver: zodResolver(FormSegmentSchema),
+    defaultValues,
+  });
   const isNew = id === "new";
 
   const queryString = generateQueryString({
@@ -105,16 +112,20 @@ export default function CreateSegment({
     enabled: false,
   });
 
-  const { data: components } = useQuery({
-    queryKey: ["getComponents"],
-    queryFn: () => getComponents(),
-  });
+  const [gender, setGender] = useState<string>();
 
-  const componentsData = _.get(components, ["mainData"]) || [];
-  const form = useForm<FormSegmentSchemaType>({
-    resolver: zodResolver(FormSegmentSchema),
-    defaultValues,
-  });
+  const { data: components, refetch: refetchComponents } =
+    useGetPublishedComponents(generateQueryString({ gender }), {
+      enabled: false,
+    });
+
+  useEffect(() => {
+    if (isNew || gender) {
+      refetchComponents();
+    }
+  }, [gender, refetchComponents, isNew]);
+
+  const componentsData = components ?? [];
 
   const handleClearReset = () => {
     if (!isNew) {
@@ -130,12 +141,14 @@ export default function CreateSegment({
   }, [isNew, refetch, id]);
 
   useEffect(() => {
-    if (segment && components) {
+    if (segment) {
       const data = _.get(segment, ["mainData", 0]) || {};
       const name = _.get(data, ["name"]);
       const gender = genderList.find(
         (gender) => gender.value === _.get(data, ["gender"]),
       );
+      if (gender) setGender(gender.value);
+
       const orderCounts = _.first(_.get(data, ["order_counts"]));
       const recommendedProducts = _.get(data, ["recommended_products"]) || [];
 
@@ -202,7 +215,7 @@ export default function CreateSegment({
         streaks: streakLength,
       });
     }
-  }, [segment, form, components]);
+  }, [segment, form]);
 
   const {
     isDiffCheckerOpen,
@@ -333,10 +346,13 @@ export default function CreateSegment({
                         <Select
                           id="gender"
                           onBlur={onBlur}
-                          onChange={onChange}
+                          onChange={(newValue) => {
+                            setGender(newValue?.value);
+                            onChange(newValue);
+                          }}
                           ref={ref}
                           isDisabled={!isNew}
-                          styles={reactSelectStyles}
+                          styles={reactSelectSingleStyles}
                           placeholder="Select Gender"
                           options={genderList}
                           value={value || null}

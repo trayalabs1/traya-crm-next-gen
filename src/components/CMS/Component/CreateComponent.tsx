@@ -37,7 +37,7 @@ import { useDiffCheckerStore } from "../store/useCmsStore";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useComponentBulk } from "src/queries/cms/component";
 import { toast } from "@hooks/use-toast";
-import { useContentBulk, useGetContents } from "@queries/cms/contents";
+import { useContentBulk, useGetPublishedContents } from "@queries/cms/contents";
 // import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
@@ -66,9 +66,10 @@ export default function CreateComponent({
   const handleSubmit = (data: FormComponentSchemaType) => {
     onSubmit({ payload: data, id });
   };
-  const { data: contents } = useGetContents();
 
-  const contentsData = _.get(contents, ["mainData"]) || [];
+  const { data: contents } = useGetPublishedContents();
+
+  const contentsData = contents ?? [];
 
   const form = useForm<FormComponentSchemaType>({
     resolver: zodResolver(FormComponentSchema),
