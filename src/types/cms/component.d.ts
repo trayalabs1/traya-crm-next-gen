@@ -24,11 +24,9 @@ export type ComponentMutationBody = {
   gender: string;
   language?: string;
   componentType?: string;
-  data?: {
-    title?: string;
-    description?: string;
-    contents?: ContentOrder[];
-  };
+  title?: string;
+  description?: string;
+  contents?: ContentOrder[];
 };
 export type ComponentContentsType = z.infer<typeof ComponentContentsSchema>;
 

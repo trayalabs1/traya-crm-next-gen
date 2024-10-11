@@ -16,7 +16,7 @@ import GlobalFallback from "@components/Fallback/GlobalFallback";
 import { Toaster } from "@components/ui/toaster";
 import "react-toastify/dist/ReactToastify.min.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
-import { getErrorMessage, getSuccessMessage } from "@utils/common";
+import { getErrorMessage } from "@utils/common";
 
 function AppRoutes() {
   const routes = AppRoutesConfig();
@@ -29,9 +29,6 @@ const queryClient = new QueryClient({
     },
   },
   mutationCache: new MutationCache({
-    onSuccess(data) {
-      toast.success(getSuccessMessage(data));
-    },
     onError(error) {
       toast.error(getErrorMessage(error));
     },

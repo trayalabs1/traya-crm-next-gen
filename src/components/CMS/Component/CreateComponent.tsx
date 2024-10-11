@@ -183,6 +183,17 @@ export default function CreateComponent({
     }
     toggleDiffCheckerDrawer();
   }
+
+  function handleFormClear() {
+    if (!isNew) {
+      form.resetField("data", {
+        defaultValue: { contents: [], title: "", description: "" },
+      });
+      form.setValue("data.contents", []);
+    } else {
+      form.reset(defaultValues);
+    }
+  }
   return (
     <div className="w-3/4 mx-auto">
       <div className="flex flex-wrap justify-between my-6 ">
@@ -375,7 +386,7 @@ export default function CreateComponent({
                 type="reset"
                 className="w-36"
                 variant="outline"
-                onClick={() => form.reset(defaultValues)}
+                onClick={handleFormClear}
               >
                 Clear
               </Button>

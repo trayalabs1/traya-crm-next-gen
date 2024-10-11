@@ -47,12 +47,11 @@ function CreateComponentLayout() {
   });
 
   const onSubmit = async ({ id, payload }: ComponentMutationPayload) => {
-    const body: ComponentMutationBody = {
+    const body: ComponentMutationBody & { data?: object } = {
       name: "",
       gender: "",
     };
 
-    console.log(payload);
     _.set(body, "name", payload.name);
     _.set(body, "gender", _.get(payload, ["gender", "value"]) || "");
     _.set(body, "language", _.get(payload, ["language", "value"]) || "");
@@ -67,12 +66,21 @@ function CreateComponentLayout() {
       "data.description",
       _.get(payload, ["data", "description"]) || "",
     );
-    _.set(body, "data.contents", _.get(payload, ["data", "contents"]));
+    _.set(body, "data.content_ids", _.get(payload, ["data", "contents"]));
 
     if (id === "new") {
       await createComponentQuery.mutateAsync(body);
     } else {
-      await updateComponentQuery.mutateAsync({ id, payload: body });
+      ///Shape the body for update component
+      const data = _.get(body, "data") || {};
+
+      const updateBody = _.assign(body, data, {
+        content_ids: _.get(data, ["contents"]) || [],
+      });
+      _.unset(updateBody, "data");
+      _.unset(updateBody, "contents");
+
+      await updateComponentQuery.mutateAsync({ id, payload: updateBody });
     }
   };
   const onBack = () => {
