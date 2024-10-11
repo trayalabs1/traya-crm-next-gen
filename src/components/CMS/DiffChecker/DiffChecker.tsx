@@ -350,7 +350,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     <>
       <div>
         <h2 className="text-xl font-bold font-openSans text-nowrap space-y-2">
-          {newVersion && !currentVersion ? "Phone Screen View" : "Diff Checker"}
+          Diff Checker
         </h2>
         {action === "CHANGES" ? (
           <div className="flex justify-end space-x-4 my-2">
