@@ -29,7 +29,7 @@ import {
 } from "@components/ui/table";
 import { getSegments } from "@services/cmsServices";
 import { useQuery } from "@tanstack/react-query";
-import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
+import { Edit, FilterX, GitCompare } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get, isArray, map, isEmpty } from "lodash";
@@ -46,7 +46,6 @@ import {
 import GenericPagination from "@components/ui/GenericPagination";
 import { useAuth } from "src/context/useAuth";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
-import { ROLES } from "@utils/user";
 import {
   Tooltip,
   TooltipContent,
@@ -141,7 +140,7 @@ export default function SegmentManager() {
         <CardContent>
           <TooltipProvider>
             <div className="flex flex-wrap gap-2">
-              {user?.role === ROLES_NAME.MAKER ? (
+              {/* {user?.role === ROLES_NAME.MAKER ? (
                 <Button
                   disabled
                   onClick={() => {
@@ -151,7 +150,7 @@ export default function SegmentManager() {
                 >
                   <Plus className="mr-2 h-4 w-4" /> Add Segment
                 </Button>
-              ) : null}
+              ) : null} */}
               <Select
                 onValueChange={(value) => {
                   setStatus(value);
@@ -314,7 +313,7 @@ export default function SegmentManager() {
                               </TooltipContent>
                             </Tooltip>
 
-                            {user?.role === ROLES.maker ? (
+                            {user?.role === ROLES_NAME.MAKER ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button

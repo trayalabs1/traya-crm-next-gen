@@ -17,7 +17,6 @@ import {
   Segment,
 } from "cms";
 import { useAuth } from "src/context/useAuth";
-import { ROLES } from "@utils/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   approvalByChecker,
@@ -32,6 +31,7 @@ import {
 import _ from "lodash";
 import { EntityError } from "./EntityError";
 import { useDiffCheckerStore } from "../store/useCmsStore";
+import { ROLES_NAME } from "@utils/common";
 export interface DiffCheckerProps {
   action?: "VIEW" | "CHANGES";
   toggleDrawer: () => void;
@@ -390,7 +390,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
               />
             ) : null}
 
-            {ROLES.maker === user?.role && entity?.status === "draft" ? (
+            {ROLES_NAME.MAKER === user?.role && entity?.status === "draft" ? (
               <CommonDialog
                 isOpen={isSubmitDialogOpen}
                 setIsDialogOpen={setIsSubmitDialogOpen}

@@ -47,7 +47,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@components/ui/tooltip";
-import { ROLES } from "@utils/user";
 import { useAuth } from "src/context/useAuth";
 import { Content } from "cms";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
@@ -295,7 +294,7 @@ export default function ContentManager() {
                             </TooltipContent>
                           </Tooltip>
 
-                          {user?.role === ROLES.maker ? (
+                          {user?.role === ROLES_NAME.MAKER ? (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button

@@ -10,9 +10,3 @@ export const getInitials = (name: string): string => {
 
   return initials;
 };
-
-export const ROLES = {
-  maker: "maker",
-  checker: "checker",
-  publisher: "publisher",
-};

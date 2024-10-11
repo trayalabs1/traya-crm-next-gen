@@ -1,4 +1,4 @@
-import { Users, Settings, SquarePen, LucideIcon, Images } from "lucide-react";
+import { Users, Settings, SquarePen, LucideIcon } from "lucide-react";
 
 type Submenu = {
   href: string;
@@ -12,6 +12,7 @@ type Menu = {
   active: boolean;
   icon: LucideIcon;
   submenus: Submenu[];
+  disabled?: boolean;
 };
 
 type Group = {
@@ -47,13 +48,14 @@ export function getMenuList(pathname: string): Group[] {
             },
           ],
         },
-        {
-          href: "/media-manager",
-          label: "Media Manager",
-          active: pathname.includes("/media-manager"),
-          icon: Images,
-          submenus: [],
-        },
+        // {
+        //   href: "/media-manager",
+        //   label: "Media Manager",
+        //   active: pathname.includes("/media-manager"),
+        //   icon: Images,
+        //   submenus: [],
+        //   disabled: true,
+        // },
       ],
     },
     {
