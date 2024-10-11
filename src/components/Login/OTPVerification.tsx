@@ -25,9 +25,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useToast } from "@hooks/use-toast";
 import { useAuthStore } from "./store/useAuthStore";
 import { useAuth } from "src/context/useAuth";
+import { isDevelopment } from "@utils/envUtil";
+import { toast } from "react-toastify";
 
 const OTP_LENGTH = 6;
 const FormSchema = z.object({
@@ -49,7 +50,6 @@ export default function OtpVerificationPage() {
   const location = useLocation();
 
   const { login, verifyOtp } = useAuthStore();
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -63,13 +63,13 @@ export default function OtpVerificationPage() {
       navigate("/login", { state: undefined });
     }
 
-    if (import.meta.env.DEV) {
+    if (isDevelopment()) {
       const { otp } = useAuthStore.getState();
       if (otp) {
         form.setValue("otp", otp);
       }
     }
-  }, [location, navigate, form]);
+  }, [location, navigate, form, isResending]);
 
   const handleSubmit = async ({ otp }: z.infer<typeof FormSchema>) => {
     try {
@@ -80,11 +80,8 @@ export default function OtpVerificationPage() {
       if (error) {
         throw new Error(error);
       }
-      toast({
-        variant: "success",
-        description: "Login successfully",
-        duration: 1000,
-      });
+
+      toast.success("Login successfully");
       setIsVerifying(false);
 
       const { user } = useAuthStore.getState();
@@ -94,11 +91,7 @@ export default function OtpVerificationPage() {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Login failed";
-      toast({
-        description: errorMessage,
-        variant: "destructive",
-        duration: 1000,
-      });
+      toast.error(errorMessage);
       setIsVerifying(false);
     }
   };
@@ -107,11 +100,7 @@ export default function OtpVerificationPage() {
     setIsResending(true);
     await login(location.state);
     setIsResending(false);
-    toast({
-      description: "A new OTP has been sent to your email.",
-      variant: "success",
-      duration: 1000,
-    });
+    toast.success("A new OTP has been sent to your email.");
   };
 
   const handleBackToLogin = () => {

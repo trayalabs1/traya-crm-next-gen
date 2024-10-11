@@ -11,6 +11,7 @@ import {
   SegmentComponentsContentsExpandedType,
   SegmentMutationBody,
   ComponentMutationBody,
+  UpdateContentPayload,
 } from "cms";
 import { axiosClient } from "@utils/axiosInterceptor";
 import {
@@ -26,6 +27,7 @@ import {
 import { EntitiyActionBody } from "cms";
 import { AxiosResponse } from "axios";
 import { getErrorMessage } from "@utils/common";
+import { toast } from "react-toastify";
 
 export const getContents = async (queryString?: string): Promise<Contents> => {
   const response = await axiosClient.get(contentsApi.GET_CONTENTS(queryString));
@@ -45,7 +47,7 @@ export const createContent = async (
 export const updateContent = async ({
   id,
   payload,
-}: ContentMutationPayload): Promise<Content> => {
+}: UpdateContentPayload): Promise<Content> => {
   const response = await axiosClient.put(contentsApi.UPDATE_CONTENT(id), {
     data: payload,
   });
@@ -205,6 +207,20 @@ export const getContentsBulk = async ({
   return response.data;
 };
 
+export const getPublishedContents = async (): Promise<Content[]> => {
+  const response = await axiosClient.get(contentsApi.GET_PUBLISHED_CONTENTS);
+  return response.data;
+};
+
+export const getPublishedComponents = async (
+  queryString?: string,
+): Promise<Component[]> => {
+  const response = await axiosClient.get(
+    componentsApi.GET_PUBLISHED_COMPONENTS(queryString),
+  );
+  return response.data;
+};
+
 export const uploadMedia = async (file: File) => {
   try {
     const form = new FormData();
@@ -212,7 +228,8 @@ export const uploadMedia = async (file: File) => {
     const response = await axiosClient.post(mediaApi.UPLOAD, form);
     return response.data;
   } catch (error) {
-    return getErrorMessage(error);
+    toast.error(getErrorMessage(error));
+    return error;
   }
 };
 

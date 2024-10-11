@@ -29,7 +29,7 @@ import {
 } from "@components/ui/table";
 import { getSegments } from "@services/cmsServices";
 import { useQuery } from "@tanstack/react-query";
-import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
+import { Edit, FilterX, GitCompare } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get, isArray, map, isEmpty } from "lodash";
@@ -41,12 +41,11 @@ import {
   getCMSActionButtonColor,
   getCMSFilterStatusByRole,
   PAGINATION_CONFIG,
-  statusList,
+  ROLES_NAME,
 } from "@utils/common";
 import GenericPagination from "@components/ui/GenericPagination";
 import { useAuth } from "src/context/useAuth";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
-import { ROLES } from "@utils/user";
 import {
   Tooltip,
   TooltipContent,
@@ -55,6 +54,7 @@ import {
 } from "@components/ui/tooltip";
 import { Segment } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
+import useFilteredStatusList from "@hooks/useFilteredStatusList";
 export default function SegmentManager() {
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
@@ -65,8 +65,6 @@ export default function SegmentManager() {
   const [version, setVersion] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [customerType, setCustomerType] = useState<string>("");
-
-  const [selectedSegment, setSelectedSegment] = useState<Segment | null>(null);
 
   const queryString = generateQueryString({
     page_number: String(page),
@@ -81,6 +79,8 @@ export default function SegmentManager() {
     queryFn: () => getSegments(queryString),
   });
 
+  const statusOptions = useFilteredStatusList(user?.role);
+
   const {
     isDiffCheckerOpen,
     toggleDiffCheckerDrawer,
@@ -94,6 +94,7 @@ export default function SegmentManager() {
     resetDiffCheckerStates();
     updateDiffStates({
       entityType: "segment",
+      segment,
       currentVersion: null,
       newVersion: null,
     });
@@ -117,7 +118,6 @@ export default function SegmentManager() {
         componentIds: componentIds,
       });
     }
-    setSelectedSegment(segment);
     toggleDiffCheckerDrawer();
   };
 
@@ -140,15 +140,17 @@ export default function SegmentManager() {
         <CardContent>
           <TooltipProvider>
             <div className="flex flex-wrap gap-2">
-              <Button
-                disabled
-                onClick={() => {
-                  navigate("new");
-                }}
-                className="mb-4"
-              >
-                <Plus className="mr-2 h-4 w-4" /> Add Segment
-              </Button>
+              {/* {user?.role === ROLES_NAME.MAKER ? (
+                <Button
+                  disabled
+                  onClick={() => {
+                    navigate("new");
+                  }}
+                  className="mb-4"
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add Segment
+                </Button>
+              ) : null} */}
               <Select
                 onValueChange={(value) => {
                   setStatus(value);
@@ -162,7 +164,7 @@ export default function SegmentManager() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Status</SelectLabel>
-                    {statusList.map((item) => (
+                    {statusOptions.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
                       </SelectItem>
@@ -311,7 +313,7 @@ export default function SegmentManager() {
                               </TooltipContent>
                             </Tooltip>
 
-                            {user?.role === ROLES.maker ? (
+                            {user?.role === ROLES_NAME.MAKER ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
@@ -357,7 +359,6 @@ export default function SegmentManager() {
         isDrawerOpen={isDiffCheckerOpen}
         toggleDrawer={toggleDiffCheckerDrawer}
         action="CHANGES"
-        segment={selectedSegment}
       />
     </>
   );

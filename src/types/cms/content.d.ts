@@ -22,3 +22,9 @@ export interface ContentOrder {
   name: string;
   order: number;
 }
+
+export type UpdateContentPayload = Omit<ContentPayload, "payload"> & {
+  payload: {
+    [key: string]: string | unknown;
+  };
+};

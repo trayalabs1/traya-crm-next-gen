@@ -1,5 +1,6 @@
 import CustomDrawer from "@components/ui/Drawer/CustomDrawer";
 import DiffChecker, { DiffCheckerProps } from "./DiffChecker";
+import { memo } from "react";
 
 interface DiffCheckerDrawerProps extends DiffCheckerProps {
   isDrawerOpen: boolean;
@@ -11,6 +12,7 @@ const DiffCheckerDrawer = ({
   isDrawerOpen,
   toggleDrawer,
   direction = "right",
+  action,
 }: DiffCheckerDrawerProps) => {
   return (
     <CustomDrawer
@@ -18,9 +20,9 @@ const DiffCheckerDrawer = ({
       onClose={toggleDrawer}
       direction={direction}
     >
-      <DiffChecker toggleDrawer={toggleDrawer} />
+      <DiffChecker toggleDrawer={toggleDrawer} action={action} />
     </CustomDrawer>
   );
 };
 
-export default DiffCheckerDrawer;
+export default memo(DiffCheckerDrawer);

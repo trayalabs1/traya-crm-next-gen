@@ -82,7 +82,7 @@ export const statusList: CustomOptionType[] = [
   { label: "Draft", value: "draft" },
   { label: "Submitted", value: "submitted" },
   { label: "Approved By Checker", value: "approved_by_checker" },
-  { label: "Approved By Publisher", value: "approved_by_publisher" },
+  // { label: "Approved By Publisher", value: "approved_by_publisher" },
   { label: "Published", value: "published" },
 ];
 
@@ -222,13 +222,13 @@ export function mapToSelectOptions<T>(
   return map(items, (item) => {
     if (isObject(item) && valueKey && labelKey) {
       return {
-        label: String(get(item, labelKey)) || "",
-        value: String(get(item, valueKey)) || "",
+        label: String(get(item, labelKey) ?? "NA"),
+        value: String(get(item, valueKey) ?? "NA"),
       };
     } else {
       return {
-        label: String(item) || "",
-        value: String(item) || "",
+        label: String(item ?? "NA"),
+        value: String(item ?? "NA"),
       };
     }
   });
@@ -296,6 +296,13 @@ export function getErrorMessage(error: unknown): string {
 
   return errorMessage;
 }
+
+export function getSuccessMessage(data: unknown): string {
+  const DEFAULT_MESSAGE = "Sucess";
+  const successMessage: string = data ? DEFAULT_MESSAGE : DEFAULT_MESSAGE;
+  return successMessage;
+}
+
 export const delay = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
@@ -313,5 +320,5 @@ export const ROLES_IDS: { [key: string]: string } = {
   "00000000-0000-0000-0000-000000000026": ROLES_NAME.SUPER_ADMIN,
   "00000000-0000-0000-0000-000000000039": ROLES_NAME.MAKER,
   "00000000-0000-0000-0000-000000000040": ROLES_NAME.CHECKER,
-  "00000000-0000-0000-0000-000000000038": ROLES_NAME.PUBLISHER,
+  "00000000-0000-0000-0000-000000000041": ROLES_NAME.PUBLISHER,
 };

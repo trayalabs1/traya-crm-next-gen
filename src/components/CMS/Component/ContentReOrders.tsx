@@ -6,7 +6,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import Select, { SingleValue, GroupBase, SelectInstance } from "react-select";
 import { CustomOptionType, mapToSelectOptions } from "@utils/common";
 import { reactSelectSingleStyles } from "@components/ui/ReactSelect/reactSelect";
-import { isEmpty, isArray, get } from "lodash";
+import { isArray, get } from "lodash";
 import { Content, ContentOrder } from "cms";
 import { cn } from "@utils/shadcn";
 
@@ -46,10 +46,7 @@ function ContentOrders({
   );
 
   useEffect(() => {
-    if (
-      !isEmpty(selectedContents) &&
-      JSON.stringify(selectedContents) !== JSON.stringify(contents)
-    ) {
+    if (JSON.stringify(selectedContents) !== JSON.stringify(contents)) {
       setContents(selectedContents);
     }
   }, [selectedContents, contents]);

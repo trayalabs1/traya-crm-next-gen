@@ -30,12 +30,12 @@ import {
   X,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { useGetContents } from "src/queries";
 import { get } from "lodash";
 import { ContentMutationPayload } from "cms";
 import { generateQueryString } from "@utils/common";
 import _ from "lodash";
 import { uploadMedia } from "@services/cmsServices";
+import { useGetContents } from "@queries/cms/contents";
 
 const contentTypes = [
   "banner",
@@ -77,14 +77,11 @@ type DataItem = {
 };
 
 const formSchema = z.object({
-  payload: z.object({
-    name: z.string().min(1, "Name is required"),
-    type: z.enum(contentTypes as [string, ...string[]], {
-      errorMap: () => ({ message: "Please select a valid content type" }),
-    }),
-    data: z.record(z.unknown()),
+  name: z.string().min(1, "Name is required"),
+  type: z.enum(contentTypes as [string, ...string[]], {
+    errorMap: () => ({ message: "Please select a valid content type" }),
   }),
-  id: z.string().optional(),
+  data: z.record(z.unknown()),
 });
 
 const ImageViewerDialog = ({ imageUrl }: { imageUrl: string }) => (
@@ -99,8 +96,8 @@ const ImageViewerDialog = ({ imageUrl }: { imageUrl: string }) => (
         <DialogTitle>Image Preview</DialogTitle>
       </DialogHeader>
       <DialogDescription></DialogDescription>
-      <div className="mt-4">
-        <img src={imageUrl} alt="Preview" className="w-full h-auto" />
+      <div className="mt-4 mx-auto">
+        <img src={imageUrl} alt="Preview" className="w-auto h-auto" />
       </div>
     </DialogContent>
   </Dialog>
@@ -366,12 +363,9 @@ export default function CreateContent({
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      payload: {
-        name: "",
-        type: contentTypes[0],
-        data: {},
-      },
-      id: "",
+      name: "",
+      type: "",
+      data: {},
     },
   });
   const [data, setData] = useState<DataItem[]>([
@@ -429,8 +423,11 @@ export default function CreateContent({
       }
 
       onSubmit({
-        ...formData,
-        payload: { ...formData.payload, data: processedData },
+        id: id,
+        payload: {
+          ...formData,
+          data: processedData,
+        },
       });
     } catch (err) {
       setError("Invalid data structure");
@@ -486,11 +483,14 @@ export default function CreateContent({
 
   useEffect(() => {
     if (content) {
-      setValue("payload.name", get(content, ["name"], ""));
-      setValue("payload.type", get(content, ["type"], ""));
-      setValue("id", id || "");
+      setValue("name", get(content, ["name"], ""));
+      setValue("type", get(content, ["type"], ""));
 
-      const draftData = get(content, ["draft_data"], {});
+      let dataKey: "data" | "draft_data" = "draft_data";
+      if (content.status === "published") {
+        dataKey = "data";
+      }
+      const draftData = get(content, [dataKey], {}) || {};
 
       if (draftData) {
         const transformedData: DataItem[] = transformData(draftData);
@@ -499,6 +499,16 @@ export default function CreateContent({
     }
   }, [content, setValue, id]);
 
+  const isDisabled = !isNew;
+
+  const handleClear = () => {
+    if (isNew) {
+      setValue("name", "");
+      setValue("type", "");
+    }
+    setData([]);
+    setError("");
+  };
   return (
     <div className="w-3/4 mx-auto">
       <div className="flex flex-wrap justify-between my-6 ">
@@ -515,23 +525,32 @@ export default function CreateContent({
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Controller
-              name="payload.name"
+              name="name"
               control={control}
-              render={({ field }) => <Input id="name" {...field} />}
+              render={({ field }) => (
+                <Input
+                  id="name"
+                  placeholder="Enter the name of comtent"
+                  {...field}
+                  disabled={isDisabled}
+                />
+              )}
             />
-            {errors.payload?.name && (
-              <p className="text-sm text-red-500">
-                {errors.payload.name.message}
-              </p>
+            {errors?.name && (
+              <p className="text-sm text-red-500">{errors.name.message}</p>
             )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="type">Type</Label>
             <Controller
-              name="payload.type"
+              name="type"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={isDisabled}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select content type" />
                   </SelectTrigger>
@@ -545,8 +564,8 @@ export default function CreateContent({
                 </Select>
               )}
             />
-            {errors.payload?.type && (
-              <p className="text-sm text-red-500">{errors.payload.message}</p>
+            {errors?.type && (
+              <p className="text-sm text-red-500">{errors.type.message}</p>
             )}
           </div>
           <div className="space-y-2">
@@ -562,22 +581,27 @@ export default function CreateContent({
                 />
               </div>
             ))}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={addDataField}
-              className="mt-2"
-              disabled={data.some(
-                (item) => !item.key.trim() || (!item.value && !item.file),
-              )}
-            >
-              <Plus className="h-4 w-4 mr-2" /> Add Field
-            </Button>
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addDataField}
+            className="mt-2"
+            disabled={data.some(
+              (item) => !item.key.trim() || (!item.value && !item.file),
+            )}
+          >
+            <Plus className="h-4 w-4 mr-2" /> Add Field
+          </Button>
           {error && <p className="text-destructive text-sm">{error}</p>}
           <div className="flex flex-wrap gap-2 justify-end">
-            <Button type="reset" className="w-36" variant="outline">
+            <Button
+              type="reset"
+              className="w-36"
+              variant="outline"
+              onClick={handleClear}
+            >
               Clear
             </Button>
             <Button type="submit" className="w-36">

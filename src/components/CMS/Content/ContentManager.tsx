@@ -31,7 +31,6 @@ import {
 import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetContents } from "src/queries";
 import { get } from "lodash";
 import {
   contentTypeList,
@@ -40,7 +39,7 @@ import {
   getCMSActionButtonColor,
   getCMSFilterStatusByRole,
   PAGINATION_CONFIG,
-  statusList,
+  ROLES_NAME,
 } from "@utils/common";
 import {
   Tooltip,
@@ -48,11 +47,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@components/ui/tooltip";
-import { ROLES } from "@utils/user";
 import { useAuth } from "src/context/useAuth";
 import { Content } from "cms";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useDiffCheckerStore } from "../store/useCmsStore";
+import { useGetContents } from "@queries/cms/contents";
+import useFilteredStatusList from "@hooks/useFilteredStatusList";
 
 export default function ContentManager() {
   const navigate = useNavigate();
@@ -73,23 +73,44 @@ export default function ContentManager() {
     type: contentType,
   });
 
-  const [selectedContent, setSelectedContent] = useState<Content | null>(null);
+  const { data, isLoading } = useGetContents(queryString);
 
   const {
     isDiffCheckerOpen,
     toggleDiffCheckerDrawer,
-    // changeDiffType,
-
-    // updateDiffStates,
-
-    // fetchDiffComponentsBulk,
-    // fetchDiffContentsBulk,
+    updateDiffStates,
+    resetDiffCheckerStates,
   } = useDiffCheckerStore();
 
-  const { data, isLoading } = useGetContents(queryString);
-
   const handleDiffChecker = (content: Content) => {
-    setSelectedContent(content);
+    resetDiffCheckerStates();
+    updateDiffStates({
+      entityType: "segment",
+      content,
+      currentVersion: null,
+      newVersion: null,
+    });
+
+    // //Check for new segement, Not have data
+    // if (!(segment.status === "draft" && isEmpty(segment.data))) {
+    //   await fetchDiffSegment({
+    //     type: "currentVersion",
+    //     segmentId: segment.segment_id,
+    //   });
+    // }
+
+    // if (segment.status !== "published") {
+    //   const componentIds = map(
+    //     get(segment, ["draft_data", "component_ids"]),
+    //     "component_id",
+    //   );
+
+    //   await fetchDiffComponentsBulk({
+    //     type: "newVersion",
+    //     componentIds: componentIds,
+    //   });
+    // }
+    toggleDiffCheckerDrawer();
   };
 
   function handleClearFilter() {
@@ -99,6 +120,8 @@ export default function ContentManager() {
     setVersion("");
     setContentType("");
   }
+
+  const statusOptions = useFilteredStatusList(user?.role);
 
   if (isLoading) return <TableSkeleton />;
   return (
@@ -111,15 +134,17 @@ export default function ContentManager() {
         <CardContent>
           <TooltipProvider>
             <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => {
-                  navigate("new");
-                }}
-                className="mb-4"
-                disabled={user?.role !== "maker"}
-              >
-                <Plus className="mr-2 h-4 w-4" /> Create Content
-              </Button>
+              {user?.role === ROLES_NAME.MAKER ? (
+                <Button
+                  onClick={() => {
+                    navigate("new");
+                  }}
+                  className="mb-4"
+                  disabled={user?.role !== "maker"}
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Create Content
+                </Button>
+              ) : null}
               <Select
                 onValueChange={(value) => {
                   setStatus(value);
@@ -133,7 +158,7 @@ export default function ContentManager() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Status</SelectLabel>
-                    {statusList.map((item) => (
+                    {statusOptions.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
                       </SelectItem>
@@ -269,7 +294,7 @@ export default function ContentManager() {
                             </TooltipContent>
                           </Tooltip>
 
-                          {user?.role === ROLES.maker ? (
+                          {user?.role === ROLES_NAME.MAKER ? (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
@@ -315,7 +340,6 @@ export default function ContentManager() {
         isDrawerOpen={isDiffCheckerOpen}
         toggleDrawer={toggleDiffCheckerDrawer}
         action="CHANGES"
-        content={selectedContent}
       />
     </>
   );

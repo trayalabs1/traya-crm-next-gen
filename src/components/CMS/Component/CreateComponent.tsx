@@ -3,7 +3,6 @@ import { Input } from "@components/ui/input";
 import Select from "react-select";
 import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { useContentBulk, useGetContents } from "src/queries";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -38,6 +37,7 @@ import { useDiffCheckerStore } from "../store/useCmsStore";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useComponentBulk } from "src/queries/cms/component";
 import { toast } from "@hooks/use-toast";
+import { useContentBulk, useGetPublishedContents } from "@queries/cms/contents";
 // import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
@@ -66,9 +66,10 @@ export default function CreateComponent({
   const handleSubmit = (data: FormComponentSchemaType) => {
     onSubmit({ payload: data, id });
   };
-  const { data: contents } = useGetContents();
 
-  const contentsData = _.get(contents, ["mainData"]) || [];
+  const { data: contents } = useGetPublishedContents();
+
+  const contentsData = contents ?? [];
 
   const form = useForm<FormComponentSchemaType>({
     resolver: zodResolver(FormComponentSchema),
@@ -182,6 +183,17 @@ export default function CreateComponent({
       });
     }
     toggleDiffCheckerDrawer();
+  }
+
+  function handleFormClear() {
+    if (!isNew) {
+      form.resetField("data", {
+        defaultValue: { contents: [], title: "", description: "" },
+      });
+      form.setValue("data.contents", []);
+    } else {
+      form.reset(defaultValues);
+    }
   }
   return (
     <div className="w-3/4 mx-auto">
@@ -375,7 +387,7 @@ export default function CreateComponent({
                 type="reset"
                 className="w-36"
                 variant="outline"
-                onClick={() => form.reset(defaultValues)}
+                onClick={handleFormClear}
               >
                 Clear
               </Button>

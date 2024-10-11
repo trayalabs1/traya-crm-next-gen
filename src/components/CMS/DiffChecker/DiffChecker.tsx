@@ -17,7 +17,6 @@ import {
   Segment,
 } from "cms";
 import { useAuth } from "src/context/useAuth";
-import { ROLES } from "@utils/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   approvalByChecker,
@@ -32,19 +31,13 @@ import {
 import _ from "lodash";
 import { EntityError } from "./EntityError";
 import { useDiffCheckerStore } from "../store/useCmsStore";
+import { ROLES_NAME } from "@utils/common";
 export interface DiffCheckerProps {
   action?: "VIEW" | "CHANGES";
   toggleDrawer: () => void;
-  segment?: Segment | null;
-  component?: Component | null;
-  content?: Content | null;
 }
 
-function getDiffEntityName({
-  segment,
-  component,
-  content,
-}: Pick<DiffCheckerProps, "segment" | "component" | "content">) {
+function getDiffEntityName({ segment, component, content }: Entities) {
   if (segment) {
     return segment.name;
   } else if (component) {
@@ -71,9 +64,6 @@ function getEntity(entities: Entities, diffEntity: EntitiyType | null) {
 const DiffChecker: React.FC<DiffCheckerProps> = ({
   toggleDrawer,
   action = "VIEW",
-  segment,
-  component,
-  content,
 }) => {
   const { user } = useAuth();
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false);
@@ -87,6 +77,9 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     currentVersion,
     newVersion,
     entityType: diffEntity,
+    component,
+    segment,
+    content,
   } = useDiffCheckerStore();
 
   const handleApprove = async () => {
@@ -357,7 +350,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     <>
       <div>
         <h2 className="text-xl font-bold font-openSans text-nowrap space-y-2">
-          {newVersion && !currentVersion ? "Phone Screen View" : "Diff Checker"}
+          Diff Checker
         </h2>
         {action === "CHANGES" ? (
           <div className="flex justify-end space-x-4 my-2">
@@ -397,7 +390,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
               />
             ) : null}
 
-            {ROLES.maker === user?.role && entity?.status === "draft" ? (
+            {ROLES_NAME.MAKER === user?.role && entity?.status === "draft" ? (
               <CommonDialog
                 isOpen={isSubmitDialogOpen}
                 setIsDialogOpen={setIsSubmitDialogOpen}
