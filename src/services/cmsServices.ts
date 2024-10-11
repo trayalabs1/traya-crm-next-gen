@@ -11,6 +11,7 @@ import {
   SegmentComponentsContentsExpandedType,
   SegmentMutationBody,
   ComponentMutationBody,
+  UpdateContentPayload,
 } from "cms";
 import { axiosClient } from "@utils/axiosInterceptor";
 import {
@@ -46,7 +47,7 @@ export const createContent = async (
 export const updateContent = async ({
   id,
   payload,
-}: ContentMutationPayload): Promise<Content> => {
+}: UpdateContentPayload): Promise<Content> => {
   const response = await axiosClient.put(contentsApi.UPDATE_CONTENT(id), {
     data: payload,
   });

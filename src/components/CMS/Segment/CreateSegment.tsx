@@ -116,8 +116,12 @@ export default function CreateSegment({
     defaultValues,
   });
 
-  const handleReset = () => {
-    form.reset(defaultValues);
+  const handleClearReset = () => {
+    if (!isNew) {
+      form.setValue("components", []);
+    } else {
+      form.reset(defaultValues);
+    }
   };
   useEffect(() => {
     if (!isNew) {
@@ -631,7 +635,7 @@ export default function CreateSegment({
                 type="reset"
                 className="w-36"
                 variant="outline"
-                onClick={handleReset}
+                onClick={handleClearReset}
               >
                 Clear
               </Button>

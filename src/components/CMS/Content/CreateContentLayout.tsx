@@ -3,7 +3,8 @@ import CreateContent from "./CreateContent";
 import { useToast } from "@hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createContent, updateContent } from "@services/cmsServices";
-import { ContentMutationPayload } from "cms";
+import { ContentMutationPayload, UpdateContentPayload } from "cms";
+import { get } from "lodash";
 
 function CreateContentLayout() {
   const { toast } = useToast();
@@ -38,7 +39,7 @@ function CreateContentLayout() {
   });
 
   const updateContentQuery = useMutation({
-    mutationFn: (data: ContentMutationPayload) => updateContent(data),
+    mutationFn: (data: UpdateContentPayload) => updateContent(data),
     onSuccess: () => handleSuccess({ message: "Content update successfully." }),
     onError: () => handleError({ message: "Unable to update Content." }),
   });
@@ -47,7 +48,9 @@ function CreateContentLayout() {
     if (id === "new") {
       await createContentQuery.mutateAsync(payload);
     } else {
-      await updateContentQuery.mutateAsync({ id, payload });
+      // Delete the name and type for update content
+      const updateBody = get(payload, ["data"]);
+      await updateContentQuery.mutateAsync({ id, payload: updateBody });
     }
   };
   const onBack = () => {

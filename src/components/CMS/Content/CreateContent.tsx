@@ -499,6 +499,16 @@ export default function CreateContent({
     }
   }, [content, setValue, id]);
 
+  const isDisabled = !isNew;
+
+  const handleClear = () => {
+    if (isNew) {
+      setValue("name", "");
+      setValue("type", "");
+    }
+    setData([]);
+    setError("");
+  };
   return (
     <div className="w-3/4 mx-auto">
       <div className="flex flex-wrap justify-between my-6 ">
@@ -517,7 +527,14 @@ export default function CreateContent({
             <Controller
               name="name"
               control={control}
-              render={({ field }) => <Input id="name" {...field} />}
+              render={({ field }) => (
+                <Input
+                  id="name"
+                  placeholder="Enter the name of comtent"
+                  {...field}
+                  disabled={isDisabled}
+                />
+              )}
             />
             {errors?.name && (
               <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -529,7 +546,11 @@ export default function CreateContent({
               name="type"
               control={control}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={isDisabled}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select content type" />
                   </SelectTrigger>
@@ -575,7 +596,12 @@ export default function CreateContent({
           </Button>
           {error && <p className="text-destructive text-sm">{error}</p>}
           <div className="flex flex-wrap gap-2 justify-end">
-            <Button type="reset" className="w-36" variant="outline">
+            <Button
+              type="reset"
+              className="w-36"
+              variant="outline"
+              onClick={handleClear}
+            >
               Clear
             </Button>
             <Button type="submit" className="w-36">
