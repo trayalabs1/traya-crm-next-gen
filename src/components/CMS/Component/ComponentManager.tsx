@@ -40,6 +40,7 @@ import {
   getCMSActionButtonColor,
   getCMSFilterStatusByRole,
   PAGINATION_CONFIG,
+  ROLES_NAME,
 } from "@utils/common";
 import GenericPagination from "@components/ui/GenericPagination";
 import {
@@ -53,13 +54,8 @@ import { useAuth } from "src/context/useAuth";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { Component, MobileComponent } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
-const statusList = [
-  { label: "Draft", value: "draft" },
-  { label: "Submitted", value: "submitted" },
-  { label: "Approved By Checker", value: "approved_by_checker" },
-  { label: "Approved By Publisher", value: "approved_by_publisher" },
-  { label: "Published", value: "published" },
-];
+import useFilteredStatusList from "@hooks/useFilteredStatusList";
+
 export default function ComponentManager() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -69,9 +65,6 @@ export default function ComponentManager() {
   const [status, setStatus] = useState<string>(DEFAULT_STATUS);
   const [gender, setGender] = useState<string>("");
   const [version, setVersion] = useState<string>("");
-  const [selectedComponent, setSelectedComponent] = useState<Component | null>(
-    null,
-  );
 
   const queryString = generateQueryString({
     page_number: String(page),
@@ -99,6 +92,7 @@ export default function ComponentManager() {
     resetDiffCheckerStates();
     updateDiffStates({
       entityType: "component",
+      component: component,
       currentVersion: null,
       newVersion: null,
     });
@@ -147,7 +141,6 @@ export default function ComponentManager() {
         updateDiffStates({ newVersion: transformComponentData });
       }
     }
-    setSelectedComponent(component);
     toggleDiffCheckerDrawer();
   };
 
@@ -158,6 +151,8 @@ export default function ComponentManager() {
     setVersion("");
     setGender("");
   }
+
+  const statusOptions = useFilteredStatusList(user?.role);
 
   if (isLoading) return <TableSkeleton />;
 
@@ -171,15 +166,17 @@ export default function ComponentManager() {
         <CardContent>
           <TooltipProvider>
             <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => {
-                  navigate("new");
-                }}
-                className="mb-4"
-                disabled={user?.role !== "maker"}
-              >
-                <Plus className="mr-2 h-4 w-4" /> Create Component
-              </Button>
+              {user?.role === ROLES_NAME.MAKER ? (
+                <Button
+                  onClick={() => {
+                    navigate("new");
+                  }}
+                  className="mb-4"
+                  disabled={user?.role !== "maker"}
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Create Component
+                </Button>
+              ) : null}
               <Select
                 onValueChange={(value) => {
                   setStatus(value);
@@ -193,7 +190,7 @@ export default function ComponentManager() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Status</SelectLabel>
-                    {statusList.map((item) => (
+                    {statusOptions.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
                       </SelectItem>
@@ -378,7 +375,6 @@ export default function ComponentManager() {
         isDrawerOpen={isDiffCheckerOpen}
         toggleDrawer={toggleDiffCheckerDrawer}
         action="CHANGES"
-        component={selectedComponent}
       />
     </>
   );

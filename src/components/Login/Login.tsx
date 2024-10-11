@@ -22,14 +22,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@components/ui/form";
-import { useToast } from "@hooks/use-toast";
 import { useAuthStore } from "./store/useAuthStore";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
-  const { toast } = useToast();
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -45,20 +44,12 @@ export default function LoginPage() {
       if (error) {
         throw new Error(error);
       }
-      toast({
-        description: "OTP send to your email.",
-        duration: 1000,
-      });
       navigate("/verify-account", { state: { ...data } });
     } catch (error: unknown) {
       console.error("Login failed:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Login failed";
-      toast({
-        description: errorMessage,
-        variant: "destructive",
-        duration: 1000,
-      });
+      toast.error(errorMessage);
     }
   };
 

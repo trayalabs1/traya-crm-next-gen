@@ -82,7 +82,7 @@ export const statusList: CustomOptionType[] = [
   { label: "Draft", value: "draft" },
   { label: "Submitted", value: "submitted" },
   { label: "Approved By Checker", value: "approved_by_checker" },
-  { label: "Approved By Publisher", value: "approved_by_publisher" },
+  // { label: "Approved By Publisher", value: "approved_by_publisher" },
   { label: "Published", value: "published" },
 ];
 
@@ -320,5 +320,5 @@ export const ROLES_IDS: { [key: string]: string } = {
   "00000000-0000-0000-0000-000000000026": ROLES_NAME.SUPER_ADMIN,
   "00000000-0000-0000-0000-000000000039": ROLES_NAME.MAKER,
   "00000000-0000-0000-0000-000000000040": ROLES_NAME.CHECKER,
-  "00000000-0000-0000-0000-000000000038": ROLES_NAME.PUBLISHER,
+  "00000000-0000-0000-0000-000000000041": ROLES_NAME.PUBLISHER,
 };

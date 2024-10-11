@@ -3,7 +3,14 @@ import { toast } from "@hooks/use-toast";
 import { axiosClient } from "@utils/axiosInterceptor";
 import { getErrorMessage } from "@utils/common";
 import { AxiosResponse } from "axios";
-import { EntitiyType, MobileComponent, MobileContent } from "cms";
+import {
+  Component,
+  Content,
+  EntitiyType,
+  MobileComponent,
+  MobileContent,
+  Segment,
+} from "cms";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 interface DiffCheckerActionAndState extends DiffCheckerState {
@@ -22,9 +29,9 @@ interface DiffCheckerState {
   isDiffCheckerOpen: boolean;
   currentVersion: MobileComponent[] | null;
   newVersion: MobileComponent[] | null;
-  segment?: object | null;
-  component?: object | null;
-  content?: object | null;
+  segment?: Segment | null;
+  component?: Component | null;
+  content?: Content | null;
   loading: boolean;
   error: null | string;
 }
@@ -54,82 +61,86 @@ const initialStates: DiffCheckerState = {
   error: null,
 };
 export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
-  devtools((set, get) => ({
-    ...initialStates,
-    toggleDiffCheckerDrawer: () => {
-      const { isDiffCheckerOpen } = get();
-      set({ isDiffCheckerOpen: !isDiffCheckerOpen });
-    },
+  devtools(
+    (set, get) => ({
+      ...initialStates,
+      toggleDiffCheckerDrawer: () => {
+        const { isDiffCheckerOpen } = get();
+        set({ isDiffCheckerOpen: !isDiffCheckerOpen });
+      },
 
-    resetDiffCheckerStates: () => {
-      set(initialStates);
-    },
-    updateDiffStates: (newState: Partial<DiffCheckerState>) => {
-      set((state) => ({
-        ...state,
-        ...newState,
-      }));
-    },
+      resetDiffCheckerStates: () => {
+        set(initialStates);
+      },
+      updateDiffStates: (newState: Partial<DiffCheckerState>) => {
+        set((state) => ({
+          ...state,
+          ...newState,
+        }));
+      },
 
-    fetchDiffSegment: async ({ segmentId, type }: FetchDiffSegment) => {
-      set({ loading: true, error: null });
-      try {
-        const response: AxiosResponse<MobileComponent[]> =
-          await axiosClient.get(
-            segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, true),
-          );
+      fetchDiffSegment: async ({ segmentId, type }: FetchDiffSegment) => {
+        set({ loading: true, error: null });
+        try {
+          const response: AxiosResponse<MobileComponent[]> =
+            await axiosClient.get(
+              segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, true),
+            );
 
-        const obj = { [type]: response.data };
-        set({ ...obj, loading: false });
-      } catch (error: unknown) {
-        set({
-          error: getErrorMessage(error),
-          loading: false,
-        });
-      }
-    },
+          const obj = { [type]: response.data };
+          set({ ...obj, loading: false });
+        } catch (error: unknown) {
+          set({
+            error: getErrorMessage(error),
+            loading: false,
+          });
+        }
+      },
 
-    fetchDiffComponentsBulk: async ({
-      componentIds,
-      type,
-    }: FetchDiffComponentsBulk) => {
-      set({ loading: true, error: null });
-      try {
-        const response: AxiosResponse<MobileComponent[]> =
-          await axiosClient.post(
-            componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
-            { componentIds: componentIds },
-          );
+      fetchDiffComponentsBulk: async ({
+        componentIds,
+        type,
+      }: FetchDiffComponentsBulk) => {
+        set({ loading: true, error: null });
+        try {
+          const response: AxiosResponse<MobileComponent[]> =
+            await axiosClient.post(
+              componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
+              { componentIds: componentIds },
+            );
 
-        const obj = { [type]: response.data };
-        set({ ...obj, loading: false });
-      } catch (error: unknown) {
-        set({
-          error: getErrorMessage(error),
-          loading: false,
-        });
-      }
-    },
-    fetchDiffContentsBulk: async ({
-      contentIds,
-    }: FetchDiffContentsBulk): Promise<
-      AxiosResponse<MobileContent[]> | undefined
-    > => {
-      try {
-        const response: AxiosResponse<MobileContent[]> = await axiosClient.post(
-          contentsApi.GET_CONTENTS_BULK_BY_CONTENT_IDS,
-          { contentIds },
-        );
+          const obj = { [type]: response.data };
+          set({ ...obj, loading: false });
+        } catch (error: unknown) {
+          set({
+            error: getErrorMessage(error),
+            loading: false,
+          });
+        }
+      },
+      fetchDiffContentsBulk: async ({
+        contentIds,
+      }: FetchDiffContentsBulk): Promise<
+        AxiosResponse<MobileContent[]> | undefined
+      > => {
+        try {
+          const response: AxiosResponse<MobileContent[]> =
+            await axiosClient.post(
+              contentsApi.GET_CONTENTS_BULK_BY_CONTENT_IDS,
+              { contentIds },
+            );
 
-        return response;
-      } catch (error) {
-        toast({
-          description: getErrorMessage(error),
-          variant: "destructive",
-          duration: 1000,
-        });
-        return undefined;
-      }
-    },
-  })),
+          return response;
+        } catch (error) {
+          toast({
+            description: getErrorMessage(error),
+            variant: "destructive",
+            duration: 1000,
+          });
+          return undefined;
+        }
+      },
+    }),
+    { name: "DiffChecker" },
+  ),
 );

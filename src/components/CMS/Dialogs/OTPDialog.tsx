@@ -22,6 +22,7 @@ import {
   InputOTPSlot,
 } from "@components/ui/input-otp";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isDevelopment } from "@utils/envUtil";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -76,7 +77,7 @@ export function OTPDialog({
   }, [isOpen, countdown]);
 
   useEffect(() => {
-    if (import.meta.env.DEV) {
+    if (isDevelopment()) {
       if (otp) {
         form.setValue("otp", otp, { shouldValidate: true });
       }

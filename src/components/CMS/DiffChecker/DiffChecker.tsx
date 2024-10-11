@@ -35,16 +35,9 @@ import { useDiffCheckerStore } from "../store/useCmsStore";
 export interface DiffCheckerProps {
   action?: "VIEW" | "CHANGES";
   toggleDrawer: () => void;
-  segment?: Segment | null;
-  component?: Component | null;
-  content?: Content | null;
 }
 
-function getDiffEntityName({
-  segment,
-  component,
-  content,
-}: Pick<DiffCheckerProps, "segment" | "component" | "content">) {
+function getDiffEntityName({ segment, component, content }: Entities) {
   if (segment) {
     return segment.name;
   } else if (component) {
@@ -71,9 +64,6 @@ function getEntity(entities: Entities, diffEntity: EntitiyType | null) {
 const DiffChecker: React.FC<DiffCheckerProps> = ({
   toggleDrawer,
   action = "VIEW",
-  segment,
-  component,
-  content,
 }) => {
   const { user } = useAuth();
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false);
@@ -87,6 +77,9 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     currentVersion,
     newVersion,
     entityType: diffEntity,
+    component,
+    segment,
+    content,
   } = useDiffCheckerStore();
 
   const handleApprove = async () => {
