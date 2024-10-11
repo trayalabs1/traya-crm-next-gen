@@ -5,7 +5,7 @@ export const ContentSchema = z.object({
   content_id: z.string(),
   name: z.string(),
   type: z.enum(["banner"]),
-  status: z.enum(["draft"]),
+  status: z.enum(['draft', 'submitted', 'approved_by_checker', 'approved_by_publisher', 'published']),
   current_version: z.number(),
   draft_version: z.number(),
   draft_data: z.object({

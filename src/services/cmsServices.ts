@@ -26,6 +26,7 @@ import {
 import { EntitiyActionBody } from "cms";
 import { AxiosResponse } from "axios";
 import { getErrorMessage } from "@utils/common";
+import { toast } from "react-toastify";
 
 export const getContents = async (queryString?: string): Promise<Contents> => {
   const response = await axiosClient.get(contentsApi.GET_CONTENTS(queryString));
@@ -212,7 +213,8 @@ export const uploadMedia = async (file: File) => {
     const response = await axiosClient.post(mediaApi.UPLOAD, form);
     return response.data;
   } catch (error) {
-    return getErrorMessage(error);
+    toast.error(getErrorMessage(error));
+    return error;
   }
 };
 

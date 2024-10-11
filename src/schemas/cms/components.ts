@@ -27,7 +27,7 @@ export const componentSchema = z.object({
   _id: z.string(),
   component_id: z.string(),
   name: z.string(),
-  status: z.enum(["draft", "published"]),
+  status: z.enum(['draft', 'submitted', 'approved_by_checker', 'approved_by_publisher', 'published']),
   gender: z.enum(["All", "M", "F"]),
   language: z.enum(["All", "ENGLISH", "HINDI"]),
   component_type: z.enum(["Static", "Dynamic"]),

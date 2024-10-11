@@ -296,6 +296,13 @@ export function getErrorMessage(error: unknown): string {
 
   return errorMessage;
 }
+
+export function getSuccessMessage(data: unknown): string {
+  const DEFAULT_MESSAGE = "Sucess";
+  const successMessage: string = data ? DEFAULT_MESSAGE : DEFAULT_MESSAGE;
+  return successMessage;
+}
+
 export const delay = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
