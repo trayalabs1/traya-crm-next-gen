@@ -230,8 +230,25 @@ export const uploadMedia = async (file: File) => {
     return response.data;
   } catch (error) {
     toast.error(getErrorMessage(error));
-    return error;
+    throw error;
   }
+};
+
+export const uploadMutipleMedia = async (files: File[]): Promise<string[]> => {
+  if (!files.length) return [];
+  const uploadPromises = files.map(async (file) => {
+    try {
+      const bucketLink = await uploadMedia(file);
+      return bucketLink;
+    } catch (error) {
+      console.error(`Failed to upload ${file.name}:`, error);
+      return null;
+    }
+  });
+
+  const results = await Promise.all(uploadPromises);
+
+  return results.filter((link): link is string => link !== null);
 };
 
 export const discard = async (data: object) => {

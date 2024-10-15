@@ -350,296 +350,398 @@ export default function CreateSegment({
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Gender</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="gender"
-                          onBlur={onBlur}
-                          onChange={(newValue) => {
-                            setGender(newValue?.value);
-                            onChange(newValue);
-                          }}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectSingleStyles}
-                          placeholder="Select Gender"
-                          options={genderList}
-                          value={value || null}
-                        />
-                      </FormControl>
+              {isNew || !_.isEmpty(form.getValues("customerType")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="gender"
+                            onBlur={onBlur}
+                            onChange={(newValue) => {
+                              setGender(newValue?.value);
+                              onChange(newValue);
+                            }}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectSingleStyles}
+                            placeholder="Gender"
+                            options={genderList}
+                            value={value || null}
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="formStatus"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Form Status</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="formStatus"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectStyles}
-                          placeholder="Select Form Status"
-                          options={formStatus}
-                          value={value || null}
-                        />
-                      </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
+              {isNew || !_.isEmpty(form.getValues("formStatus")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="formStatus"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Form Status</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="formStatus"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectStyles}
+                            placeholder="Form Status"
+                            options={formStatus}
+                            value={value || null}
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="weeksInProgram"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Select Weeks in Program</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="weeksInProgram"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectStyles}
-                          placeholder="Select weeks..."
-                          options={weeks}
-                          value={value}
-                          isMulti
-                        />
-                      </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
+              {isNew || form.getValues("weeksInProgram")?.length ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="weeksInProgram"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Weeks in Program</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="weeksInProgram"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectStyles}
+                            placeholder="weeks..."
+                            options={weeks}
+                            value={value}
+                            isMulti
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="orderCounts"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Orders Count</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter orders count"
-                          {...field}
-                          disabled={!isNew}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="daysSinceLatestFormFilled"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Days Since Latest Form Filled</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="daysSinceLatestFormFilled"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectStyles}
-                          placeholder="Select Latest Form Filled"
-                          options={daysSinceLatestFormFilled}
-                          value={value || null}
-                        />
-                      </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
+              {isNew || _.isEmpty(form.getValues("orderCounts")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="orderCounts"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Orders Count</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter orders count"
+                            {...field}
+                            disabled={!isNew}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
+              {isNew ||
+              !_.isEmpty(form.getValues("daysSinceLatestFormFilled")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="daysSinceLatestFormFilled"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Days Since Latest Form Filled</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="daysSinceLatestFormFilled"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectStyles}
+                            placeholder="Latest Form Filled"
+                            options={daysSinceLatestFormFilled}
+                            value={value || null}
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="stages"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Stages</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="stages"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectStyles}
-                          placeholder="Select Stage"
-                          options={stagesList}
-                          value={value || null}
-                          isMulti
-                        />
-                      </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
+              {isNew || !_.isEmpty(form.getValues("stages")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="stages"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Stages</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="stages"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectStyles}
+                            placeholder="Stage"
+                            options={stagesList}
+                            value={value || null}
+                            isMulti
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="streaks"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Streak</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="streaks"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectStyles}
-                          placeholder="Select streaks"
-                          options={streaks}
-                          value={value || null}
-                          isMulti
-                        />
-                      </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="coins"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Coins</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="streak"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectStyles}
-                          placeholder="Select coins"
-                          options={coins}
-                          value={value || null}
-                        />
-                      </FormControl>
+              {isNew || !_.isEmpty(form.getValues("streaks")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="streaks"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Streak</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="streaks"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectStyles}
+                            placeholder="streaks"
+                            options={streaks}
+                            value={value || null}
+                            isMulti
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="phases"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Phases</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="phases"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectStyles}
-                          placeholder="Select phases"
-                          options={phases}
-                          value={value || null}
-                        />
-                      </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
+              {isNew || !_.isEmpty(form.getValues("coins")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="coins"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Coins</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="coins"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectStyles}
+                            placeholder="coins"
+                            options={coins}
+                            value={value || null}
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
+              {isNew || !_.isEmpty(form.getValues("phases")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="phases"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Phases</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="phases"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectStyles}
+                            placeholder="phases"
+                            options={phases}
+                            value={value || null}
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="customerType"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Select Customer Type</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="customerType"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectSingleStyles}
-                          placeholder="Select Customer Type"
-                          options={customerTypeList}
-                          value={value}
-                        />
-                      </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              {isNew || !_.isEmpty(form.getValues("customerType")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="customerType"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Customer Type</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="customerType"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectSingleStyles}
+                            placeholder="Customer Type"
+                            options={customerTypeList}
+                            value={value}
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
 
-              <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="recommendedProducts"
-                  render={({ field: { onChange, onBlur, ref, value } }) => (
-                    <FormItem>
-                      <FormLabel>Select Recommended Products</FormLabel>
-                      <FormControl>
-                        <Select
-                          id="recommendedProducts"
-                          onBlur={onBlur}
-                          onChange={onChange}
-                          ref={ref}
-                          isDisabled={!isNew}
-                          styles={reactSelectStyles}
-                          placeholder="Select Recommended Products..."
-                          options={products}
-                          value={value}
-                          isMulti
-                        />
-                      </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              {isNew || !_.isEmpty(form.getValues("recommendedProducts")) ? (
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="recommendedProducts"
+                    render={({ field: { onChange, onBlur, ref, value } }) => (
+                      <FormItem>
+                        <FormLabel>Recommended Products</FormLabel>
+                        <FormControl>
+                          <Select
+                            id="recommendedProducts"
+                            onBlur={onBlur}
+                            onChange={onChange}
+                            ref={ref}
+                            isDisabled={!isNew}
+                            styles={reactSelectStyles}
+                            placeholder="Recommended Products..."
+                            options={products}
+                            value={value}
+                            isMulti
+                            components={
+                              !isNew
+                                ? {
+                                    DropdownIndicator: () => null,
+                                    IndicatorSeparator: () => null,
+                                  }
+                                : undefined
+                            }
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : null}
             </div>
 
             <div className="space-y-2">
