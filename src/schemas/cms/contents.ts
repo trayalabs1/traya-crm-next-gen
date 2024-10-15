@@ -14,9 +14,8 @@ export const ContentSchema = z.object({
   ]),
   current_version: z.number(),
   draft_version: z.number(),
-  draft_data: z.object({
-    key: z.string(),
-  }),
+  data: z.record(z.string(), z.unknown()),
+  draft_data: z.record(z.string(), z.unknown()),
   created_at: z.string(),
   updated_at: z.string(),
   __v: z.number(),

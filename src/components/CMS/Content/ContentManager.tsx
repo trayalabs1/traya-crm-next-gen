@@ -85,10 +85,12 @@ export default function ContentManager() {
   const handleDiffChecker = (content: Content) => {
     resetDiffCheckerStates();
     updateDiffStates({
-      entityType: "segment",
+      entityType: "content",
       content,
       currentVersion: null,
       newVersion: null,
+      data: content.data,
+      draftData: content.draft_data,
     });
 
     // //Check for new segement, Not have data
@@ -281,7 +283,6 @@ export default function ContentManager() {
                               <Button
                                 variant="outline"
                                 size="icon"
-                                disabled
                                 className={getCMSActionButtonColor("compare")}
                                 onClick={() => handleDiffChecker(content)}
                               >
