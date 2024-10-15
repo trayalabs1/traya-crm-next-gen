@@ -28,6 +28,11 @@ export type ComponentMutationBody = {
   description?: string;
   contents?: ContentOrder[];
 };
+export type ComponentMutationUpdateBody = {
+  title?: string;
+  description?: string;
+  contents?: ContentOrder[];
+};
 export type ComponentContentsType = z.infer<typeof ComponentContentsSchema>;
 
 export interface ComponentOrder {

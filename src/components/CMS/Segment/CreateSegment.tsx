@@ -266,10 +266,25 @@ export default function CreateSegment({
       componentsBulkData = await componentBulkQuery.refetch();
     }
 
+    const modifiedSegment = form.getValues();
+    const existingSegment = _.get(segment, ["mainData", 0]);
+    const draftData = {
+      component_ids: _.get(modifiedSegment, ["components"]),
+    };
+
+    const data = {
+      component_ids:
+        existingSegment?.status !== "published"
+          ? existingSegment?.draft_data
+          : existingSegment.data,
+    };
+
     updateDiffStates({
       entityType: "segment",
       currentVersion: currentVersiontransformedData,
       newVersion: componentsBulkData?.data ?? null,
+      data,
+      draftData,
     });
     toggleDiffCheckerDrawer();
 

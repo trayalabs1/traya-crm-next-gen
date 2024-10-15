@@ -34,6 +34,8 @@ interface DiffCheckerState {
   content?: Content | null;
   loading: boolean;
   error: null | string;
+  data: object | null;
+  draftData?: object | null;
 }
 
 interface FetchDiffSegment {
@@ -59,6 +61,8 @@ const initialStates: DiffCheckerState = {
   content: null,
   loading: false,
   error: null,
+  data: null,
+  draftData: null,
 };
 export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
   devtools(
@@ -112,10 +116,17 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
           const obj = { [type]: response.data };
           set({ ...obj, loading: false });
         } catch (error: unknown) {
+          const errorMessage = getErrorMessage(error);
           set({
-            error: getErrorMessage(error),
+            error: errorMessage,
             loading: false,
           });
+          toast({
+            description: errorMessage,
+            variant: "destructive",
+            duration: 1000,
+          });
+          return undefined;
         }
       },
       fetchDiffContentsBulk: async ({

@@ -97,6 +97,8 @@ export default function SegmentManager() {
       segment,
       currentVersion: null,
       newVersion: null,
+      data: segment.data,
+      draftData: segment.draft_data,
     });
 
     //Check for new segement, Not have data

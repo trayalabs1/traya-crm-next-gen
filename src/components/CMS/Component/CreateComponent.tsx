@@ -23,7 +23,7 @@ import {
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { getComponents } from "@services/cmsServices";
 import { useEffect, useState } from "react";
-import _ from "lodash";
+import _, { get } from "lodash";
 import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
 import {
   componentTypeList,
@@ -148,7 +148,8 @@ export default function CreateComponent({
     let componentsBulkData: UseQueryResult<MobileComponent[]> | null = null;
     let contentsBulkData: UseQueryResult<MobileContent[]> | null = null;
 
-    componentsBulkData = await componentBulkQuery.refetch();
+    if (!isNew) componentsBulkData = await componentBulkQuery.refetch();
+
     contentsBulkData = await contentBulkQuery.refetch();
     const componentData = _.get(component, ["mainData", 0]);
     const newComponentData = form.getValues();
@@ -162,10 +163,25 @@ export default function CreateComponent({
       },
     ];
 
+    const currentComponent = form.getValues();
+    const draftData = {
+      title: get(currentComponent, ["data", "title"]),
+      description: get(currentComponent, ["data", "description"]),
+      content_ids: get(currentComponent, ["data", "contents"]),
+    };
+
+    const data = {
+      title: get(componentBulkQuery, ["data", 0, "title"]),
+      description: get(componentBulkQuery, ["data", 0, "description"]),
+      content_ids: get(componentBulkQuery, ["data", 0, "contents"]),
+    };
+
     updateDiffStates({
       entityType: "component",
-      currentVersion: componentsBulkData.data,
+      currentVersion: componentsBulkData?.data,
       newVersion: newVersiontransformedData,
+      data,
+      draftData,
     });
 
     if (componentsBulkData && componentsBulkData.isError) {

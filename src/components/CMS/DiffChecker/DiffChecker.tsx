@@ -32,6 +32,7 @@ import _ from "lodash";
 import { EntityError } from "./EntityError";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import { ROLES_NAME } from "@utils/common";
+import JsonDiffViewer from "./JSONDiff";
 export interface DiffCheckerProps {
   action?: "VIEW" | "CHANGES";
   toggleDrawer: () => void;
@@ -80,6 +81,8 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     component,
     segment,
     content,
+    data,
+    draftData,
   } = useDiffCheckerStore();
 
   const handleApprove = async () => {
@@ -468,6 +471,9 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
             </PhoneLayout>
           </div>
         ) : null}
+      </div>
+      <div className="container mx-auto p-4">
+        <JsonDiffViewer oldJson={data} newJson={draftData} />
       </div>
     </>
   );

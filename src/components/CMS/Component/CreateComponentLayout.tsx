@@ -1,7 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import CreateComponent from "./CreateComponent";
 import { useToast } from "@hooks/use-toast";
-import { ComponentMutationBody, ComponentMutationPayload } from "cms";
+import {
+  ComponentMutationBody,
+  ComponentMutationPayload,
+  ComponentMutationUpdateBody,
+} from "cms";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createComponent, updateComponent } from "@services/cmsServices";
 import _ from "lodash";
@@ -39,7 +43,7 @@ function CreateComponentLayout() {
   });
 
   const updateComponentQuery = useMutation({
-    mutationFn: (data: { id?: string; payload: ComponentMutationBody }) =>
+    mutationFn: (data: { id?: string; payload: ComponentMutationUpdateBody }) =>
       updateComponent(data),
     onSuccess: () =>
       handleSuccess({ message: "Component updated successfully." }),
@@ -72,13 +76,7 @@ function CreateComponentLayout() {
       await createComponentQuery.mutateAsync(body);
     } else {
       ///Shape the body for update component
-      const data = _.get(body, "data") || {};
-
-      const updateBody = _.assign(body, data, {
-        content_ids: _.get(data, ["contents"]) || [],
-      });
-      _.unset(updateBody, "data");
-      _.unset(updateBody, "contents");
+      const updateBody = _.get(body, "data") || {};
 
       await updateComponentQuery.mutateAsync({ id, payload: updateBody });
     }

@@ -7,6 +7,7 @@ import Login from "@components/Login/Login";
 import NotFound from "@components/NotFound/NotFound";
 import ForgotPasswordPage from "@components/ForgetPassword/ForgetPassword";
 import OtpVerification from "@components/Login/OTPVerification";
+import JsonDiffViewer from "@components/CMS/DiffChecker/JSONDiff";
 const SegmentManager = lazy(
   () => import("@components/CMS/Segment/SegmentManager"),
 );
@@ -28,9 +29,9 @@ const SegmentComponents = lazy(
 const ComponentContents = lazy(
   () => import("@components/CMS/Component/ComponentContents"),
 );
-const RenderComponents = lazy(
-  () => import("@components/MobileLayout/RenderMobileComponents"),
-);
+// const RenderComponents = lazy(
+//   () => import("@components/MobileLayout/RenderMobileComponents"),
+// );
 const AccountPage = lazy(() => import("@components/Account/Account"));
 const Users = lazy(() => import("@components/Users/Users"));
 const UserForm = lazy(() => import("@components/Users/UserForm"));
@@ -52,7 +53,7 @@ const AppRoutesConfig = (): RouteObject[] => {
       path: "/",
       element: (
         <PrivateRoute isAuthenticated={isAuthenticated}>
-          <RenderComponents />
+          <JsonDiffViewer newJson={{}} oldJson={{}} />
         </PrivateRoute>
       ),
     },
