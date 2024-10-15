@@ -29,14 +29,14 @@ function CreateSegmentLayout() {
 
   const createSegmentQuery = useMutation({
     mutationFn: (payload: SegmentMutationBody) => createSegment(payload),
-    onSuccess: () => handleSuccess({ message: "Segmemt Create successfully" }),
+    onSuccess: () => handleSuccess({ message: "Segmemt created successfully" }),
     onError: () => handleError({ message: "Unable to create segment" }),
   });
 
   const updateSegmentQuery = useMutation({
     mutationFn: (payload: { id?: string; payload: SegmentMutationBody }) =>
       updateSegment(payload),
-    onSuccess: () => handleSuccess({ message: "Segmemt update successfully" }),
+    onSuccess: () => handleSuccess({ message: "Segment updated successfully" }),
     onError: () => handleError({ message: "Unable to update segment" }),
   });
 
