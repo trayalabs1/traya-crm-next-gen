@@ -101,11 +101,11 @@ export const formStatus: CustomOptionType[] = [
 export const genderList: CustomOptionType[] = [
   { label: "Male", value: "M" },
   { label: "Female", value: "F" },
-  { label: "All", value: "All" },
+  // { label: "All", value: "All" },
 ];
 
 export const customerTypeList: CustomOptionType[] = [
-  { label: "All", value: "All" },
+  // { label: "All", value: "All" },
   { label: "Draft", value: "Draft" },
   { label: "Lead", value: "Lead" },
   { label: "Customer", value: "Customer" },
@@ -154,7 +154,7 @@ export const daysSinceLatestFormFilled: CustomOptionType[] = [
 ];
 
 export const languageList = [
-  { label: "All", value: "All" },
+  // { label: "All", value: "All" },
   { label: "ENGLISH", value: "ENGLISH" },
   { label: "HINDI", value: "HINDI" },
 ];

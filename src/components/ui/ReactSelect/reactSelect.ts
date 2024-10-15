@@ -67,21 +67,26 @@ export const reactSelectStyles: StylesConfig<OptionType, true> = {
 };
 
 export const reactSelectSingleStyles: StylesConfig<OptionType, false> = {
-  control: (styles) => ({
+  control: (styles, { isDisabled }) => ({
     ...styles,
-    backgroundColor: "hsl(var(--background))",
+    backgroundColor: isDisabled
+      ? "hsl(var(--muted))"
+      : "hsl(var(--background))",
     borderColor: "hsl(var(--border))",
     "&:hover": {
-      borderColor: "hsl(var(--border-hover))",
+      borderColor: isDisabled
+        ? "hsl(var(--border))"
+        : "hsl(var(--border-hover))",
     },
     boxShadow: "none",
+    opacity: isDisabled ? 0.5 : 1,
   }),
   menu: (styles) => ({
     ...styles,
     backgroundColor: "hsl(var(--background))",
     borderColor: "hsl(var(--border))",
   }),
-  option: (styles, { isFocused, isSelected }) => ({
+  option: (styles, { isFocused, isSelected, isDisabled }) => ({
     ...styles,
     backgroundColor: isSelected
       ? "hsl(var(--primary))"
@@ -91,24 +96,36 @@ export const reactSelectSingleStyles: StylesConfig<OptionType, false> = {
     color: isSelected
       ? "hsl(var(--primary-foreground))"
       : "hsl(var(--foreground))",
+    cursor: isDisabled ? "not-allowed" : "default",
+    opacity: isDisabled ? 0.5 : 1,
     ":active": {
-      backgroundColor: "hsl(var(--accent))",
+      backgroundColor: isDisabled
+        ? "hsl(var(--background))"
+        : "hsl(var(--accent))",
     },
   }),
-  multiValue: (styles) => ({
+  multiValue: (styles, { isDisabled }) => ({
     ...styles,
-    backgroundColor: "hsl(var(--accent))",
+    backgroundColor: isDisabled ? "hsl(var(--muted))" : "hsl(var(--accent))",
   }),
-  multiValueLabel: (styles) => ({
+  multiValueLabel: (styles, { isDisabled }) => ({
     ...styles,
-    color: "hsl(var(--accent-foreground))",
+    color: isDisabled
+      ? "hsl(var(--muted-foreground))"
+      : "hsl(var(--accent-foreground))",
   }),
-  multiValueRemove: (styles) => ({
+  multiValueRemove: (styles, { isDisabled }) => ({
     ...styles,
-    color: "hsl(var(--accent-foreground))",
+    color: isDisabled
+      ? "hsl(var(--muted-foreground))"
+      : "hsl(var(--accent-foreground))",
     ":hover": {
-      backgroundColor: "hsl(var(--destructive))",
-      color: "hsl(var(--destructive-foreground))",
+      backgroundColor: isDisabled
+        ? "hsl(var(--muted))"
+        : "hsl(var(--destructive))",
+      color: isDisabled
+        ? "hsl(var(--muted-foreground))"
+        : "hsl(var(--destructive-foreground))",
     },
   }),
 };
