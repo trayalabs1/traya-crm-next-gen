@@ -94,6 +94,8 @@ export default function ComponentManager() {
       component: component,
       currentVersion: null,
       newVersion: null,
+      data: component.data,
+      draftData: component.draft_data,
     });
 
     await fetchDiffComponentsBulk({
@@ -271,31 +273,41 @@ export default function ComponentManager() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data?.mainData?.map((component, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-medium">
-                        <Button asChild variant="link" className="no-underline">
-                          <Link
-                            // to={`${component.component_id}/contents`}
-                            to="#"
+                  {data?.mainData?.map((component, index) => {
+                    const dataKey =
+                      component.status !== "published" ? "draft_data" : "data";
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell className="font-medium">
+                          <Button
+                            asChild
+                            variant="link"
+                            className="no-underline"
                           >
-                            {get(component, ["name"], "-") || "-"}
-                          </Link>
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        {get(component, ["data", "title"], "-") || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {get(component, ["data", "description"], "-") || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {formatWithSpaces(component.status) || "-"}
-                      </TableCell>
-                      <TableCell> {get(component, "gender") || "-"}</TableCell>
-                      <TableCell>{component.current_version}</TableCell>
-                      {/* <TableCell className="text-center">
+                            <Link
+                              // to={`${component.component_id}/contents`}
+                              to="#"
+                            >
+                              {get(component, ["name"], "-") || "-"}
+                            </Link>
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          {get(component, [dataKey, "title"], "-") || "-"}
+                        </TableCell>
+                        <TableCell>
+                          {get(component, [dataKey, "description"], "-") || "-"}
+                        </TableCell>
+                        <TableCell>
+                          {formatWithSpaces(component.status) || "-"}
+                        </TableCell>
+                        <TableCell>
+                          {" "}
+                          {get(component, "gender") || "-"}
+                        </TableCell>
+                        <TableCell>{component.current_version}</TableCell>
+                        {/* <TableCell className="text-center">
                     <Button
                       variant="outline"
                       size="sm"
@@ -309,49 +321,50 @@ export default function ComponentManager() {
    
                   </TableCell> */}
 
-                      <TableCell className="text-center">
-                        <div className="flex justify-center space-x-2">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className={getCMSActionButtonColor("compare")}
-                                onClick={() => handleDiffChecker(component)}
-                              >
-                                <GitCompare className="h-4 w-4" />
-                                <span className="sr-only">View</span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>View</p>
-                            </TooltipContent>
-                          </Tooltip>
-
-                          {user?.role === ROLES_NAME.MAKER ? (
+                        <TableCell className="text-center">
+                          <div className="flex justify-center space-x-2">
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  className={getCMSActionButtonColor("edit")}
-                                  onClick={() => {
-                                    navigate(component.component_id);
-                                  }}
+                                  className={getCMSActionButtonColor("compare")}
+                                  onClick={() => handleDiffChecker(component)}
                                 >
-                                  <Edit className="h-4 w-4" />
-                                  <span className="sr-only">Edit</span>
+                                  <GitCompare className="h-4 w-4" />
+                                  <span className="sr-only">View</span>
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Edit</p>
+                                <p>View</p>
                               </TooltipContent>
                             </Tooltip>
-                          ) : null}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+
+                            {user?.role === ROLES_NAME.MAKER ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className={getCMSActionButtonColor("edit")}
+                                    onClick={() => {
+                                      navigate(component.component_id);
+                                    }}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                    <span className="sr-only">Edit</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Edit</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : null}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
                 <TableFooter>
                   <TableRow>

@@ -77,6 +77,8 @@ export function generateQueryString(
 export interface CustomOptionType {
   label: string;
   value: string;
+  readonly isFixed?: boolean;
+  readonly isDisabled?: boolean;
 }
 export const statusList: CustomOptionType[] = [
   { label: "Draft", value: "draft" },
@@ -157,9 +159,9 @@ export const languageList = [
   { label: "HINDI", value: "HINDI" },
 ];
 
-export const componentTypeList = [
+export const componentTypeList: CustomOptionType[] = [
   { label: "Static", value: "Static" },
-  { label: "Dynamic", value: "Dynamic" },
+  { label: "Dynamic", value: "Dynamic", isDisabled: true },
 ];
 
 export const contentTypeList: CustomOptionType[] = [
@@ -284,7 +286,11 @@ export function getErrorMessage(error: unknown): string {
         errorMessage = get(
           error,
           ["response", "data", "message"],
-          get(error, ["response", "data", "error"], DEFAULT_MESSAGE),
+          get(
+            error,
+            ["response", "data", "error"],
+            get(error, ["response", "message"], DEFAULT_MESSAGE),
+          ),
         );
       }
     } else if (error.request) {
@@ -294,7 +300,7 @@ export function getErrorMessage(error: unknown): string {
     errorMessage = error.message;
   }
 
-  return errorMessage;
+  return isEmpty(errorMessage) ? DEFAULT_MESSAGE : errorMessage;
 }
 
 export function getSuccessMessage(data: unknown): string {
