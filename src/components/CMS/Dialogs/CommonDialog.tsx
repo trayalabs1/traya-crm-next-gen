@@ -8,9 +8,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@components/ui/dialog";
-import React, { memo, ReactElement } from "react";
+import React, { memo, PropsWithChildren, ReactElement } from "react";
 
-interface CommonDialogProps {
+interface CommonDialogProps extends PropsWithChildren {
   isOpen: boolean;
   onCancel: () => void;
   onConfirm: () => void;
@@ -37,6 +37,7 @@ const CommonDialog: React.FC<CommonDialogProps> = memo(
     cancelVariant = "outline",
     setIsDialogOpen,
     trigger,
+    children,
   }) => {
     return (
       <Dialog open={isOpen} onOpenChange={setIsDialogOpen}>
@@ -46,6 +47,7 @@ const CommonDialog: React.FC<CommonDialogProps> = memo(
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
+          {children}
           <DialogFooter>
             <Button variant={cancelVariant} onClick={onCancel}>
               {cancelLabel}

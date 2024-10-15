@@ -26,6 +26,7 @@ import {
   publishByPublisher,
   retryOtp,
   submitByChecker,
+  uploadMutipleMedia,
   verifyOtp,
 } from "@services/cmsServices";
 import _ from "lodash";
@@ -33,6 +34,7 @@ import { EntityError } from "./EntityError";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import { ROLES_NAME } from "@utils/common";
 import JsonDiffViewer from "./JSONDiff";
+import MediaUploadWithComment from "../Dialogs/MediaUploadWithComment";
 export interface DiffCheckerProps {
   action?: "VIEW" | "CHANGES";
   toggleDrawer: () => void;
@@ -130,6 +132,11 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
       await submitMutation.mutateAsync(body);
     }
 
+    if (files?.length) {
+      const links = await uploadMutipleMedia(files);
+      body.attachments = links;
+    }
+    if (comment) body.comment = comment;
     if (user?.role === "checker") {
       await approveByCheckerMutation.mutateAsync(body);
     }
@@ -186,6 +193,13 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
     body.type_id = typeId;
     body.user_id = user.id;
     body.role = _.toUpper(user.role);
+
+    if (files?.length) {
+      const links = await uploadMutipleMedia(files);
+      body.attachments = links;
+    }
+    if (comment) body.comment = comment;
+
     await discardMutation.mutateAsync(body);
     setIsDiscardDialogOpen(false);
     await invalidateQueries();
@@ -347,6 +361,9 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
 
   const [progress, setProgress] = useState(0);
 
+  const [files, setFiles] = useState<File[]>();
+  const [comment, setComment] = useState<string>("");
+
   if (!diffEntity) return <EntityError />;
 
   return (
@@ -373,7 +390,12 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
                   <X className="mr-2 h-5 w-5" /> Discard
                 </Button>
               }
-            />
+            >
+              <MediaUploadWithComment
+                onChange={setFiles}
+                onComment={setComment}
+              />
+            </CommonDialog>
             {(user?.role === "checker" && entity?.status === "submitted") ||
             (user?.role === "publisher" &&
               entity?.status === "approved_by_checker") ? (
@@ -390,7 +412,12 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
                     <Check className="mr-2 h-5 w-5" /> Approve
                   </Button>
                 }
-              />
+              >
+                <MediaUploadWithComment
+                  onChange={setFiles}
+                  onComment={setComment}
+                />
+              </CommonDialog>
             ) : null}
 
             {ROLES_NAME.MAKER === user?.role && entity?.status === "draft" ? (
