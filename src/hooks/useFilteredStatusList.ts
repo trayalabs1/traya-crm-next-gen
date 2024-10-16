@@ -1,24 +1,26 @@
 import { Roles } from "user";
 import { useMemo } from "react";
-import { statusList } from "@utils/common";
 
 const useFilteredStatusList = (role?: Roles) => {
   return useMemo(() => {
     switch (role) {
       case "maker":
-        return statusList.filter((status) =>
-          ["draft", "submitted"].includes(status.value),
-        );
+        return [
+          { label: "DRAFT", value: "draft" },
+          { label: "SUBMITTED", value: "submitted" },
+          { label: "PUBLISHED", value: "published" },
+        ];
       case "checker":
-        return statusList.filter((status) => status.value === "submitted");
+        return [
+          { label: "PENDING", value: "submitted" },
+          { label: "APPROVED", value: "approved_by_checker" },
+        ];
+
       case "publisher":
-        return statusList.filter((status) =>
-          [
-            "approved_by_checker",
-            "approved_by_publisher",
-            "published",
-          ].includes(status.value),
-        );
+        return [
+          { label: "PENDING", value: "approved_by_checker" },
+          { label: "PUBLISHED", value: "published" },
+        ];
       default:
         return [];
     }

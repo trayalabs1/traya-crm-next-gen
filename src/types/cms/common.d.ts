@@ -4,7 +4,7 @@ export interface EntitiyActionBody {
   type: EntitiyType;
   type_id: string;
   user_id: string;
-  comment?: string;
+  comments?: string;
   attachments?: string[];
 }
 
