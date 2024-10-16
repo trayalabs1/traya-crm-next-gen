@@ -136,7 +136,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
       const links = await uploadMutipleMedia(files);
       body.attachments = links;
     }
-    if (comment) body.comment = comment;
+    if (comment) body.comments = comment;
     if (user?.role === "checker") {
       await approveByCheckerMutation.mutateAsync(body);
     }
@@ -198,7 +198,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
       const links = await uploadMutipleMedia(files);
       body.attachments = links;
     }
-    if (comment) body.comment = comment;
+    if (comment) body.comments = comment;
 
     await discardMutation.mutateAsync(body);
     setIsDiscardDialogOpen(false);

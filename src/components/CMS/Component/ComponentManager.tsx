@@ -34,6 +34,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get, map } from "lodash";
 import {
+  componentTypeList,
   formatWithSpaces,
   genderList,
   generateQueryString,
@@ -63,6 +64,7 @@ export default function ComponentManager() {
   const DEFAULT_STATUS = getCMSFilterStatusByRole(user?.role);
   const [status, setStatus] = useState<string>(DEFAULT_STATUS);
   const [gender, setGender] = useState<string>("");
+  const [componentType, setComponentType] = useState<string>("");
   const [version, setVersion] = useState<string>("");
 
   const queryString = generateQueryString({
@@ -71,6 +73,7 @@ export default function ComponentManager() {
     status,
     current_version: version,
     gender,
+    component_type: componentType,
   });
 
   const { data, isLoading } = useQuery({
@@ -201,6 +204,27 @@ export default function ComponentManager() {
               </Select>
               <Select
                 onValueChange={(value) => {
+                  setComponentType(value);
+                  setPage(1);
+                }}
+                value={componentType}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select Component Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Component Type</SelectLabel>
+                    {componentTypeList.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) => {
                   setGender(value);
                   setPage(1);
                 }}
@@ -267,6 +291,7 @@ export default function ComponentManager() {
                     <TableHead>Title</TableHead>
                     <TableHead>Description</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Component Type</TableHead>
                     <TableHead>Gender</TableHead>
                     <TableHead>Current Version</TableHead>
                     <TableHead className="text-center">Action</TableHead>
@@ -303,9 +328,9 @@ export default function ComponentManager() {
                           {formatWithSpaces(component.status) || "-"}
                         </TableCell>
                         <TableCell>
-                          {" "}
-                          {get(component, "gender") || "-"}
+                          {get(component, ["component_type"], "-") || "-"}
                         </TableCell>
+                        <TableCell>{get(component, "gender") || "-"}</TableCell>
                         <TableCell>{component.current_version}</TableCell>
                         {/* <TableCell className="text-center">
                     <Button
