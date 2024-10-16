@@ -330,6 +330,8 @@ export default function CreateSegment({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
+            <h4 className="text-base font-[500]">Segment Parameters</h4>
+
             <div className="space-y-2">
               <FormField
                 control={form.control}
@@ -750,7 +752,9 @@ export default function CreateSegment({
                 name="components"
                 render={({ field: { onChange, value } }) => (
                   <FormItem>
-                    <FormLabel>Select Components</FormLabel>
+                    <FormLabel className="text-base">
+                      Select Components
+                    </FormLabel>
                     <FormControl>
                       <ComponentOrders
                         onChange={onChange}
