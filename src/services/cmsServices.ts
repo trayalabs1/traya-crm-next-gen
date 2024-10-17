@@ -13,6 +13,8 @@ import {
   ComponentMutationBody,
   UpdateContentPayload,
   ComponentMutationUpdateBody,
+  VersionHistoryParams,
+  VersionHistory,
 } from "cms";
 import { axiosClient } from "@utils/axiosInterceptor";
 import {
@@ -24,7 +26,8 @@ import {
   releaseApi,
   mediaApi,
   discardApi,
-} from "src/api";
+  versionHistoryApi,
+} from "@api/cmsApi";
 import { EntitiyActionBody } from "cms";
 import { AxiosResponse } from "axios";
 import { getErrorMessage } from "@utils/common";
@@ -253,5 +256,14 @@ export const uploadMutipleMedia = async (files: File[]): Promise<string[]> => {
 
 export const discard = async (data: object) => {
   const response = await axiosClient.post(discardApi.DISCARD, data);
+  return response.data;
+};
+
+export const getVersionHistory = async (
+  params: VersionHistoryParams,
+): Promise<VersionHistory[]> => {
+  const response = await axiosClient.get(
+    versionHistoryApi.GET_VERSION_HISTORY(params),
+  );
   return response.data;
 };

@@ -1,13 +1,17 @@
 import { lazy } from "react";
 import { useAuth } from "src/context/useAuth";
-import { RouteObject } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import GuestRoute from "./GuestRoute";
 import Login from "@components/Login/Login";
 import NotFound from "@components/NotFound/NotFound";
 import ForgotPasswordPage from "@components/ForgetPassword/ForgetPassword";
 import OtpVerification from "@components/Login/OTPVerification";
-import JsonDiffViewer from "@components/CMS/DiffChecker/JSONDiff";
+import ExternalLogin from "@components/Login/ExternalLogin";
+
+const VersionHistory = lazy(
+  () => import("@components/CMS/VersionHistory/VersionHistory"),
+);
 const SegmentManager = lazy(
   () => import("@components/CMS/Segment/SegmentManager"),
 );
@@ -53,7 +57,7 @@ const AppRoutesConfig = (): RouteObject[] => {
       path: "/",
       element: (
         <PrivateRoute isAuthenticated={isAuthenticated}>
-          <JsonDiffViewer newJson={{}} oldJson={{}} />
+          <Navigate to="/cms/segments" />
         </PrivateRoute>
       ),
     },
@@ -153,6 +157,14 @@ const AppRoutesConfig = (): RouteObject[] => {
             </PrivateRoute>
           ),
         },
+        {
+          path: "version-history/:entityType/:entityId",
+          element: (
+            <PrivateRoute isAuthenticated={isAuthenticated}>
+              <VersionHistory />
+            </PrivateRoute>
+          ),
+        },
       ],
     },
     {
@@ -197,6 +209,14 @@ const AppRoutesConfig = (): RouteObject[] => {
       element: (
         <GuestRoute isAuthenticated={isAuthenticated}>
           <OtpVerification />
+        </GuestRoute>
+      ),
+    },
+    {
+      path: "/external/:loginFrom",
+      element: (
+        <GuestRoute isAuthenticated={isAuthenticated}>
+          <ExternalLogin />
         </GuestRoute>
       ),
     },

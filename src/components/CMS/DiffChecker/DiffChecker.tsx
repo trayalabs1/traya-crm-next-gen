@@ -52,10 +52,11 @@ function getDiffEntityName({ segment, component, content }: Entities) {
   }
 }
 
-interface Entities {
+export interface Entities {
   segment?: Segment | null;
   component?: Component | null;
   content?: Content | null;
+  unknown?: null;
 }
 
 function getEntity(entities: Entities, diffEntity: EntitiyType | null) {

@@ -310,10 +310,7 @@ export default function ComponentManager() {
                             variant="link"
                             className="no-underline"
                           >
-                            <Link
-                              // to={`${component.component_id}/contents`}
-                              to="#"
-                            >
+                            <Link to={component.component_id}>
                               {get(component, ["name"], "-") || "-"}
                             </Link>
                           </Button>
@@ -331,7 +328,28 @@ export default function ComponentManager() {
                           {get(component, ["component_type"], "-") || "-"}
                         </TableCell>
                         <TableCell>{get(component, "gender") || "-"}</TableCell>
-                        <TableCell>{component.current_version}</TableCell>
+                        <TableCell>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                asChild
+                                variant="ghost"
+                                size="icon"
+                                className="no-underline"
+                              >
+                                <Link
+                                  to={`/cms/version-history/component/${component.component_id}`}
+                                  state={{ component }}
+                                >
+                                  {component.current_version}
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Version History</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                         {/* <TableCell className="text-center">
                     <Button
                       variant="outline"
@@ -345,7 +363,6 @@ export default function ComponentManager() {
                     </Button>
    
                   </TableCell> */}
-
                         <TableCell className="text-center">
                           <div className="flex justify-center space-x-2">
                             <Tooltip>

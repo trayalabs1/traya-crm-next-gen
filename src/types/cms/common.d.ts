@@ -1,4 +1,6 @@
-export type EntitiyType = "segment" | "component" | "content";
+import { VersionHistorySchema } from "@schemas/cms/versionHistory";
+
+export type EntitiyType = "segment" | "component" | "content" | "unknown";
 
 export interface EntitiyActionBody {
   type: EntitiyType;
@@ -14,3 +16,10 @@ export interface EntitiyActionDiscardBody extends EntitiyActionBody {
   user_id: string;
   role: "MAKER" | "CHECKER" | "PUBLISHER";
 }
+
+export interface VersionHistoryParams {
+  entityType: EntitiyType;
+  entityId: string;
+}
+
+export type VersionHistory = z.infer<typeof VersionHistorySchema>;
