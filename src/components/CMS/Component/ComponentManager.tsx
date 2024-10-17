@@ -383,13 +383,15 @@ export default function ComponentManager() {
                               </TooltipContent>
                             </Tooltip>
 
-                            {user?.role === ROLES_NAME.MAKER &&
-                            component.component_type !== "Dynamic" ? (
+                            {user?.role === ROLES_NAME.MAKER ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="outline"
                                     size="icon"
+                                    disabled={
+                                      component.component_type === "Dynamic"
+                                    }
                                     className={getCMSActionButtonColor("edit")}
                                     onClick={() => {
                                       navigate(component.component_id);
