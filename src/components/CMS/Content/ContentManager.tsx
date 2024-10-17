@@ -30,7 +30,7 @@ import {
 } from "@components/ui/table";
 import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { get } from "lodash";
 import {
   contentTypeList,
@@ -234,8 +234,8 @@ export default function ContentManager() {
                     <TableHead>#</TableHead>
                     <TableHead className="w-[100px]">Name</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Current Version</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Current Version</TableHead>
                     <TableHead className="text-center">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -244,18 +244,37 @@ export default function ContentManager() {
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell className="font-medium">
-                        {/* <Button asChild variant="link" className="no-underline">
-                        <Link to="#">
-                          {content.name}
-                        </Link>
-                      </Button> */}
-                        {content.name}
+                        <Button asChild variant="link" className="no-underline">
+                          <Link to={content.content_id}>{content.name}</Link>
+                        </Button>
                       </TableCell>
                       <TableCell>{content.type}</TableCell>
-                      <TableCell>{content.current_version}</TableCell>
                       <TableCell>
                         {formatWithSpaces(content.status) || "-"}
                       </TableCell>
+                      <TableCell>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              asChild
+                              variant="ghost"
+                              size="icon"
+                              className="no-underline"
+                            >
+                              <Link
+                                to={`/cms/version-history/content/${content.content_id}`}
+                                state={{ content }}
+                              >
+                                {content.current_version}
+                              </Link>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Version History</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+
                       {/* <TableCell className="text-center">
                     <Button
                       variant="outline"
@@ -275,7 +294,6 @@ export default function ContentManager() {
                         <Trash2 className="mr-2 h-4 w-4" /> Delete
                       </Button>
                   </TableCell> */}
-
                       <TableCell className="text-center">
                         <div className="flex justify-center space-x-2">
                           <Tooltip>

@@ -52,10 +52,11 @@ function getDiffEntityName({ segment, component, content }: Entities) {
   }
 }
 
-interface Entities {
+export interface Entities {
   segment?: Segment | null;
   component?: Component | null;
   content?: Content | null;
+  unknown?: null;
 }
 
 function getEntity(entities: Entities, diffEntity: EntitiyType | null) {
@@ -374,28 +375,31 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
         </h2>
         {action === "CHANGES" ? (
           <div className="flex justify-end space-x-4 my-2">
-            <CommonDialog
-              isOpen={isDiscardDialogOpen}
-              setIsDialogOpen={setIsDiscardDialogOpen}
-              onConfirm={handleDiscard}
-              onCancel={() => setIsDiscardDialogOpen(false)}
-              title="Are you sure you want to discard?"
-              description="This action cannot be undone. This will permanently discard the new version."
-              confirmVariant="destructive"
-              trigger={
-                <Button
-                  variant="outline"
-                  className="shadow-md hover:shadow-lg transition-shadow duration-200"
-                >
-                  <X className="mr-2 h-5 w-5" /> Discard
-                </Button>
-              }
-            >
-              <MediaUploadWithComment
-                onChange={setFiles}
-                onComment={setComment}
-              />
-            </CommonDialog>
+            {user?.role === ROLES_NAME.CHECKER &&
+            entity?.status === "approved_by_checker" ? (
+              <CommonDialog
+                isOpen={isDiscardDialogOpen}
+                setIsDialogOpen={setIsDiscardDialogOpen}
+                onConfirm={handleDiscard}
+                onCancel={() => setIsDiscardDialogOpen(false)}
+                title="Are you sure you want to discard?"
+                description="This action cannot be undone. This will permanently discard the new version."
+                confirmVariant="destructive"
+                trigger={
+                  <Button
+                    variant="outline"
+                    className="shadow-md hover:shadow-lg transition-shadow duration-200"
+                  >
+                    <X className="mr-2 h-5 w-5" /> Discard
+                  </Button>
+                }
+              >
+                <MediaUploadWithComment
+                  onChange={setFiles}
+                  onComment={setComment}
+                />
+              </CommonDialog>
+            ) : null}
             {(user?.role === "checker" && entity?.status === "submitted") ||
             (user?.role === "publisher" &&
               entity?.status === "approved_by_checker") ? (

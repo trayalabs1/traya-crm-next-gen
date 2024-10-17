@@ -55,6 +55,7 @@ import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { Component, MobileComponent } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
+import { cn } from "@utils/shadcn";
 
 export default function ComponentManager() {
   const navigate = useNavigate();
@@ -308,11 +309,19 @@ export default function ComponentManager() {
                           <Button
                             asChild
                             variant="link"
-                            className="no-underline"
+                            className={cn(
+                              "no-underline",
+                              component.component_type === "Dynamic"
+                                ? "cursor-not-allowed"
+                                : "",
+                            )}
                           >
                             <Link
-                              // to={`${component.component_id}/contents`}
-                              to="#"
+                              to={
+                                component.component_type === "Dynamic"
+                                  ? "#"
+                                  : component.component_id
+                              }
                             >
                               {get(component, ["name"], "-") || "-"}
                             </Link>
@@ -331,7 +340,28 @@ export default function ComponentManager() {
                           {get(component, ["component_type"], "-") || "-"}
                         </TableCell>
                         <TableCell>{get(component, "gender") || "-"}</TableCell>
-                        <TableCell>{component.current_version}</TableCell>
+                        <TableCell>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                asChild
+                                variant="ghost"
+                                size="icon"
+                                className="no-underline"
+                              >
+                                <Link
+                                  to={`/cms/version-history/component/${component.component_id}`}
+                                  state={{ component }}
+                                >
+                                  {component.current_version}
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Version History</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                         {/* <TableCell className="text-center">
                     <Button
                       variant="outline"
@@ -345,7 +375,6 @@ export default function ComponentManager() {
                     </Button>
    
                   </TableCell> */}
-
                         <TableCell className="text-center">
                           <div className="flex justify-center space-x-2">
                             <Tooltip>
@@ -365,7 +394,8 @@ export default function ComponentManager() {
                               </TooltipContent>
                             </Tooltip>
 
-                            {user?.role === ROLES_NAME.MAKER ? (
+                            {user?.role === ROLES_NAME.MAKER &&
+                            component.component_type !== "Dynamic" ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button

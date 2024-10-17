@@ -280,12 +280,7 @@ export default function SegmentManager() {
                             variant="link"
                             className="no-underline"
                           >
-                            <Link
-                              // to={`/cms/segments/${segment.segment_id}/components`}
-                              to="#"
-                            >
-                              {segment.name}
-                            </Link>
+                            <Link to={segment.segment_id}>{segment.name}</Link>
                           </Button>
                         </TableCell>
                         <TableCell>
@@ -295,7 +290,29 @@ export default function SegmentManager() {
                         <TableCell>{segment.customer_type}</TableCell>
 
                         {/* <TableCell>{segment.weeks_in_program}</TableCell>*/}
-                        <TableCell>{segment.current_version}</TableCell>
+
+                        <TableCell>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                asChild
+                                variant="ghost"
+                                size="icon"
+                                className="no-underline"
+                              >
+                                <Link
+                                  to={`/cms/version-history/segment/${segment.segment_id}`}
+                                  state={{ segment }}
+                                >
+                                  {segment.current_version}
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Version History</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
                         <TableCell className="text-center">
                           <div className="flex justify-center space-x-2">
                             <Tooltip>

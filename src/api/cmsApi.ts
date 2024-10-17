@@ -1,3 +1,5 @@
+import { VersionHistoryParams } from "cms";
+
 export const makerApi = {
   GET_SEGMENTS: "/todos/1",
 };
@@ -49,17 +51,22 @@ export const OTPApi = {
 export const approvalApi = {
   APPROVAL_BY_CHECKER: "/api/approve/approvalByChecker",
   APPROVAL_BY_PUBLISHER: "/api/approve/approvalByPublisher",
-};
+} as const;
 
 export const releaseApi = {
   SUBMIT: "/api/submit",
   PUBLISH: "/api/publish",
-};
+} as const;
 
 export const mediaApi = {
   UPLOAD: "/v2/cms/s3/upload",
-};
+} as const;
 
 export const discardApi = {
   DISCARD: "/api/discard",
-};
+} as const;
+
+export const versionHistoryApi = {
+  GET_VERSION_HISTORY: ({ entityId, entityType }: VersionHistoryParams) =>
+    `/api/versionhistory?entityType=${entityType}&entityId=${entityId}`,
+} as const;
