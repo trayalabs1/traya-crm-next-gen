@@ -158,7 +158,7 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
       //Hide Drawer
       toast({
         variant: "success",
-        title: _.startCase(diffEntity || "unknown") + " is discard",
+        title: _.startCase(diffEntity || "unknown") + " has been discarded",
       });
     },
     onError: () => {

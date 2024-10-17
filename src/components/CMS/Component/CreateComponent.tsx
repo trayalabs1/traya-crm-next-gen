@@ -369,7 +369,9 @@ export default function CreateComponent({
                           isDisabled={!isNew || isDynamicType}
                           styles={reactSelectStyles}
                           placeholder="Select Component Type"
-                          options={componentTypeList}
+                          options={componentTypeList.filter(
+                            (type) => type.label !== "Dynamic",
+                          )}
                           value={value || null}
                         />
                       </FormControl>
