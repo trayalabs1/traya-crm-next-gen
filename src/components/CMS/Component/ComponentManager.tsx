@@ -55,6 +55,7 @@ import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { Component, MobileComponent } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
+import { cn } from "@utils/shadcn";
 
 export default function ComponentManager() {
   const navigate = useNavigate();
@@ -308,9 +309,20 @@ export default function ComponentManager() {
                           <Button
                             asChild
                             variant="link"
-                            className="no-underline"
+                            className={cn(
+                              "no-underline",
+                              component.component_type === "Dynamic"
+                                ? "cursor-not-allowed"
+                                : "",
+                            )}
                           >
-                            <Link to={component.component_id}>
+                            <Link
+                              to={
+                                component.component_type === "Dynamic"
+                                  ? "#"
+                                  : component.component_id
+                              }
+                            >
                               {get(component, ["name"], "-") || "-"}
                             </Link>
                           </Button>
@@ -382,7 +394,8 @@ export default function ComponentManager() {
                               </TooltipContent>
                             </Tooltip>
 
-                            {user?.role === ROLES_NAME.MAKER ? (
+                            {user?.role === ROLES_NAME.MAKER &&
+                            component.component_type !== "Dynamic" ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
