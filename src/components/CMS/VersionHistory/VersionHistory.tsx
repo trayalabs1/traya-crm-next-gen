@@ -223,23 +223,26 @@ export default function VersionHistory() {
                                     <span className="text-sm font-semibold">
                                       Attachments:
                                     </span>
-                                    {item.attachments.map(
-                                      (
-                                        attachment: { url: string },
-                                        i: number,
-                                      ) => (
-                                        <a
-                                          key={i}
-                                          href={attachment.url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="flex items-center mt-1 text-sm text-blue-600 hover:underline"
-                                        >
-                                          <FileText className="h-4 w-4 mr-1" />
-                                          View Attachment
-                                        </a>
-                                      ),
-                                    )}
+                                    <Button
+                                      variant="link"
+                                      className="flex items-center mt-1 text-sm text-blue-600 hover:underline"
+                                      onClick={() => {
+                                        item.attachments.forEach(
+                                          (url: string) => {
+                                            const link =
+                                              document.createElement("a");
+                                            link.href = url;
+                                            link.download = "";
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                          },
+                                        );
+                                      }}
+                                    >
+                                      <FileText className="h-4 w-4 mr-1" />
+                                      View Attachments
+                                    </Button>
                                   </div>
                                 )}
                               <CollapsibleTrigger asChild>
@@ -345,7 +348,9 @@ export default function VersionHistory() {
             </Card>
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl font-bold">Audit Stats</CardTitle>
+                <CardTitle className="text-xl font-bold">
+                  Version Stats
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">

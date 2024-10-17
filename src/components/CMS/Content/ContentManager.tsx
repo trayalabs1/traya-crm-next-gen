@@ -28,7 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@components/ui/table";
-import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
+import { Edit, FilterX, GitCompare, History, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get } from "lodash";
@@ -252,50 +252,30 @@ export default function ContentManager() {
                       <TableCell>
                         {formatWithSpaces(content.status) || "-"}
                       </TableCell>
-                      <TableCell>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              asChild
-                              variant="ghost"
-                              size="icon"
-                              className="no-underline"
-                            >
-                              <Link
-                                to={`/cms/version-history/content/${content.content_id}`}
-                                state={{ content }}
-                              >
-                                {content.current_version}
-                              </Link>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Version History</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TableCell>
+                      <TableCell>{content.current_version}</TableCell>
 
-                      {/* <TableCell className="text-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mr-2"
-                      onClick={() => {
-                        navigate(content.content_id);
-                      }}
-                    >
-                      <Edit className="mr-2 h-4 w-4" /> Edit
-                    </Button>
-                    <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => {}}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </Button>
-                  </TableCell> */}
                       <TableCell className="text-center">
                         <div className="flex justify-center space-x-2">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                asChild
+                                className="text-white bg-teal-400 hover:bg-teal-600 focus:bg-teal-600"
+                              >
+                                <Link
+                                  to={`/cms/version-history/content/${content.content_id}`}
+                                  state={{ content }}
+                                >
+                                  <History />
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Version History</p>
+                            </TooltipContent>
+                          </Tooltip>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button

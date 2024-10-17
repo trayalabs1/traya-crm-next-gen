@@ -29,7 +29,7 @@ import {
 } from "@components/ui/table";
 import { getSegments } from "@services/cmsServices";
 import { useQuery } from "@tanstack/react-query";
-import { Edit, FilterX, GitCompare } from "lucide-react";
+import { Edit, FilterX, GitCompare, History } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get, isArray, map, isEmpty } from "lodash";
@@ -265,7 +265,7 @@ export default function SegmentManager() {
                     <TableHead>Gender</TableHead>
                     {/* <TableHead>Week In Program</TableHead> */}
                     <TableHead>Customer Type</TableHead>
-                    <TableHead>Version</TableHead>
+                    <TableHead>Current Version</TableHead>
                     <TableHead className="text-center">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -291,30 +291,29 @@ export default function SegmentManager() {
 
                         {/* <TableCell>{segment.weeks_in_program}</TableCell>*/}
 
-                        <TableCell>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                asChild
-                                variant="ghost"
-                                size="icon"
-                                className="no-underline"
-                              >
-                                <Link
-                                  to={`/cms/version-history/segment/${segment.segment_id}`}
-                                  state={{ segment }}
-                                >
-                                  {segment.current_version}
-                                </Link>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Version History</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TableCell>
+                        <TableCell>{segment.current_version}</TableCell>
                         <TableCell className="text-center">
                           <div className="flex justify-center space-x-2">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  asChild
+                                  className="text-white bg-teal-400 hover:bg-teal-600 focus:bg-teal-600"
+                                >
+                                  <Link
+                                    to={`/cms/version-history/segment/${segment.segment_id}`}
+                                    state={{ segment }}
+                                  >
+                                    <History />
+                                  </Link>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Version History</p>
+                              </TooltipContent>
+                            </Tooltip>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button

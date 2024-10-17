@@ -251,7 +251,12 @@ export const uploadMutipleMedia = async (files: File[]): Promise<string[]> => {
 
   const results = await Promise.all(uploadPromises);
 
-  return results.filter((link): link is string => link !== null);
+  if (results.length) {
+    return results
+      .filter((response: { url: string; success: boolean }) => response.success)
+      .map((response) => response.url);
+  }
+  return [];
 };
 
 export const discard = async (data: object) => {
