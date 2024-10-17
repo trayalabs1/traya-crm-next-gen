@@ -186,8 +186,11 @@ export default function VersionHistory() {
                               <div className="flex items-start justify-between">
                                 <div>
                                   <h3 className="text-lg font-semibold">
-                                    {item.user_name} has {item.status} the{" "}
-                                    {entityType}
+                                    {item.user_name} has{" "}
+                                    {item.status.startsWith("approve")
+                                      ? "approved"
+                                      : item.status}{" "}
+                                    the {entityType}
                                   </h3>
                                   <p className="text-sm text-gray-600">
                                     {formatDate(item.created_at)}
