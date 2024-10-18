@@ -53,6 +53,7 @@ import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import { useGetContents } from "@queries/cms/contents";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
+import { cn } from "@utils/shadcn";
 
 export default function ContentManager() {
   const navigate = useNavigate();
@@ -244,8 +245,25 @@ export default function ContentManager() {
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell className="font-medium">
-                        <Button asChild variant="link" className="no-underline">
-                          <Link to={content.content_id}>{content.name}</Link>
+                        <Button
+                          asChild
+                          variant="link"
+                          className={cn(
+                            "no-underline",
+                            user?.role !== ROLES_NAME.MAKER
+                              ? "cursor-not-allowed"
+                              : "",
+                          )}
+                        >
+                          <Link
+                            to={
+                              user?.role !== ROLES_NAME.MAKER
+                                ? "#"
+                                : content.content_id
+                            }
+                          >
+                            {content.name}
+                          </Link>
                         </Button>
                       </TableCell>
                       <TableCell>{content.type}</TableCell>

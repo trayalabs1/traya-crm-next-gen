@@ -55,6 +55,7 @@ import {
 import { Segment } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
+import { cn } from "@utils/shadcn";
 export default function SegmentManager() {
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
@@ -278,9 +279,22 @@ export default function SegmentManager() {
                           <Button
                             asChild
                             variant="link"
-                            className="no-underline"
+                            className={cn(
+                              "no-underline",
+                              user?.role !== ROLES_NAME.MAKER
+                                ? "cursor-not-allowed"
+                                : "",
+                            )}
                           >
-                            <Link to={segment.segment_id}>{segment.name}</Link>
+                            <Link
+                              to={
+                                user?.role !== ROLES_NAME.MAKER
+                                  ? "#"
+                                  : segment.segment_id
+                              }
+                            >
+                              {segment.name}
+                            </Link>
                           </Button>
                         </TableCell>
                         <TableCell>

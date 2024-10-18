@@ -311,14 +311,16 @@ export default function ComponentManager() {
                             variant="link"
                             className={cn(
                               "no-underline",
-                              component.component_type === "Dynamic"
+                              component.component_type === "Dynamic" ||
+                                user?.role !== ROLES_NAME.MAKER
                                 ? "cursor-not-allowed"
                                 : "",
                             )}
                           >
                             <Link
                               to={
-                                component.component_type === "Dynamic"
+                                component.component_type === "Dynamic" ||
+                                user?.role !== ROLES_NAME.MAKER
                                   ? "#"
                                   : component.component_id
                               }
