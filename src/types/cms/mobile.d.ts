@@ -24,6 +24,26 @@ export interface MobileContentData {
   language_based_description?: { [key: string]: string };
   h1Text?: string;
   h2Ttext?: string[];
+  h3?: string;
+  color1?: string;
+  color2?: string;
+  icon?: string;
+  root_cause_name?: string;
+  callbooked?: { h1?: string; h2?: string; h3?: string };
+  callnotbooked?: { h1?: string; h2?: string; h3?: string };
+  cta1?: string;
+  cta2?: string;
+  loginImgUrl?: string;
+  title?: string;
+  bottomSheet?: {
+    root_cause_name?: string;
+    sub_heading?: string;
+  };
+  details?: {
+    description?: {
+      english?: string;
+    };
+  };
 }
 
 export interface MobileContent {
@@ -36,5 +56,6 @@ export interface MobileComponent {
   name: string;
   title?: string;
   description?: string;
+  sub_components?: object[];
   contents: MobileContent[];
 }
