@@ -1,4 +1,4 @@
-import { componentsList } from "./components";
+// import { componentsList } from "./components";
 import TrayaDoctors from "./MobileComponents/TrayaDoctors/TrayaDoctors";
 import GetStartedv2 from "./MobileComponents/GetStarted/GetStartedv2";
 import GoogleReview from "./MobileComponents/GoogleReview/GoogleReview";
@@ -78,7 +78,6 @@ export interface GetstartedBookCallProps {
   sub_components?: SubComponents[];
   title: string;
 }
-console.log(componentsList, "componentsList");
 function RenderComponents({ components }: RenderComponentsProps) {
   // if (!components) components = componentsList;
   const renderComponent = (item: MobileComponent) => {
@@ -90,7 +89,6 @@ function RenderComponents({ components }: RenderComponentsProps) {
       title = "",
     } = item;
 
-    console.log(sub_components, "sub_components");
     const componentsMap: Record<string, React.ReactNode> = {
       name_draft: <GetStartedv2 contents={contents} />,
       how_traya_works: <HowTrayaWorks contents={contents} title={title} />,

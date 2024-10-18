@@ -1,7 +1,7 @@
 export const componentsList = [
   {
     componentId: "component-1727025548970-rTPtvX",
-    name: "whytrusttraya",
+    name: "why_trust_traya",
     title: "",
     description: "",
     contents: [
@@ -15,7 +15,7 @@ export const componentsList = [
   },
   {
     componentId: "component-1727025548978-2YJTPO",
-    name: "takehairtest",
+    name: "take_hair_test",
     title: "",
     description: "",
     contents: [
@@ -32,7 +32,7 @@ export const componentsList = [
   },
   {
     componentId: "component-1727025549056-JG6Ou4",
-    name: "meetourteamdoctors",
+    name: "meet_our_team_doctors",
     title: "Meet Our Team Of Doctors",
     description: "",
     contents: [
@@ -207,7 +207,7 @@ export const componentsList = [
   },
   {
     componentId: "component-1727025549636-HXqxn5",
-    name: "namedraft",
+    name: "name_draft",
     title: "",
     description: "",
     contents: [
@@ -221,7 +221,7 @@ export const componentsList = [
   },
   {
     componentId: "component-1727025549648-3zHg6m",
-    name: "userreview",
+    name: "user_review",
     title: "Google Reviews & Ratings",
     description: "",
 
@@ -471,7 +471,7 @@ export const componentsList = [
   },
   {
     componentId: "component-1727027451853-fYa0So",
-    name: "trayaheros",
+    name: "traya_heroes",
     title: "Traya Heros",
     description: "Success stories from Traya users",
     contents: [
@@ -499,7 +499,7 @@ export const componentsList = [
   },
   {
     componentId: "component-1727029595619-CHIFr5",
-    name: "howTrayaWorks",
+    name: "how_traya_works",
     title: "How Traya Works",
     description: "",
     contents: [
@@ -543,6 +543,329 @@ export const componentsList = [
           cta_upper_text: "TM",
           icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/StartHairJourney.png",
           is_active: true,
+        },
+      },
+    ],
+  },
+  {
+    componentId: "component-1727627905657-rbhoeK",
+    name: "lead_book_a_call",
+    title: "",
+    description: "",
+    status: "published",
+    current_version: 1,
+    component_type: "Dynamic",
+    gender: "M",
+    sub_components: [
+      {
+        component_id: "component-1728005637201-1BqGP2",
+        name: "your_root_causes",
+        gender: "All",
+        language: "All",
+        component_type: "Dynamic",
+        is_sub_component: true,
+        status: "published",
+        current_version: 1,
+        contents: [
+          {
+            content_name: "Digestion",
+            content_type: "banner",
+            content_data: {
+              title: "Digestion",
+              title_ln: {
+                english: "Digestion",
+                hinglish: "Pachan",
+              },
+              imgUrl:
+                "https://d3twoz8hvcdm9h.cloudfront.net/uploads/rootcause/digestion.png",
+              loginImgUrl:
+                "https://d3twoz8hvcdm9h.cloudfront.net/uploads/rootcause/digestion.png",
+              colorIcons:
+                "https://d3twoz8hvcdm9h.cloudfront.net/App/rootCauseIcons/Digestion.png",
+              key: "digestion",
+              progressPercentage: 50,
+              bottomSheet: {
+                root_cause_name: "Digestion",
+                sub_heading:
+                  "37% of Indians experiencing hair loss battle poor gut health.",
+                description:
+                  "Digestion issues indicate poor gut health, which compromises the absorption of nutrients, thereby impacting hair nourishment.",
+                icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/result/rootCauses/digestion.png",
+                color1: "#E29867",
+                color2: "#F9DAC5",
+                root_cause_name_ln: {
+                  english: "Digestion",
+                  hinglish: "Pachan",
+                },
+                sub_heading_ln: {
+                  english:
+                    "37% of Indians experiencing hair loss battle poor gut health.",
+                  hinglish:
+                    "Hair loss se ladne wale 37% Bharatiyon ko pachan se related problems hain.",
+                },
+                description_ln: {
+                  english:
+                    "Digestion issues indicate poor gut health, which compromises the absorption of nutrients, thereby impacting hair nourishment.",
+                  hinglish:
+                    "Vitamin A, D, E aur biotin baalon ke poshan aur keratin banane ke liye bahut zaroori hain, isliye inki kami se hair loss ki problem ho sakti hai",
+                },
+              },
+              details: {
+                root_cause_name: {
+                  english: "Digestion",
+                },
+                icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/result/rootCauses/digestion.png",
+                description: {
+                  english:
+                    "Poor digestion directly affects the activity of our gut microbiome, limiting nutrient absorption leading to hair fall",
+                },
+                priority: 6,
+              },
+            },
+          },
+          {
+            content_name: "Nutrition",
+            content_type: "banner",
+            content_data: {
+              title: "Nutrition",
+              title_ln: {
+                english: "Nutrition",
+                hinglish: "Poshan",
+              },
+              imgUrl:
+                "https://d3twoz8hvcdm9h.cloudfront.net/uploads/rootcause/nutrition.png",
+              loginImgUrl:
+                "https://d3twoz8hvcdm9h.cloudfront.net/uploads/rootcause/nutrition.png",
+              colorIcons:
+                "https://d3twoz8hvcdm9h.cloudfront.net/App/rootCauseIcons/Nutrition.png",
+              key: "nutrition",
+              progressPercentage: 35,
+              bottomSheet: {
+                root_cause_name: "Nutrition",
+                sub_heading:
+                  "Around 52% people with hair loss also reported deficiencies.",
+                description:
+                  "Just like the body, our hair needs nutrition too. A poor diet compromises hair nourishment, creating a higher risk of hair loss.",
+                icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/result/rootCauses/nutrition.png",
+                color1: "#AECF98",
+                color2: "#EEFDF1",
+                root_cause_name_ln: {
+                  english: "Nutrition",
+                  hinglish: "Poshan",
+                },
+                sub_heading_ln: {
+                  english:
+                    "Around 52% people with hair loss also reported deficiencies.",
+                  hinglish:
+                    "Taqreeban 52% log jinhe hair loss hai unmein poshan ki kami bhi dekhi gayi.",
+                },
+                description_ln: {
+                  english:
+                    "Just like the body, our hair needs nutrition too. A poor diet compromises hair nourishment, creating a higher risk of hair loss.",
+                  hinglish:
+                    "Hamare baal ko bhi poshan ki zarurat hoti hai. Kharab diet se hair nourishment pe asar padta hai aur hair loss ka risk badh jaata hai",
+                },
+              },
+              details: {
+                root_cause_name: {
+                  english: "Nutrition",
+                },
+                icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/result/rootCauses/nutrition.png",
+                description: {
+                  english:
+                    "A poor diet can lead to nutrient gaps leaving your hair follicles without the nourishment, causing hair loss",
+                },
+                priority: 8,
+              },
+            },
+          },
+          {
+            content_name: "Lifestyle",
+            content_type: "banner",
+            content_data: {
+              title: "Lifestyle",
+              title_ln: {
+                english: "Lifestyle",
+                hinglish: "Jeevan Shaili",
+              },
+              imgUrl:
+                "https://d3twoz8hvcdm9h.cloudfront.net/uploads/rootcause/lifestyle.png",
+              loginImgUrl:
+                "https://d3twoz8hvcdm9h.cloudfront.net/uploads/rootcause/lifestyle.png",
+              colorIcons:
+                "https://d3twoz8hvcdm9h.cloudfront.net/App/rootCauseIcons/Lifestyle.png",
+              key: "lifestyle",
+              progressPercentage: 35,
+              bottomSheet: {
+                root_cause_name: "Lifestyle",
+                sub_heading:
+                  "Smokers have shown 2x risk of having hair loss than non-smokers.",
+                description:
+                  "Lifestyle factors like poor nutrition, stress, smoking, and lack of sleep can weaken follicles and increase their risk of damage.",
+                icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/result/rootCauses/lifestyle.png",
+                color1: "#FFC6C6",
+                color2: "#CC8585",
+                root_cause_name_ln: {
+                  english: "Lifestyle",
+                  hinglish: "Jeevan Shaili",
+                },
+                sub_heading_ln: {
+                  english:
+                    "Smokers have shown 2x risk of having hair loss than non-smokers.",
+                  hinglish:
+                    "Smokers ko non-smokers ke mukable do guna jyada hair loss ka khatra hota hai",
+                },
+                description_ln: {
+                  english:
+                    "Lifestyle factors like poor nutrition, stress, smoking, and lack of sleep can weaken follicles and increase their risk of damage.",
+                  hinglish:
+                    "Kharab nutrition, stress, smoking, aur neend ki kami se follicles kamzor hote hain aur damage hone ka risk badh jaata hai",
+                },
+              },
+              details: {
+                root_cause_name: {
+                  english: "Lifestyle",
+                },
+                icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/result/rootCauses/lifestyle.png",
+                description: {
+                  english:
+                    "Not eating well, stress, smoking, and poor sleep can weaken your hair and make it more likely to get damaged",
+                },
+                priority: 9,
+              },
+            },
+          },
+          {
+            content_name: "Genetics",
+            content_type: "banner",
+            content_data: {
+              title: "Genetics",
+              title_ln: {
+                english: "Genetics",
+                hinglish: "Anuvanshikta",
+              },
+              imgUrl:
+                "https://d3twoz8hvcdm9h.cloudfront.net/uploads/rootcause/genetics.png",
+              loginImgUrl:
+                "https://d3twoz8hvcdm9h.cloudfront.net/uploads/rootcause/genetics.png",
+              colorIcons:
+                "https://d3twoz8hvcdm9h.cloudfront.net/App/rootCauseIcons/Genetics.png",
+              key: "genetic",
+              progressPercentage: 75,
+              bottomSheet: {
+                root_cause_name: "Genetics",
+                sub_heading: "Almost half of the hair loss cases are genetic.",
+                description:
+                  "Genes can make hair follicles sensitive to DHT, which shrinks the follicles, leading to thinning and hair loss. It can be managed, only if acted upon early.",
+                icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/result/rootCauses/genetics.png",
+                color1: "#F7CCC5",
+                color2: "#CC8E85",
+                root_cause_name_ln: {
+                  english: "Genetics",
+                  hinglish: "Anuvanshikta",
+                },
+                sub_heading_ln: {
+                  english: "Almost half of the hair loss cases are genetic.",
+                  hinglish:
+                    "Aadhe se zyada hair loss genetics ki wajah se hote hain.",
+                },
+                description_ln: {
+                  english:
+                    "Genes can make hair follicles sensitive to DHT, which shrinks the follicles, leading to thinning and hair loss. It can be managed, only if acted upon early.",
+                  hinglish:
+                    "Genes ke kaaran, hair follicles DHT ke liye sensitive ho jate hain aur chhote hone lagte hain, isse baal patle hote hain aur jhadte hain. Agar jaldi action liya jaye toh isko manage kiya ja sakta hai",
+                },
+              },
+              details: {
+                root_cause_name: {
+                  english: "Genetics",
+                },
+                icon: "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/result/rootCauses/genetics.png",
+                description: {
+                  english:
+                    "Genetics determine your hair's response to dihydrotestosterone (DHT), which can cause the hair follicle to shrink and eventually close entirely",
+                },
+                priority: 3,
+              },
+            },
+          },
+        ],
+      },
+    ],
+    contents: [
+      {
+        content_id: "content-1727627905570-8tXjUc",
+        content_name: "hair_analysis_report_female",
+        content_type: "banner",
+        content_data: {
+          content_name: "hair_analysis_report_male",
+          content_type: "banner",
+          h1: "Here's what your hair analysis report says:",
+          img: "https://dvv8w2q8s3qot.cloudfront.net/App/Home/getStartedBC.png",
+          callbooked: {
+            h1: "Slot Booked",
+            h2: "",
+            h3: "",
+          },
+          callnotbooked: {
+            h1: "Still have doubts?",
+            h2: "Talk to a Hair Coach\nfor",
+            h3: "FREE",
+          },
+          cta1: true,
+          cta2: false,
+        },
+      },
+    ],
+  },
+  {
+    componentId: "component-1727627905634-4lf74M",
+    name: "what_happen_after_order_placed",
+    title: "What Happen After Place An Order?",
+    description: "",
+    status: "published",
+    current_version: 1,
+    component_type: "Static",
+    gender: "M",
+    sub_components: [],
+    contents: [
+      {
+        content_id: "content-1727627905568-x9mJN7",
+        content_name: "connect_with_hair_coach_male",
+        content_type: "banner",
+        content_data: {
+          content_name: "connect_with_hair_coach_male",
+          content_type: "banner",
+          title: "What Happens After You Place An Order?",
+          h1: "1",
+          h2: "Connect with a Hair Coach",
+          h3: "Get instant access to a free hair coach who will guide you on how to start the treatment.",
+        },
+      },
+      {
+        content_id: "content-1727627905568-MQCAtu",
+        content_name: "customised_diet_plan_male",
+        content_type: "banner",
+        content_data: {
+          content_name: "customised_diet_plan_male",
+          content_type: "banner",
+          title: "What Happens After You Place An Order?",
+          h1: "2",
+          h2: "Get a Customised Diet Plan",
+          h3: "Improve your hair health with a diet plan made just for you.",
+        },
+      },
+      {
+        content_id: "content-1727627905568-c0W5PV",
+        content_name: "stay_consistent_for_results_male",
+        content_type: "banner",
+        content_data: {
+          content_name: "stay_consistent_for_results_male",
+          content_type: "banner",
+          title: "What Happens After You Place An Order?",
+          h1: "3",
+          h2: "Stay Consistent to See Results",
+          h3: "Follow your routine and diet plan regularly to see your desired results.",
         },
       },
     ],
