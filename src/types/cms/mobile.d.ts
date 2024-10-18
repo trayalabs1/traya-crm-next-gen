@@ -58,6 +58,7 @@ export interface MobileContentData {
   img2?: string;
   number_perc?: string;
   h2?: string;
+  _id?: string;
 }
 
 interface componentDetails {
