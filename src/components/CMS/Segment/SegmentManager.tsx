@@ -160,8 +160,8 @@ export default function SegmentManager() {
                   <Plus className="mr-2 h-4 w-4" /> Add Segment
                 </Button>
               ) : null} */}
-                 {/* Search Input Field */}
-                 <Input
+              {/* Search Input Field */}
+              <Input
                 placeholder="Search Segments"
                 value={search}
                 onChange={(e) => {
