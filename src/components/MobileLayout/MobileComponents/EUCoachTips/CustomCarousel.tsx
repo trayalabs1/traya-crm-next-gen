@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 
 // Define generic type for CarouselProps
 interface CarouselProps<T> {
@@ -20,8 +20,16 @@ const CustomCarousel = <T,>({
   autoplay = false,
   loop = false,
   interval = 3000,
-  PaginationInActiveDot = { width: '6px', height: '6px', backgroundColor: '#ccc' },
-  PaginationActiveDot = { width: '16px', height: '6px', backgroundColor: '#000' },
+  PaginationInActiveDot = {
+    width: "6px",
+    height: "6px",
+    backgroundColor: "#ccc",
+  },
+  PaginationActiveDot = {
+    width: "16px",
+    height: "6px",
+    backgroundColor: "#000",
+  },
   showPagination = true,
   sliderWidth = 300,
   itemWidth = 300,
@@ -32,14 +40,18 @@ const CustomCarousel = <T,>({
   // Function to move to the next slide
   const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) =>
-      loop ? (prevIndex + 1) % totalSlides : Math.min(prevIndex + 1, totalSlides - 1)
+      loop
+        ? (prevIndex + 1) % totalSlides
+        : Math.min(prevIndex + 1, totalSlides - 1),
     );
   }, [loop, totalSlides]);
 
   // Function to move to the previous slide
   const prevSlide = useCallback(() => {
     setCurrentIndex((prevIndex) =>
-      loop ? (prevIndex - 1 + totalSlides) % totalSlides : Math.max(prevIndex - 1, 0)
+      loop
+        ? (prevIndex - 1 + totalSlides) % totalSlides
+        : Math.max(prevIndex - 1, 0),
     );
   }, [loop, totalSlides]);
 
@@ -54,11 +66,17 @@ const CustomCarousel = <T,>({
   }, [nextSlide, autoplay, interval]);
 
   return (
-    <div style={{ width: `${sliderWidth}px`, overflow: 'hidden', position: 'relative' }}>
+    <div
+      style={{
+        width: `${sliderWidth}px`,
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
       <div
         style={{
-          display: 'flex',
-          transition: 'transform 0.5s ease',
+          display: "flex",
+          transition: "transform 0.5s ease",
           transform: `translateX(-${currentIndex * itemWidth}px)`,
           width: `${totalSlides * itemWidth}px`,
         }}
@@ -76,7 +94,11 @@ const CustomCarousel = <T,>({
           {data.map((_, index) => (
             <span
               key={index}
-              style={index === currentIndex ? PaginationActiveDot : PaginationInActiveDot}
+              style={
+                index === currentIndex
+                  ? PaginationActiveDot
+                  : PaginationInActiveDot
+              }
               className={`inline-block mx-1 rounded-full`}
             />
           ))}
@@ -87,14 +109,14 @@ const CustomCarousel = <T,>({
       <button
         onClick={prevSlide}
         style={{
-          position: 'absolute',
-          top: '50%',
-          left: '10px',
-          transform: 'translateY(-50%)',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '24px',
+          position: "absolute",
+          top: "50%",
+          left: "10px",
+          transform: "translateY(-50%)",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "24px",
         }}
       >
         &#10094;
@@ -102,14 +124,14 @@ const CustomCarousel = <T,>({
       <button
         onClick={nextSlide}
         style={{
-          position: 'absolute',
-          top: '50%',
-          right: '10px',
-          transform: 'translateY(-50%)',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '24px',
+          position: "absolute",
+          top: "50%",
+          right: "10px",
+          transform: "translateY(-50%)",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "24px",
         }}
       >
         &#10095;

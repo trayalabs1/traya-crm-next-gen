@@ -73,11 +73,12 @@ function RenderComponents({ components }: RenderComponentsProps) {
       why_trust_traya: <WhyTrustTraya contents={contents} />,
       user_review: <GoogleReview contents={contents} title={title} />,
       meet_our_team_doctors: <TrayaDoctors contents={contents} title={title} />,
-      meet_our_team_of_doctors: <TrayaDoctors contents={contents} title={title} />,
+      meet_our_team_of_doctors: (
+        <TrayaDoctors contents={contents} title={title} />
+      ),
       take_hair_test: <HairTest contents={contents} />,
       coach_tips: <EUCoachTips contents={contents} title={title} />,
       success_stories: <SuccesStories contents={contents} title={title} />,
-
     };
 
     return (

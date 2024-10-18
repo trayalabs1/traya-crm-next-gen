@@ -1,5 +1,5 @@
-import React, { memo, useState } from 'react';
-import { MobileContent } from 'cms'; // Assuming this is the correct import for MobileContent
+import React, { memo, useState } from "react";
+import { MobileContent } from "cms"; // Assuming this is the correct import for MobileContent
 
 // Define the types for props
 interface SuccessStoryProps {
@@ -16,12 +16,12 @@ const SuccesStories: React.FC<SuccessStoryProps> = ({ contents, title }) => {
   // Handler for changing slides
   const handleNextSlide = () => {
     setActiveSlide((prev) => (prev + 1) % contents.length);
-    console.log('Swiped in success stories');
+    console.log("Swiped in success stories");
   };
 
   const handlePrevSlide = () => {
     setActiveSlide((prev) => (prev - 1 + contents.length) % contents.length);
-    console.log('Swiped in success stories');
+    console.log("Swiped in success stories");
   };
 
   return contents.length > 0 ? (
@@ -41,12 +41,11 @@ const SuccesStories: React.FC<SuccessStoryProps> = ({ contents, title }) => {
             }}
           >
             {contents.map((item, index) => (
-              <div
-                key={index}
-                className="min-w-full box-border text-center"
-              >
+              <div key={index} className="min-w-full box-border text-center">
                 <img
-                  src={item.content_data?.img ?? item.content_data?.thumbnail ?? ''}
+                  src={
+                    item.content_data?.img ?? item.content_data?.thumbnail ?? ""
+                  }
                   alt={`Success Story ${index}`}
                   className="w-full h-[450px] object-cover rounded-lg"
                   style={{ maxWidth: viewPortWidth - 32 }}
@@ -76,7 +75,7 @@ const SuccesStories: React.FC<SuccessStoryProps> = ({ contents, title }) => {
             <div
               key={i}
               className={`w-3 h-3 rounded-full mx-1 ${
-                i === activeSlide ? 'bg-gray-800' : 'bg-gray-300'
+                i === activeSlide ? "bg-gray-800" : "bg-gray-300"
               }`}
             ></div>
           ))}
