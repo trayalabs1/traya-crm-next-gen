@@ -37,7 +37,9 @@
       "@services/*": ["./src/services/*"],
       "@types/*": ["./src/types/*"],
       "@api/*": ["./src/api/*"],
-      "@queries/*": ["./src/queries/*"]
+      "@queries/*": ["./src/queries/*"],
+      "@context/*": ["./src/context/*"]
+
     },
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },

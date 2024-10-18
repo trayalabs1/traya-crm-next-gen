@@ -86,6 +86,8 @@ export default function OtpVerificationPage() {
 
       const { user } = useAuthStore.getState();
       if (user) {
+        ////////TODO: TEMP. get from backend
+        user.first_name = "Unknown Name";
         handleLogin(user);
       }
     } catch (error: unknown) {

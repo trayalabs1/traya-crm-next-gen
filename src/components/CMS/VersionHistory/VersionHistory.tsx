@@ -30,6 +30,7 @@ import { Component, Content, EntitiyType } from "cms";
 import { get, isArray, isEmpty, startCase } from "lodash";
 import NotDataAvailable from "@components/NoDataAvailable/NotDataAvailable";
 import { Segment } from "framer-motion";
+import { formatWithSpaces } from "@utils/common";
 
 export interface Entities {
   segment?: Segment | null;
@@ -52,7 +53,7 @@ export default function VersionHistory() {
   const navigate = useNavigate();
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.screenY > 300) {
+      if (window.scrollY > 150) {
         setShowScrollTop(true);
       } else {
         setShowScrollTop(false);
@@ -142,10 +143,10 @@ export default function VersionHistory() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex items-center justify-between flex-wrap">
           <Button
             variant="ghost"
-            className="flex items-center text-gray-600 hover:text-gray-900"
+            className="flex items-center text-gray-600 hover:text-gray-900 flex-wrap"
             onClick={onBack}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -206,7 +207,7 @@ export default function VersionHistory() {
                                 <Badge
                                   className={`${getStatusColor(item.status)} ml-2 hover:text-white`}
                                 >
-                                  {item.status}
+                                  {formatWithSpaces(item.status)}
                                 </Badge>
                               </div>
                               {item.comments && (
@@ -223,23 +224,26 @@ export default function VersionHistory() {
                                     <span className="text-sm font-semibold">
                                       Attachments:
                                     </span>
-                                    {item.attachments.map(
-                                      (
-                                        attachment: { url: string },
-                                        i: number,
-                                      ) => (
-                                        <a
-                                          key={i}
-                                          href={attachment.url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="flex items-center mt-1 text-sm text-blue-600 hover:underline"
-                                        >
-                                          <FileText className="h-4 w-4 mr-1" />
-                                          View Attachment
-                                        </a>
-                                      ),
-                                    )}
+                                    <Button
+                                      variant="link"
+                                      className="flex items-center mt-1 text-sm text-blue-600 hover:underline"
+                                      onClick={() => {
+                                        item.attachments.forEach(
+                                          (url: string) => {
+                                            const link =
+                                              document.createElement("a");
+                                            link.href = url;
+                                            link.download = "";
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                          },
+                                        );
+                                      }}
+                                    >
+                                      <FileText className="h-4 w-4 mr-1" />
+                                      View Attachments
+                                    </Button>
                                   </div>
                                 )}
                               <CollapsibleTrigger asChild>
@@ -345,7 +349,9 @@ export default function VersionHistory() {
             </Card>
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl font-bold">Audit Stats</CardTitle>
+                <CardTitle className="text-xl font-bold">
+                  Version Stats
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">

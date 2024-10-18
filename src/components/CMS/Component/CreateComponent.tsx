@@ -315,7 +315,9 @@ export default function CreateComponent({
                           isDisabled={!isNew || isDynamicType}
                           styles={reactSelectStyles}
                           placeholder="Select Gender"
-                          options={genderList}
+                          options={genderList.filter(
+                            (gender) => gender.label !== "Both",
+                          )}
                           value={value || null}
                         />
                       </FormControl>
@@ -367,7 +369,9 @@ export default function CreateComponent({
                           isDisabled={!isNew || isDynamicType}
                           styles={reactSelectStyles}
                           placeholder="Select Component Type"
-                          options={componentTypeList}
+                          options={componentTypeList.filter(
+                            (type) => type.label !== "Dynamic",
+                          )}
                           value={value || null}
                         />
                       </FormControl>

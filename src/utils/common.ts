@@ -101,7 +101,7 @@ export const formStatus: CustomOptionType[] = [
 export const genderList: CustomOptionType[] = [
   { label: "Male", value: "M" },
   { label: "Female", value: "F" },
-  // { label: "All", value: "All" },
+  { label: "Both", value: "All" },
 ];
 
 export const customerTypeList: CustomOptionType[] = [

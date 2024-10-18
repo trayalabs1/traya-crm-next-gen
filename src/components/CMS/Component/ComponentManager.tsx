@@ -29,7 +29,7 @@ import {
 } from "@components/ui/table";
 import { getComponents } from "@services/cmsServices";
 import { useQuery } from "@tanstack/react-query";
-import { Edit, FilterX, GitCompare, Plus } from "lucide-react";
+import { Edit, FilterX, GitCompare, History, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { get, map } from "lodash";
@@ -340,43 +340,32 @@ export default function ComponentManager() {
                           {get(component, ["component_type"], "-") || "-"}
                         </TableCell>
                         <TableCell>{get(component, "gender") || "-"}</TableCell>
-                        <TableCell>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                asChild
-                                variant="ghost"
-                                size="icon"
-                                className="no-underline"
-                              >
-                                <Link
-                                  to={`/cms/version-history/component/${component.component_id}`}
-                                  state={{ component }}
-                                >
-                                  {component.current_version}
-                                </Link>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Version History</p>
-                            </TooltipContent>
-                          </Tooltip>
+                        <TableCell align="left">
+                          {get(component, ["current_version"])}
                         </TableCell>
-                        {/* <TableCell className="text-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mr-2"
-                      onClick={() => {
-                        navigate(component.component_id);
-                      }}
-                    >
-                      <Edit className="mr-2 h-4 w-4" /> Edit
-                    </Button>
-   
-                  </TableCell> */}
+
                         <TableCell className="text-center">
                           <div className="flex justify-center space-x-2">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  asChild
+                                  className="text-white bg-teal-400 hover:bg-teal-600 focus:bg-teal-600"
+                                >
+                                  <Link
+                                    to={`/cms/version-history/component/${component.component_id}`}
+                                    state={{ component }}
+                                  >
+                                    <History />
+                                  </Link>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Version History</p>
+                              </TooltipContent>
+                            </Tooltip>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
@@ -394,13 +383,15 @@ export default function ComponentManager() {
                               </TooltipContent>
                             </Tooltip>
 
-                            {user?.role === ROLES_NAME.MAKER &&
-                            component.component_type !== "Dynamic" ? (
+                            {user?.role === ROLES_NAME.MAKER ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="outline"
                                     size="icon"
+                                    disabled={
+                                      component.component_type === "Dynamic"
+                                    }
                                     className={getCMSActionButtonColor("edit")}
                                     onClick={() => {
                                       navigate(component.component_id);
