@@ -56,6 +56,8 @@ import { Component, MobileComponent } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
 import { cn } from "@utils/shadcn";
+import { Input } from "@components/ui/input";
+import useDebounce from "@hooks/use-debounce";
 
 export default function ComponentManager() {
   const navigate = useNavigate();
@@ -67,6 +69,8 @@ export default function ComponentManager() {
   const [gender, setGender] = useState<string>("");
   const [componentType, setComponentType] = useState<string>("");
   const [version, setVersion] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(search, 600);
 
   const queryString = generateQueryString({
     page_number: String(page),
@@ -75,6 +79,7 @@ export default function ComponentManager() {
     current_version: version,
     gender,
     component_type: componentType,
+    search: debouncedSearch,
   });
 
   const { data, isLoading } = useQuery({
@@ -155,6 +160,7 @@ export default function ComponentManager() {
     setStatus(DEFAULT_STATUS);
     setVersion("");
     setGender("");
+    setSearch("");
   }
 
   const statusOptions = useFilteredStatusList(user?.role);
@@ -182,6 +188,16 @@ export default function ComponentManager() {
                   <Plus className="mr-2 h-4 w-4" /> Create Component
                 </Button>
               ) : null}
+              {/* Search Input Field */}
+              <Input
+                placeholder="Search Components"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1); // Reset to first page on search
+                }}
+                className="w-[200px]"
+              />
               <Select
                 onValueChange={(value) => {
                   setStatus(value);
