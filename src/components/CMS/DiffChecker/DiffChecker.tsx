@@ -375,8 +375,10 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
         </h2>
         {action === "CHANGES" ? (
           <div className="flex justify-end space-x-4 my-2">
-            {user?.role === ROLES_NAME.CHECKER &&
-            entity?.status === "approved_by_checker" ? (
+            {(user?.role === ROLES_NAME.CHECKER &&
+              entity?.status === "submitted") ||
+            (user?.role === ROLES_NAME.PUBLISHER &&
+              entity?.status === "approved_by_checker") ? (
               <CommonDialog
                 isOpen={isDiscardDialogOpen}
                 setIsDialogOpen={setIsDiscardDialogOpen}
