@@ -46,9 +46,25 @@ export interface MobileContentData {
   };
 }
 
+interface componentDetails {
+  title?: string;
+  cardNumber?: number;
+  description?: string;
+  img_url?: string;
+  description_ln: {
+    english?: string;
+    hinglish?: string;
+  };
+}
+
 export interface MobileContent {
   content_id: string;
   content_data: MobileContentData;
+  product_id?: string;
+  name?: string;
+  image_url?: string;
+  showComponent?: true;
+  componentDetails?: componentDetails[];
 }
 
 export interface MobileComponent {
@@ -57,5 +73,5 @@ export interface MobileComponent {
   title?: string;
   description?: string;
   sub_components?: object[];
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
 }

@@ -204,11 +204,13 @@ export default function SegmentManager() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Gender</SelectLabel>
-                    {genderList.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
+                    {genderList
+                      .filter((gender) => gender.label !== "Both")
+                      .map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>

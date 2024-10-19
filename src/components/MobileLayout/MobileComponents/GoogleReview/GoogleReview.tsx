@@ -62,7 +62,9 @@ const ReviewCard = ({ item }: { item: Review }) => {
 };
 
 const GoogleReviews: React.FC<GoogleReviewsProps> = ({ contents, title }) => {
-  const usersReview = contents.map((item) => item.content_data);
+  const usersReview = Array.isArray(contents)
+    ? contents.map((item) => item.content_data)
+    : [];
   const reviewCount = { rating: 10, userCount: 100 };
 
   if (usersReview.length === 0) {

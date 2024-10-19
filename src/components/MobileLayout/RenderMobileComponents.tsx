@@ -9,63 +9,67 @@ import HairTest from "./MobileComponents/HairTest/HairTest";
 import { MobileComponent, MobileContent } from "cms";
 import NotFound from "./MobileComponents/NotFound";
 import { memo } from "react";
-import WhatHappenAfterOrder from "./MobileComponents/New/WhatHappenAfterOrder";
-import GetstartedBookCall from "./MobileComponents/New/GetstartedBookCall";
+import GetstartedBookCall from "./MobileComponents/GetstartedBookCall/GetstartedBookCall";
+import HairGrowthKit from "./MobileComponents/HairGrowthKit/HairGrowthKit";
+import JourneyLookLikeFemale from "./MobileComponents/JourneyLookLikeFemale/JourneyLookLikeFemale";
+import WhatHappenAfterOrder from "./MobileComponents/WhatHappenAfterOrder/WhatHappenAfterOrder";
+import JourneyLookLike from "./MobileComponents/JourneyLookLike/JourneyLookLike";
 export interface GetStartedV2Props {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
 }
 
 export interface HowTrayaWorksProps {
   title: string;
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
 }
 
 export interface TrayaHeroesScreenProps {
   title: string;
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
 }
 
 export interface WhyTrustTrayaProps {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
 }
 export interface GoogleReviewsProps {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
   title: string;
 }
 
 export interface TrayaDoctorsProps {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
   title: string;
 }
 
 export interface HairTestProps {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
   // title: string;
 }
 
 export interface NotFoundProps {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
   name: string;
   title: string;
 }
 interface RenderComponentsProps {
   components?: MobileComponent[];
+  gender?: "F" | "M";
 }
 
 export interface WhatHappenAfterOrderProps {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
   title: string;
 }
 
 export interface RootCausesProps {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
   title: string;
 }
 
 export interface SubComponents {
   component_id?: string;
   component_type?: string;
-  contents?: MobileContent[];
+  contents?: MobileContent[] | MobileContent;
   current_version?: number;
   gender?: string;
   is_sub_component?: boolean;
@@ -74,11 +78,29 @@ export interface SubComponents {
   status?: string;
 }
 export interface GetstartedBookCallProps {
-  contents: MobileContent[];
+  contents: MobileContent[] | MobileContent;
   sub_components?: SubComponents[];
   title: string;
 }
-function RenderComponents({ components }: RenderComponentsProps) {
+
+export interface HairGrowthKitProps {
+  contents: MobileContent[] | MobileContent;
+  lang?: string;
+  title: string;
+}
+export interface JourneyLookLikeFemaleProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+}
+
+export interface JourneyLookLikeProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+  props?: {
+    home?: string;
+  };
+}
+function RenderComponents({ components, gender = "M" }: RenderComponentsProps) {
   // if (!components) components = componentsList;
   const renderComponent = (item: MobileComponent) => {
     const {
@@ -111,6 +133,13 @@ function RenderComponents({ components }: RenderComponentsProps) {
           title={title}
         />
       ),
+      your_first_month_kit: <HairGrowthKit contents={contents} title={title} />,
+      hair_growth_journey:
+        gender === "F" ? (
+          <JourneyLookLikeFemale contents={contents} title={title} />
+        ) : (
+          <JourneyLookLike contents={contents} title={title} />
+        ),
     };
 
     return (

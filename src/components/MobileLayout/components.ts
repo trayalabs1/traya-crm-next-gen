@@ -870,4 +870,102 @@ export const componentsList = [
       },
     ],
   },
+  {
+    componentId: "component-1728005637201-XMqITE",
+    name: "your_first_month_kit",
+    title: "Your First Month Kit",
+    description: "",
+    status: "published",
+    current_version: 1,
+    component_type: "Dynamic",
+    gender: "All",
+    sub_components: [],
+    contents: [
+      {
+        product_id: "37997006225586",
+        name: "Minoxidil 5%",
+        image_url:
+          "https://d3twoz8hvcdm9h.cloudfront.net/sku_images/v3/digestBoost.png",
+      },
+      {
+        product_id: "42437558468786",
+        name: "Digest Boost for Improved Digestive Ability",
+        image_url:
+          "https://d3twoz8hvcdm9h.cloudfront.net/sku_images/v3/digestBoost.png",
+      },
+      {
+        product_id: "37546042785970",
+        name: "Defence shampoo",
+        image_url:
+          "https://d3twoz8hvcdm9h.cloudfront.net/products/product_cards/defence_shampoo_100ml.jpg",
+      },
+      {
+        product_id: "37546421289138",
+        name: "Hair Ras",
+        image_url:
+          "https://d3twoz8hvcdm9h.cloudfront.net/products/product_cards/hair_ras.jpg",
+      },
+      {
+        product_id: "44479548031154",
+        name: "Scalp Oil 50ml with Growth Oil Shot",
+        image_url:
+          "https://d3twoz8hvcdm9h.cloudfront.net/products/product_cards/scalp_oil_50ml_growth_oil_shot.jpg",
+      },
+    ],
+  },
+  {
+    componentId: "component-1728006165765-RoETYE",
+    name: "hair_growth_journey",
+    title: "Hair Growth Journey",
+    description: "",
+    status: "draft",
+    current_version: 1,
+    component_type: "Dynamic",
+    gender: "All",
+    sub_components: [],
+    contents: {
+      showComponent: true,
+      componentDetails: [
+        {
+          title: "Month 1-2",
+          cardNumber: 1,
+          description:
+            "Addressing digestion issues which is an internal trigger for hair loss",
+          img_url:
+            "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/digestion_male.png",
+          description_ln: {
+            english:
+              "Addressing digestion issues which is an internal trigger for hair loss",
+            hinglish:
+              "Digestion issues ka samadhan, jo hair loss ke liye ek internal trigger hai",
+          },
+        },
+        {
+          title: "Month 3-4",
+          cardNumber: 2,
+          description:
+            "Visible reduction in hair fall and improved follicular health",
+          img_url:
+            "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/hair_fall_male.png",
+          description_ln: {
+            english:
+              "Visible reduction in hair fall and improved follicular health",
+            hinglish:
+              "Hair fall kam hota hua nazar aayega aur follicle health behtar hogi",
+          },
+        },
+        {
+          title: "Month 5",
+          cardNumber: 3,
+          description: "Onset of new baby hair growth",
+          img_url:
+            "https://d3twoz8hvcdm9h.cloudfront.net/App/Home/baby_hair_growth_male.png",
+          description_ln: {
+            english: "Onset of new baby hair growth",
+            hinglish: "Naye baby hair ki growth dikhegi",
+          },
+        },
+      ],
+    },
+  },
 ];

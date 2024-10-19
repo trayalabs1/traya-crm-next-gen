@@ -40,7 +40,9 @@ const TrayaDoctors: React.FC<TrayaDoctorsProps> = ({
   contents,
   title,
 }) => {
-  const trayaDoctors = contents.map((item) => item.content_data);
+  const trayaDoctors = Array.isArray(contents)
+    ? contents.map((item) => item.content_data)
+    : [];
 
   if (trayaDoctors.length === 0) {
     return null;

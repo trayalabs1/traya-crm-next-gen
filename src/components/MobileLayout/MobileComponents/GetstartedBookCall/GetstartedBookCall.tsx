@@ -3,9 +3,9 @@ import dayjs from "dayjs";
 
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
-import RootCausesItems from "./RootCausesItems";
 import { GetstartedBookCallProps } from "@components/MobileLayout/RenderMobileComponents";
 import { useAuth } from "@context/useAuth";
+import RootCausesItems from "./RootCausesItems";
 
 interface ReportData {
   root_causes: {
@@ -21,10 +21,15 @@ const GetstartedBookCall: React.FC<GetstartedBookCallProps> = ({
   const [dateTime] = useState<string | null>(new Date().toISOString());
   const [reportData] = useState<ReportData>();
 
-  const componentSegmentJson = contents.map((item) => item.content_data)[0];
-  const subcomponentSegmentJson = Array.isArray(sub_components)
-    ? sub_components[0].contents?.map((item) => item.content_data)
-    : [];
+  const componentSegmentJson = Array.isArray(contents)
+    ? contents.map((item) => item.content_data)[0]
+    : {};
+  const subcomponentSegmentJson =
+    Array.isArray(sub_components) && sub_components.length > 0
+      ? Array.isArray(sub_components[0].contents)
+        ? sub_components[0].contents.map((item) => item.content_data)
+        : []
+      : [];
 
   const { user } = useAuth();
 
