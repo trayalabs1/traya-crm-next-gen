@@ -224,10 +224,3 @@ function RenderComponents({
 }
 
 export default memo(RenderComponents);
-// why_this_plan_work_for_me : <VideoComp contents={contents} title={title} />,
-// hair_growth_journey: gender == 'F' ?  <JourneyLookLikeFemale contents={contents} title={title} /> : <JourneyLokkLike contents={contents} title={title} />,
-// chat_with_us:<ChatWithHairExpert contents={contents}  title={title} />,
-// understand_your_concern:<SolutionHairConcern contents={contents} title={title} />,
-// how_traya_works:<HowTrayaWorks contents={contents} title={title} />,
-// traya_heroes:<TrayaHeroesScreen contents={contents} title={title} />,
-// what_happen_after_order_placed:<WhatHappenAfterOrder contents={contents} title={title} />,
