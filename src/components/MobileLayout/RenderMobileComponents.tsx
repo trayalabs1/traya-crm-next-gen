@@ -17,9 +17,11 @@ import JourneyLookLike from "./MobileComponents/JourneyLookLike/JourneyLookLike"
 import MyTrayaKitScreen from "./MobileComponents/MyTrayaKitScreen/MyTrayaKitScreen";
 import ChatWithHairExpert from "./MobileComponents/ChatWithHairExpert/ChatWithHairExpert";
 import TrayaHolistic from "./MobileComponents/TrayaHolistic/TrayaHolistic";
-import RetakeHairBanner from "./MobileComponents/RetakeHairBanner/RetakeHairBanner";
+import RetakeHairBanner from "./MobileComponents/Retakehairbanner/RetakeHairBanner";
 import CategorySlider from "./MobileComponents/CategorySlider/CategorySlider";
 import Urgency from "./MobileComponents/Urgency/Urgency";
+import StayConsistent from "./MobileComponents/StayConsistent/StayConsistent";
+import EUCoachTips from "./MobileComponents/CoachTips/CoachTips";
 export interface GetStartedV2Props {
   contents: MobileContent[] | MobileContent;
 }
@@ -141,6 +143,16 @@ export interface UrgencyProps {
   title: string;
   lang: Language;
 }
+
+export interface StayConsistentProps {
+  contents: MobileContent[] | MobileContent;
+}
+
+export interface EUCoachTipsProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+}
+
 function RenderComponents({
   components,
   gender = "M",
@@ -204,6 +216,8 @@ function RenderComponents({
       act_now_stage_2: (
         <Urgency lang={lang} contents={contents} title={title} />
       ),
+      coach_tips: <EUCoachTips contents={contents} title={title} />,
+      stay_consistent_order_O1: <StayConsistent contents={contents} />,
     };
 
     return (
