@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { useAuth } from "src/context/useAuth";
-import { Navigate, RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import GuestRoute from "./GuestRoute";
 import Login from "@components/Login/Login";
@@ -8,6 +8,7 @@ import NotFound from "@components/NotFound/NotFound";
 import ForgotPasswordPage from "@components/ForgetPassword/ForgetPassword";
 import OtpVerification from "@components/Login/OTPVerification";
 import ExternalLogin from "@components/Login/ExternalLogin";
+import RenderMobileComponents from "@components/MobileLayout/RenderMobileComponents";
 
 const VersionHistory = lazy(
   () => import("@components/CMS/VersionHistory/VersionHistory"),
@@ -57,7 +58,8 @@ const AppRoutesConfig = (): RouteObject[] => {
       path: "/",
       element: (
         <PrivateRoute isAuthenticated={isAuthenticated}>
-          <Navigate to="/cms/segments" />
+          {/* <Navigate to="/cms/segments" /> */}
+          <RenderMobileComponents />
         </PrivateRoute>
       ),
     },

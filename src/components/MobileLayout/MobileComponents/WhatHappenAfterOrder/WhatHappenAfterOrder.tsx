@@ -1,14 +1,9 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { WhatHappenAfterOrderProps } from "@components/MobileLayout/RenderMobileComponents";
+import { MobileContentData } from "cms";
 
-interface OrderItem {
-  item: {
-    h1?: string;
-    h2?: string;
-    h3?: string;
-  };
-}
+type OrderItem = { item: Pick<MobileContentData, "h1" | "h2" | "h3"> };
 const Card = ({ item }: OrderItem) => (
   <div className="h-[150px] border border-[#DDDDDD] mx-4 rounded-lg p-4 mb-2.5">
     <div className="flex items-center">
