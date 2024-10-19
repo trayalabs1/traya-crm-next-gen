@@ -23,7 +23,6 @@ import JourneyLookLike from "./MobileComponents/JourneyLookLike/JourneyLookLike"
 import MyTrayaKitScreen from "./MobileComponents/MyTrayaKitScreen/MyTrayaKitScreen";
 import ChatWithHairExpert from "./MobileComponents/ChatWithHairExpert/ChatWithHairExpert";
 import TrayaHolistic from "./MobileComponents/TrayaHolistic/TrayaHolistic";
-import RetakeHairBanner from "./MobileComponents/Retakehairbanner/RetakeHairBanner";
 import CategorySlider from "./MobileComponents/CategorySlider/CategorySlider";
 import Urgency from "./MobileComponents/Urgency/Urgency";
 import RootCauses from "./MobileComponents/RootCauses/RootCauses";
@@ -35,6 +34,7 @@ import BookCall from "./MobileComponents/BookCall/BookCall";
 import GetStart from "./MobileComponents/TopSection/GetStart";
 import StayConsistent from "./MobileComponents/StayConsistent/StayConsistent";
 import EUCoachTips from "./MobileComponents/CoachTips/CoachTips";
+import RetakeHairBanner from "./MobileComponents/RetakeHairBanner/RetakeHairBanner";
 export interface GetStartedV2Props {
   contents: MobileContent[] | MobileContent;
 }
