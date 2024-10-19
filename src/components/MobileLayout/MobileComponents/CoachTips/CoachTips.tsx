@@ -6,7 +6,9 @@ const EUCoachTips: React.FC<EUCoachTipsProps> = ({ contents, title }) => {
   contents = Array.isArray(contents) ? contents : [];
 
   // Extract content_data from the first object in contents array
-  const coachTips = contents[0]?.content_data || [];
+  const coachTips = Array.isArray(contents[0]?.content_data)
+    ? contents[0]?.content_data
+    : [];
 
   const [activeIndex, setActiveIndex] = useState(0);
 

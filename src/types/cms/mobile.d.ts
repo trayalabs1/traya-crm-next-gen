@@ -1,7 +1,7 @@
 export interface MobileContentData {
   img?: string;
   h1?: string;
-  h2?: string;
+  h2?: string | string[];
   cta?: string;
   prefix?: string;
   doctor_name?: string;
@@ -54,10 +54,13 @@ export interface MobileContentData {
   subcategory?: object;
   time_span?: string;
   img1?: string;
-  h1?: string;
   img2?: string;
   number_perc?: string;
-  h2?: string;
+  icon?: string;
+  root_cause_name?: string;
+  icon?: string;
+  content?: string;
+  images?: string;
   _id?: string;
 }
 
@@ -80,6 +83,11 @@ export interface MobileContent {
   image_url?: string;
   showComponent?: true;
   componentDetails?: componentDetails[];
+  images_circle?: string;
+  title?: string;
+  h1?: string;
+  cta1?: string;
+  cta2?: string;
 }
 
 export interface MobileComponent {
@@ -87,6 +95,40 @@ export interface MobileComponent {
   name: string;
   title?: string;
   description?: string;
-  sub_components?: object[];
+  sub_components?: SubComponents[] | SubComponents;
   contents: MobileContent[] | MobileContent;
 }
+
+export interface SubComponents {
+  component_id?: string;
+  component_type?: string;
+  contents?: MobileContent[] | MobileContent;
+  current_version?: number;
+  gender?: string;
+  is_sub_component?: boolean;
+  language?: string;
+  name?: string;
+  status?: string;
+  taskList?: TaskList[];
+}
+
+export interface TaskList {
+  userTaskDetailId: string;
+  h1: string;
+  h2: string;
+  h3: string[];
+  urlOrText: string;
+  eventName: string;
+  navigation: {
+    button_text: string;
+    url_or_text: string;
+    params: {
+      url: string;
+    };
+  }[];
+  type: string;
+  priority: string;
+  taskName: string;
+}
+export type Language = "hinglish" | "english";
+export type Gender = "F" | "M";

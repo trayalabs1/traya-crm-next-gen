@@ -3,7 +3,6 @@ import React from "react";
 
 const TrayaHolistic: React.FC<TrayaHolisticProps> = ({ contents, title }) => {
   const contentsDetails = Array.isArray(contents) ? contents : [];
-  console.log(contentsDetails[0]?.content_data?.img, "contentsDetails");
   return (
     <div className="mb-6">
       <h2 className="text-xl font-bold font-nunito text-[#212121] mb-4 mx-4">
