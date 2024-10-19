@@ -8,7 +8,9 @@ const GetStartedV2: React.FC<GetStartedV2Props> = ({ contents }) => {
     <div className="relative">
       <div
         className="h-[420px] bg-cover bg-center"
-        style={{ backgroundImage: `url(${contents[0]?.content_data?.img})` }}
+        style={{
+          backgroundImage: `url(${Array.isArray(contents) && contents[0]?.content_data?.img})`,
+        }}
       >
         <p className="text-lg font-nunito text-white px-4 pt-10">
           {first_name} 👋

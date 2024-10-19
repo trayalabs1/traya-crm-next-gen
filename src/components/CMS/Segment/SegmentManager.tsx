@@ -55,6 +55,9 @@ import {
 import { Segment } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
+import { cn } from "@utils/shadcn";
+import { Input } from "@components/ui/input";
+import useDebounce from "@hooks/use-debounce";
 export default function SegmentManager() {
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
@@ -65,6 +68,8 @@ export default function SegmentManager() {
   const [version, setVersion] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [customerType, setCustomerType] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(search, 600);
 
   const queryString = generateQueryString({
     page_number: String(page),
@@ -73,6 +78,7 @@ export default function SegmentManager() {
     current_version: version,
     gender,
     customer_type: customerType,
+    search: debouncedSearch,
   });
   const { data, isLoading } = useQuery({
     queryKey: ["getSegments", queryString],
@@ -130,6 +136,7 @@ export default function SegmentManager() {
     setVersion("");
     setGender("");
     setCustomerType("");
+    setSearch("");
   }
   if (isLoading) return <TableSkeleton />;
   return (
@@ -153,6 +160,16 @@ export default function SegmentManager() {
                   <Plus className="mr-2 h-4 w-4" /> Add Segment
                 </Button>
               ) : null} */}
+              {/* Search Input Field */}
+              <Input
+                placeholder="Search Segments"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1); // Reset to first page on search
+                }}
+                className="w-[200px]"
+              />
               <Select
                 onValueChange={(value) => {
                   setStatus(value);
@@ -187,11 +204,13 @@ export default function SegmentManager() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Gender</SelectLabel>
-                    {genderList.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
+                    {genderList
+                      .filter((gender) => gender.label !== "Both")
+                      .map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -278,9 +297,22 @@ export default function SegmentManager() {
                           <Button
                             asChild
                             variant="link"
-                            className="no-underline"
+                            className={cn(
+                              "no-underline",
+                              user?.role !== ROLES_NAME.MAKER
+                                ? "cursor-not-allowed"
+                                : "",
+                            )}
                           >
-                            <Link to={segment.segment_id}>{segment.name}</Link>
+                            <Link
+                              to={
+                                user?.role !== ROLES_NAME.MAKER
+                                  ? "#"
+                                  : segment.segment_id
+                              }
+                            >
+                              {segment.name}
+                            </Link>
                           </Button>
                         </TableCell>
                         <TableCell>

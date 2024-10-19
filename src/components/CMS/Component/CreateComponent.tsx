@@ -315,9 +315,7 @@ export default function CreateComponent({
                           isDisabled={!isNew || isDynamicType}
                           styles={reactSelectStyles}
                           placeholder="Select Gender"
-                          options={genderList.filter(
-                            (gender) => gender.label !== "Both",
-                          )}
+                          options={genderList}
                           value={value || null}
                         />
                       </FormControl>

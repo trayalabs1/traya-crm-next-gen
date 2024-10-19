@@ -27,7 +27,9 @@ const WhatHappenAfterOrder: React.FC<WhatHappenAfterOrderProps> = ({
   contents,
   title,
 }) => {
-  const whatHappenAfterOrder = contents.map((item) => item.content_data);
+  const whatHappenAfterOrder = Array.isArray(contents)
+    ? contents.map((item) => item.content_data)
+    : [];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (whatHappenAfterOrder.length === 0) return null;

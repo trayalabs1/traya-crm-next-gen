@@ -31,48 +31,50 @@ const HowTrayaWorks: React.FC<HowTrayaWorksProps> = ({ contents, title }) => {
           className="flex transition-transform duration-300 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {contents.map((item) => (
-            <div key={item.content_id} className="min-w-full flex p-4">
-              <div
-                className={cn(
-                  "max-w-20 max-h-20 p-5 bg-[#F2F4EB] border rounded-xl flex items-center justify-center",
-                  `bg-[${doubleQuotesRemover(COLORS.greyF2F4EB)}]`,
-                )}
-              >
-                <img
-                  className="w-full h-auto max-h-10 object-contain"
-                  src={item.content_data.icon}
-                  alt={item.content_data.h1_text}
-                />
+          {Array.isArray(contents) &&
+            contents.map((item) => (
+              <div key={item.content_id} className="min-w-full flex p-4">
+                <div
+                  className={cn(
+                    "max-w-20 max-h-20 p-5 bg-[#F2F4EB] border rounded-xl flex items-center justify-center",
+                    `bg-[${doubleQuotesRemover(COLORS.greyF2F4EB)}]`,
+                  )}
+                >
+                  <img
+                    className="w-full h-auto max-h-10 object-contain"
+                    src={item.content_data.icon}
+                    alt={item.content_data.h1_text}
+                  />
+                </div>
+                <div className="flex flex-col space-y-1 ml-4">
+                  <p className="font-nunito font-normal text-[#727272]">
+                    {item.content_data.step_text}
+                  </p>
+                  <h1 className="font-nunito font-bold text-[#212121]">
+                    {item.content_data.h1_text}
+                  </h1>
+                  <p className="text-left text-ellipsis font-nunito text-[#212121]">
+                    {item.content_data.description}
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-col space-y-1 ml-4">
-                <p className="font-nunito font-normal text-[#727272]">
-                  {item.content_data.step_text}
-                </p>
-                <h1 className="font-nunito font-bold text-[#212121]">
-                  {item.content_data.h1_text}
-                </h1>
-                <p className="text-left text-ellipsis font-nunito text-[#212121]">
-                  {item.content_data.description}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
       <div className="flex justify-center items-center mt-4 space-x-2">
-        {contents.map((_, index) => (
-          <button
-            key={index}
-            className={`${
-              index === currentIndex
-                ? "w-3 h-1 bg-black"
-                : "w-1 h-1 bg-gray-500"
-            } rounded transition-all duration-300`}
-            onClick={() => goToSlide(index)}
-            aria-label={`Go to slide ${index + 1}`}
-          ></button>
-        ))}
+        {Array.isArray(contents) &&
+          contents.map((_, index) => (
+            <button
+              key={index}
+              className={`${
+                index === currentIndex
+                  ? "w-3 h-1 bg-black"
+                  : "w-1 h-1 bg-gray-500"
+              } rounded transition-all duration-300`}
+              onClick={() => goToSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            ></button>
+          ))}
       </div>
     </div>
   );

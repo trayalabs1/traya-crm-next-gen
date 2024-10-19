@@ -10,17 +10,21 @@ const HairTest: React.FC<HairTestProps> = ({ contents }) => {
   return (
     <div className="">
       <h1 className="text-lg font-nunito font-bold text-[#212121] p-4 text-ellipsis">
-        {contents[0]?.content_data?.h1}
+        {Array.isArray(contents) && contents[0]?.content_data?.h1}
       </h1>
       <p className="text-base font-nunito text-[#212121] px-4 text-ellipsis">
-        {contents[0]?.content_data?.h2}
+        {Array.isArray(contents) && contents[0]?.content_data?.h2}
       </p>
 
       <div className="p-4">
         <CustomBtn
           onPress={() => {}}
-          btnText={contents[0]?.content_data?.cta}
-          btnSubText={contents[0]?.content_data?.prefix}
+          btnText={
+            Array.isArray(contents) ? contents[0]?.content_data?.cta : ""
+          }
+          btnSubText={
+            Array.isArray(contents) ? contents[0]?.content_data?.prefix : ""
+          }
         />
       </div>
     </div>

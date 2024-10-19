@@ -3,7 +3,10 @@ import { WhyTrustTrayaProps } from "@components/MobileLayout/RenderMobileCompone
 const WhyTrustTraya: React.FC<WhyTrustTrayaProps> = ({ contents }) => {
   return (
     <div>
-      <img src={contents[0]?.content_data?.img} className="object-cover" />
+      <img
+        src={Array.isArray(contents) ? contents[0]?.content_data?.img : ""}
+        className="object-cover"
+      />
     </div>
   );
 };
