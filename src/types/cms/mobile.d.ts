@@ -61,6 +61,7 @@ export interface MobileContentData {
   icon?: string;
   content?: string;
   images?: string;
+  _id?: string;
 }
 
 interface componentDetails {

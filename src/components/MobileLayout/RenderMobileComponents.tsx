@@ -23,7 +23,7 @@ import JourneyLookLike from "./MobileComponents/JourneyLookLike/JourneyLookLike"
 import MyTrayaKitScreen from "./MobileComponents/MyTrayaKitScreen/MyTrayaKitScreen";
 import ChatWithHairExpert from "./MobileComponents/ChatWithHairExpert/ChatWithHairExpert";
 import TrayaHolistic from "./MobileComponents/TrayaHolistic/TrayaHolistic";
-import RetakeHairBanner from "./MobileComponents/RetakeHairBanner/RetakeHairBanner";
+import RetakeHairBanner from "./MobileComponents/Retakehairbanner/RetakeHairBanner";
 import CategorySlider from "./MobileComponents/CategorySlider/CategorySlider";
 import Urgency from "./MobileComponents/Urgency/Urgency";
 import RootCauses from "./MobileComponents/RootCauses/RootCauses";
@@ -33,6 +33,8 @@ import DietPlanOld from "./MobileComponents/DietPlan/DietPlanOld";
 import SolutionHairConcern from "./MobileComponents/SolutionHairConcern/SolutionHairConcern";
 import BookCall from "./MobileComponents/BookCall/BookCall";
 import GetStart from "./MobileComponents/TopSection/GetStart";
+import StayConsistent from "./MobileComponents/StayConsistent/StayConsistent";
+import EUCoachTips from "./MobileComponents/CoachTips/CoachTips";
 export interface GetStartedV2Props {
   contents: MobileContent[] | MobileContent;
 }
@@ -177,6 +179,16 @@ export interface GetStartProps {
   gender: Gender;
   sub_components?: SubComponents[] | SubComponents;
 }
+
+export interface StayConsistentProps {
+  contents: MobileContent[] | MobileContent;
+}
+
+export interface EUCoachTipsProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+}
+
 function RenderComponents({
   components,
   gender = "M",
@@ -272,6 +284,8 @@ function RenderComponents({
           title={title}
         />
       ),
+      coach_tips: <EUCoachTips contents={contents} title={title} />,
+      stay_consistent_order_O1: <StayConsistent contents={contents} />,
     };
 
     return (
