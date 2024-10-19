@@ -27,6 +27,7 @@ export interface MobileContentData {
   h3?: string;
   color1?: string;
   color2?: string;
+  color3?: string;
   icon?: string;
   root_cause_name?: string;
   callbooked?: { h1?: string; h2?: string; h3?: string };
@@ -35,6 +36,8 @@ export interface MobileContentData {
   cta2?: string;
   loginImgUrl?: string;
   title?: string;
+  whatsApp?: string;
+  image?: string;
   bottomSheet?: {
     root_cause_name?: string;
     sub_heading?: string;
@@ -44,6 +47,17 @@ export interface MobileContentData {
       english?: string;
     };
   };
+  ctaName?: string;
+  key?: string;
+  label?: string;
+  categoryIcon?: string;
+  subcategory?: object;
+  time_span?: string;
+  img1?: string;
+  h1?: string;
+  img2?: string;
+  number_perc?: string;
+  h2?: string;
 }
 
 interface componentDetails {

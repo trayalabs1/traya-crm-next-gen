@@ -14,6 +14,12 @@ import HairGrowthKit from "./MobileComponents/HairGrowthKit/HairGrowthKit";
 import JourneyLookLikeFemale from "./MobileComponents/JourneyLookLikeFemale/JourneyLookLikeFemale";
 import WhatHappenAfterOrder from "./MobileComponents/WhatHappenAfterOrder/WhatHappenAfterOrder";
 import JourneyLookLike from "./MobileComponents/JourneyLookLike/JourneyLookLike";
+import MyTrayaKitScreen from "./MobileComponents/MyTrayaKitScreen/MyTrayaKitScreen";
+import ChatWithHairExpert from "./MobileComponents/ChatWithHairExpert/ChatWithHairExpert";
+import TrayaHolistic from "./MobileComponents/TrayaHolistic/TrayaHolistic";
+import RetakeHairBanner from "./MobileComponents/RetakeHairBanner/RetakeHairBanner";
+import CategorySlider from "./MobileComponents/CategorySlider/CategorySlider";
+import Urgency from "./MobileComponents/Urgency/Urgency";
 export interface GetStartedV2Props {
   contents: MobileContent[] | MobileContent;
 }
@@ -51,9 +57,12 @@ export interface NotFoundProps {
   name: string;
   title: string;
 }
+type Language = "hinglish" | "english";
+
 interface RenderComponentsProps {
   components?: MobileComponent[];
   gender?: "F" | "M";
+  lang?: Language;
 }
 
 export interface WhatHappenAfterOrderProps {
@@ -100,7 +109,43 @@ export interface JourneyLookLikeProps {
     home?: string;
   };
 }
-function RenderComponents({ components, gender = "M" }: RenderComponentsProps) {
+
+export interface MyTrayaKitScreenProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+}
+
+export interface ChatWithHairExpertProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+  gender: string;
+}
+
+export interface TrayaHolisticProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+}
+
+export interface RetakeHairBannerProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+  gender: string;
+}
+
+export interface CategorySliderProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+}
+export interface UrgencyProps {
+  contents: MobileContent[] | MobileContent;
+  title: string;
+  lang: Language;
+}
+function RenderComponents({
+  components,
+  gender = "M",
+  lang = "english",
+}: RenderComponentsProps) {
   // if (!components) components = componentsList;
   const renderComponent = (item: MobileComponent) => {
     const {
@@ -140,6 +185,25 @@ function RenderComponents({ components, gender = "M" }: RenderComponentsProps) {
         ) : (
           <JourneyLookLike contents={contents} title={title} />
         ),
+      whatgoesinsidemykit: (
+        <MyTrayaKitScreen contents={contents} title={title} />
+      ),
+      chat_with_us: (
+        <ChatWithHairExpert gender={gender} contents={contents} title={title} />
+      ),
+      traya_plan_includes: <TrayaHolistic contents={contents} title={title} />,
+      retake_hair_test: (
+        <RetakeHairBanner gender={gender} contents={contents} title={title} />
+      ),
+      lead_category_responses: (
+        <CategorySlider contents={contents} title={title} />
+      ),
+      act_now_stage_1: (
+        <Urgency lang={lang} contents={contents} title={title} />
+      ),
+      act_now_stage_2: (
+        <Urgency lang={lang} contents={contents} title={title} />
+      ),
     };
 
     return (
@@ -160,20 +224,10 @@ function RenderComponents({ components, gender = "M" }: RenderComponentsProps) {
 }
 
 export default memo(RenderComponents);
-// lead_book_a_call:<GetstartedBookCall contents={contents} sub_components={sub_components} title={title} />,
 // why_this_plan_work_for_me : <VideoComp contents={contents} title={title} />,
-// your_first_month_kit: <HairGrowthKit contents={contents} title={title} />,
 // hair_growth_journey: gender == 'F' ?  <JourneyLookLikeFemale contents={contents} title={title} /> : <JourneyLokkLike contents={contents} title={title} />,
 // chat_with_us:<ChatWithHairExpert contents={contents}  title={title} />,
-// traya_plan_includes:<TrayaHolistic contents={contents} title={title} />,
-// whatgoesinsidemykit:<MyTrayaKitScreen contents={contents} title={title} />,
-// act_now_stage_1:<Urgency contents={contents} title={title} />,
-// lead_category_responses:<CategorySlider contents={contents} title={title} />,
 // understand_your_concern:<SolutionHairConcern contents={contents} title={title} />,
 // how_traya_works:<HowTrayaWorks contents={contents} title={title} />,
 // traya_heroes:<TrayaHeroesScreen contents={contents} title={title} />,
-// meet_our_team_doctors: <TrayaDoctors contents={contents} title={title} />,
-// meet_our_team_of_doctors: <TrayaDoctors contents={contents} title={title} />,
 // what_happen_after_order_placed:<WhatHappenAfterOrder contents={contents} title={title} />,
-// user_review:<GoogleReview contents={contents} additional_data={additional_data} title={title}/>,
-// retake_hair_test:<RetakeHairBanner contents={contents} title={title} />,
