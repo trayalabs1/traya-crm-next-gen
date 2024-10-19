@@ -54,6 +54,8 @@ import { useDiffCheckerStore } from "../store/useCmsStore";
 import { useGetContents } from "@queries/cms/contents";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
 import { cn } from "@utils/shadcn";
+import { Input } from "@components/ui/input";
+import useDebounce from "@hooks/use-debounce";
 
 export default function ContentManager() {
   const navigate = useNavigate();
@@ -65,6 +67,8 @@ export default function ContentManager() {
   const [status, setStatus] = useState<string>(DEFAULT_STATUS);
   const [version, setVersion] = useState<string>("");
   const [contentType, setContentType] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(search, 600);
 
   const queryString = generateQueryString({
     page_number: String(page),
@@ -72,6 +76,7 @@ export default function ContentManager() {
     status,
     current_version: version,
     type: contentType,
+    search: debouncedSearch,
   });
 
   const { data, isLoading } = useGetContents(queryString);
@@ -122,6 +127,7 @@ export default function ContentManager() {
     setStatus(DEFAULT_STATUS);
     setVersion("");
     setContentType("");
+    setSearch("");
   }
 
   const statusOptions = useFilteredStatusList(user?.role);
@@ -148,6 +154,16 @@ export default function ContentManager() {
                   <Plus className="mr-2 h-4 w-4" /> Create Content
                 </Button>
               ) : null}
+              {/* Search Input Field */}
+              <Input
+                placeholder="Search Contents"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                className="w-[200px]"
+              />
               <Select
                 onValueChange={(value) => {
                   setStatus(value);
