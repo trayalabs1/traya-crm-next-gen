@@ -161,7 +161,6 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
             },
           );
           const obj = { [type]: transformedComponents }; // Assign transformed data to either currentVersion or newVersion
-          console.log("Transformed Components:", obj);
           set({ ...obj, loading: false });
         } catch (error: unknown) {
           const errorMessage = getErrorMessage(error);
