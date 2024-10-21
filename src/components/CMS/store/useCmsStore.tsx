@@ -13,6 +13,7 @@ import {
 } from "cms";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+
 interface DiffCheckerActionAndState extends DiffCheckerState {
   toggleDiffCheckerDrawer: () => void;
   updateDiffStates: (data: Partial<DiffCheckerState>) => void;
@@ -50,6 +51,29 @@ interface FetchDiffComponentsBulk {
 interface FetchDiffContentsBulk {
   contentIds: string[];
 }
+interface ComponentResponse {
+  component_id: string;
+  name: string;
+  component_type: string;
+  status: string;
+  current_version: number;
+  data: {
+    title: string;
+    description: string;
+    contents: MobileContent[];
+  };
+  old_data?: {
+    title: string;
+    description: string;
+    contents: MobileContent[];
+  };
+  new_data?: {
+    title: string;
+    description: string;
+    contents: MobileContent[];
+  };
+  sub_components: MobileContent[];
+}
 
 const initialStates: DiffCheckerState = {
   isDiffCheckerOpen: false,
@@ -64,6 +88,7 @@ const initialStates: DiffCheckerState = {
   data: null,
   draftData: null,
 };
+
 export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
   devtools(
     (set, get) => ({
@@ -107,13 +132,36 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
       }: FetchDiffComponentsBulk) => {
         set({ loading: true, error: null });
         try {
-          const response: AxiosResponse<MobileComponent[]> =
+          const response: AxiosResponse<ComponentResponse[]> =
             await axiosClient.post(
               componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
-              { componentIds: componentIds },
+              { componentIds },
             );
 
-          const obj = { [type]: response.data };
+          const components = response.data; // Original data from API
+
+          // Transforming the components into the MobileComponent format
+          const transformedComponents: MobileComponent[] = components.map(
+            (component) => {
+              const oldData = component.old_data;
+              const newData = component.new_data;
+
+              // Use optional chaining to prevent 'undefined' errors
+              const selectedData =
+                type === "currentVersion" ? oldData : newData;
+              return {
+                componentId: component.component_id,
+                name: component.name,
+                title: selectedData?.title || component.data.title || "",
+                description:
+                  selectedData?.description || component.data.description || "",
+                contents: selectedData?.contents || [], // Contents from old or new data
+                sub_components: component.sub_components || [], // Handle sub-components if present
+              };
+            },
+          );
+          const obj = { [type]: transformedComponents }; // Assign transformed data to either currentVersion or newVersion
+          console.log("Transformed Components:", obj);
           set({ ...obj, loading: false });
         } catch (error: unknown) {
           const errorMessage = getErrorMessage(error);
