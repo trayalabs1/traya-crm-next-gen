@@ -420,7 +420,10 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
                 description="This will approve. You will need to enter an OTP to confirm."
                 trigger={
                   <Button className="shadow-md hover:shadow-lg transition-shadow duration-20 bg-green-500 hover:bg-green-700">
-                    <Check className="mr-2 h-5 w-5" /> Approve
+                    <Check className="mr-2 h-5 w-5" />{" "}
+                    {user?.role === ROLES_NAME.PUBLISHER
+                      ? "Publish"
+                      : "Approve"}
                   </Button>
                 }
               >

@@ -65,11 +65,6 @@ export interface TrayaDoctorsProps {
   title: string;
 }
 
-export interface HairTestProps {
-  contents: MobileContent[] | MobileContent;
-  // title: string;
-}
-
 export interface NotFoundProps {
   contents: MobileContent[] | MobileContent;
   name: string;
@@ -78,7 +73,6 @@ export interface NotFoundProps {
 
 interface RenderComponentsProps {
   components?: MobileComponent[];
-  gender?: Gender;
   lang?: Language;
 }
 
@@ -194,7 +188,6 @@ export interface EUCoachTipsProps {
 
 function RenderComponents({
   components,
-  gender = "M",
   lang = "english",
 }: RenderComponentsProps) {
   // if (!components) components = componentsList;
@@ -204,13 +197,16 @@ function RenderComponents({
       contents = [],
       sub_components,
       // additional_data,
+      gender: genderType,
       title = "",
     } = item;
 
+    const gender: Gender = genderType ? genderType : "All";
+
     const componentsMap: Record<string, React.ReactNode> = {
       name_draft: <GetStartedv2 contents={contents} />,
-      take_hair_test: <HairTest contents={contents} />,
-      complete_hair_test: <HairTest contents={contents} />,
+      take_hair_test: <HairTest contents={contents} gender={gender} />,
+      complete_hair_test: <HairTest contents={contents} gender={gender} />,
       why_trust_traya: <WhyTrustTraya contents={contents} />,
       what_causes_hair_loss: <RootCauses contents={contents} title={title} />,
       lead_book_a_call: (
