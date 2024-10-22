@@ -3,8 +3,8 @@ import { devtools, persist } from "zustand/middleware";
 import { userApi } from "@api/userApi";
 import { getErrorMessage, ROLES_IDS } from "@utils/common";
 import axios, { AxiosResponse } from "axios";
-import { Roles, User } from "user";
-import { API_BASE_URL } from "@config/config";
+import { LoginFrom, Roles, User } from "user";
+import { API_BASE_URL, LOGIN_URL } from "@config/config";
 
 interface VerifyOTPResponse {
   user: User;
@@ -13,7 +13,7 @@ interface VerifyOTPResponse {
 interface AuthStoreStates {
   accessToken?: string;
   user: User | null;
-  loginFrom: "password" | "login" | "external" | "guest";
+  loginFrom: LoginFrom;
   error: null | string;
   otp?: string;
   isAuthenticated: boolean;
@@ -22,6 +22,11 @@ interface AuthStoreActions {
   login: (loginData: TLogin) => Promise<void>;
   logout: () => Promise<void>;
   verifyOtp: (verifyData: TVerifyOtp) => Promise<void>;
+  externalLogin: (
+    user: User,
+    accessToken: string,
+    loginFrom: LoginFrom,
+  ) => void;
 }
 
 interface TLogin {
@@ -67,7 +72,8 @@ export const useAuthStore = create<AuthStoreStates & AuthStoreActions>()(
         logout: async () => {
           set(initialStates);
           localStorage.clear();
-          window.location.href = "/login";
+          sessionStorage.clear();
+          window.location.replace(LOGIN_URL);
         },
         verifyOtp: async (payload: TVerifyOtp) => {
           set(initialStates);
@@ -99,6 +105,19 @@ export const useAuthStore = create<AuthStoreStates & AuthStoreActions>()(
             const errorMessage = getErrorMessage(error);
             set({ error: errorMessage });
           }
+        },
+        externalLogin: (
+          user: User,
+          accessToken: string,
+          loginFrom: LoginFrom,
+        ) => {
+          set({ error: null });
+          set({
+            user: user,
+            accessToken,
+            loginFrom,
+            isAuthenticated: true,
+          });
         },
       }),
       {

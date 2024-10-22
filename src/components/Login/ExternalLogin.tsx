@@ -1,181 +1,236 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@components/ui/card";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import { Card, CardContent } from "@components/ui/card";
 import { Button } from "@components/ui/button";
 import { Progress } from "@components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
-import {
-  LockIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-  RefreshCwIcon,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { LockIcon, RefreshCwIcon, ArrowRightIcon, XIcon } from "lucide-react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { API_BASE_URL, LOGIN_URL } from "@config/config";
+import { LoginFrom, Roles, User } from "user";
+import { ROLES_IDS } from "@utils/common";
+import { get, isEmpty } from "lodash";
+import { useAuthStore } from "./store/useAuthStore";
+import { toast } from "react-toastify";
 
-export default function EnhancedExternalLogin() {
-  const [validationStatus, setValidationStatus] = useState<
-    "loading" | "success" | "failed"
-  >("loading");
+type ValidationStatus = "loading" | "success" | "failed";
+
+const ExternalLogin = () => {
+  const [validationStatus, setValidationStatus] =
+    useState<ValidationStatus>("loading");
   const [countdown, setCountdown] = useState(3);
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams<{ loginFrom: LoginFrom }>();
+  const { externalLogin } = useAuthStore();
 
-  // Validation logic
-  useEffect(() => {
-    const validateUser = async () => {
-      try {
-        // Simulating API call with a delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        const response = await fetch("/api/validate-session");
-        const data = await response.json();
-        if (data.isValid) {
-          setValidationStatus("success");
-        } else {
-          setValidationStatus("failed");
-        }
-      } catch (error) {
-        console.error("Error validating user:", error);
+  const handleProgressUpdate = (
+    loaded: number,
+    total: number,
+    multiplier: number = 1,
+  ) => {
+    const percentCompleted = Math.round((loaded * multiplier) / (total || 1));
+    setProgress(percentCompleted);
+  };
+
+  const validateUser = useCallback(async () => {
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get("token") || sessionStorage.getItem("token");
+
+    if (isEmpty(token)) {
+      setValidationStatus("failed");
+      toast.error("Token validation failed. Please log in again.");
+      return;
+    }
+
+    sessionStorage.setItem("token", token ?? "");
+    urlParams.delete("token");
+    navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
+
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // Validate Token
+      const tokenResponse = await axios.get(
+        `${API_BASE_URL}/api/validate-token`,
+        {
+          headers,
+          onDownloadProgress: (progressEvent) =>
+            handleProgressUpdate(
+              progressEvent.loaded,
+              progressEvent.total || 0,
+            ),
+        },
+      );
+
+      if (tokenResponse.status !== 200 || !tokenResponse.data.valid) {
         setValidationStatus("failed");
+        toast.error("Token validation failed. Please log in again.");
+        return;
       }
-    };
 
-    validateUser();
-  }, []);
-
-  // Progress bar logic
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
+      // Get User Profile
+      const profileResponse = await axios.get(`${API_BASE_URL}/profile`, {
+        headers,
+        onDownloadProgress: (progressEvent) =>
+          handleProgressUpdate(
+            progressEvent.loaded,
+            progressEvent.total || 0,
+            0.5,
+          ),
       });
-    }, 200);
 
-    return () => clearInterval(interval);
-  }, []);
+      if (profileResponse.status === 200) {
+        const { email, first_name, id, phone_number, roles } =
+          profileResponse.data;
+        const roleId = get(roles, [0, "role_id"]);
+        const user: User = {
+          email,
+          first_name,
+          id,
+          phone_number,
+          role: ROLES_IDS[roleId] as Roles,
+          roles,
+          tenants: [],
+        };
+        externalLogin(user, token ?? "", params.loginFrom ?? "guest");
+        setValidationStatus("success");
+      } else {
+        setValidationStatus("failed");
+        toast.error("Failed to fetch user profile.");
+      }
+    } catch (error) {
+      console.error("Error during authentication:", error);
+      toast.error("An error occurred during authentication. Please try again.");
+      setValidationStatus("failed");
+    }
+  }, [
+    externalLogin,
+    location.pathname,
+    location.search,
+    navigate,
+    params.loginFrom,
+  ]);
 
-  // Countdown and delayed navigation on failure
   useEffect(() => {
-    if (validationStatus === "failed") {
+    validateUser();
+  }, [validateUser]);
+
+  useEffect(() => {
+    if (validationStatus === "success" || validationStatus === "failed") {
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            // Navigate after a delay in useEffect, so it happens after rendering
-            // navigate("/login");
-            window.location.href = "/login";
+            if (validationStatus === "success") {
+              sessionStorage.clear();
+              window.location.replace("/");
+            } else {
+              handleInstantLoginRedirect();
+            }
+            return 0;
           }
           return prev - 1;
         });
       }, 1000);
-
       return () => clearInterval(timer);
     }
-  }, [validationStatus, navigate]); // Navigation logic here after render
+  }, [validationStatus]);
 
-  const handleRetry = () => {
-    setValidationStatus("loading");
-    setProgress(0);
-    // Retry validation (simulated)
-    setTimeout(() => {
-      const isValid = Math.random() < 0.5;
-      setValidationStatus(isValid ? "success" : "failed");
-    }, 2000);
+  const handleInstantLoginRedirect = () => {
+    window.location.replace(LOGIN_URL);
   };
 
-  const handleInstantRedirect = () => {
-    // Navigation on button click
-    navigate("/login");
+  const renderStatusMessage = () => {
+    const messages: Record<ValidationStatus, JSX.Element> = {
+      loading: (
+        <>
+          <Progress value={progress} className="w-full h-2 [&>*]:bg-blue-500" />
+          <p className="text-sm text-gray-400 text-center">
+            Validating your session...
+          </p>
+        </>
+      ),
+      success: (
+        <>
+          <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+            <ArrowRightIcon className="h-8 w-8 text-white" />
+          </div>
+          <h3 className="text-xl font-semibold text-white">Access Granted</h3>
+          <p className="text-gray-400">
+            Redirecting to CMS in {countdown} seconds...
+          </p>
+        </>
+      ),
+      failed: (
+        <>
+          <div className="bg-red-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+            <XIcon className="h-8 w-8 text-white" />
+          </div>
+          <h3 className="text-xl font-semibold text-white">Access Denied</h3>
+          <p className="text-gray-400">
+            Redirecting to Login in {countdown} seconds...
+          </p>
+        </>
+      ),
+    };
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="text-center space-y-4"
+      >
+        {messages[validationStatus]}
+      </motion.div>
+    );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-primary flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center flex items-center justify-center">
-              <LockIcon className="mr-2" /> Secure Access Validation
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {validationStatus === "loading" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="text-center"
+        <Card className="bg-gray-800 border-gray-700 shadow-xl">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-blue-500 p-3 rounded-full">
+                <LockIcon className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-center text-white mb-6">
+              Secure Access Authentication
+            </h2>
+            <AnimatePresence mode="wait">
+              {renderStatusMessage()}
+            </AnimatePresence>
+            <div className="mt-8 flex justify-between">
+              <Button
+                variant="outline"
+                onClick={validateUser}
+                disabled={validationStatus === "loading"}
+                className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
               >
-                <Progress value={progress} className="w-full mb-4" />
-                <p className="text-sm text-gray-600">
-                  Validating your session...
-                </p>
-              </motion.div>
-            )}
-
-            {validationStatus === "success" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+                <RefreshCwIcon className="mr-2 h-4 w-4" /> Retry
+              </Button>
+              <Button
+                onClick={handleInstantLoginRedirect}
+                className="bg-blue-500 hover:bg-blue-600 text-white"
               >
-                <Alert
-                  variant="default"
-                  className="bg-green-50 border-green-200"
-                >
-                  <CheckCircleIcon className="h-4 w-4 text-green-600" />
-                  <AlertTitle className="text-green-800">
-                    Access Granted
-                  </AlertTitle>
-                  <AlertDescription className="text-green-700">
-                    Your session is valid. Redirecting to CMS Dashboard...{" "}
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
-
-            {validationStatus === "failed" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Alert variant="destructive">
-                  <XCircleIcon className="h-4 w-4" />
-                  <AlertTitle>Access Denied</AlertTitle>
-                  <AlertDescription>
-                    Your session is invalid. Redirecting to login in {countdown}{" "}
-                    seconds...
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
+                Go to Login Now
+              </Button>
+            </div>
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button
-              variant="outline"
-              onClick={handleRetry}
-              disabled={validationStatus === "loading"}
-            >
-              <RefreshCwIcon className="mr-2 h-4 w-4" /> Retry
-            </Button>
-            <Button onClick={handleInstantRedirect}>Go to Login Now</Button>
-          </CardFooter>
         </Card>
       </motion.div>
     </div>
   );
-}
+};
+
+export default ExternalLogin;

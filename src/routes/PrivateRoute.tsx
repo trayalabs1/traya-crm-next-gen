@@ -1,7 +1,7 @@
 import { ContentLayout } from "@components/Layout/ContentLayout";
 import AdminPanelLayout from "@components/Layout/Layout";
-import React, { PropsWithChildren } from "react";
-import { Navigate } from "react-router-dom";
+import { LOGIN_URL } from "@config/config";
+import React, { PropsWithChildren, useEffect } from "react";
 
 interface PrivateRouteProps extends PropsWithChildren {
   isAuthenticated: boolean;
@@ -11,12 +11,20 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   isAuthenticated,
   children,
 }) => {
-  return isAuthenticated ? (
+  useEffect(() => {
+    if (!isAuthenticated) {
+      window.location.replace(LOGIN_URL);
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return (
     <AdminPanelLayout>
       <ContentLayout title="Dashboard">{children}</ContentLayout>
     </AdminPanelLayout>
-  ) : (
-    <Navigate to="/login" />
   );
 };
 

@@ -15,3 +15,5 @@ interface User {
 export type LoginSchemaType = z.infer<typeof loginSchema>;
 
 export type Profile = z.infer<typeof ProfileSchema>;
+
+export type LoginFrom = "password" | "login" | "guest" | "crm";
