@@ -32,7 +32,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Edit, FilterX, GitCompare, History, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { get } from "lodash";
+import { get, map } from "lodash";
 import {
   componentTypeList,
   formatWithSpaces,
@@ -52,7 +52,7 @@ import {
 } from "@components/ui/tooltip";
 import { useAuth } from "src/context/useAuth";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
-import { Component } from "cms";
+import { Component, MobileComponent } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
 import { cn } from "@utils/shadcn";
@@ -92,13 +92,12 @@ export default function ComponentManager() {
     toggleDiffCheckerDrawer,
     updateDiffStates,
     fetchDiffComponentsBulk,
+    fetchDiffContentsBulk,
     resetDiffCheckerStates,
   } = useDiffCheckerStore();
 
   const handleDiffChecker = async (component: Component) => {
     resetDiffCheckerStates();
-
-    // Initial state update
     updateDiffStates({
       entityType: "component",
       component: component,
@@ -108,21 +107,50 @@ export default function ComponentManager() {
       draftData: component.draft_data,
     });
 
-    // Fetch currentVersion and set state
     await fetchDiffComponentsBulk({
       type: "currentVersion",
       componentIds: [component.component_id],
     });
 
-    // Fetch newVersion and set state (if not published)
-    if (component.status !== "published") {
-      await fetchDiffComponentsBulk({
-        type: "newVersion",
-        componentIds: [component.component_id],
-      });
+    let dataKey = "data";
+    if (component.status === "draft") {
+      dataKey = "draft_data";
     }
 
-    // Toggle the diff checker drawer after fetching both versions
+    const contentIds = map(
+      get(component, [dataKey, "content_ids"]),
+      "content_id",
+    );
+
+    if (component.status !== "published") {
+      const response = await fetchDiffContentsBulk({
+        contentIds: contentIds,
+      });
+
+      if (response?.status === 200 && response.data) {
+        const transformComponentData: MobileComponent[] = [
+          {
+            componentId: component.component_id,
+            name: component.name,
+            title: get(
+              component,
+              component.status === "draft" ? "draft_data.title" : "data.title",
+              "",
+            ),
+            description: get(
+              component,
+              component.status === "draft"
+                ? "draft_data.description"
+                : "data.description",
+              "",
+            ),
+            contents: response.data,
+          },
+        ];
+
+        updateDiffStates({ newVersion: transformComponentData });
+      }
+    }
     toggleDiffCheckerDrawer();
   };
 
