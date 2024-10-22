@@ -402,9 +402,14 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
                 />
               </CommonDialog>
             ) : null}
-            {(user?.role === "checker" && entity?.status === "submitted") ||
-            (user?.role === "publisher" &&
-              entity?.status === "approved_by_checker") ? (
+            {((user?.role === ROLES_NAME.CHECKER &&
+              entity?.status === "submitted") ||
+              (user?.role === ROLES_NAME.PUBLISHER &&
+                entity?.status === "approved_by_checker")) &&
+            !(
+              diffEntity === "component" &&
+              component?.component_type === "Dynamic"
+            ) ? (
               <CommonDialog
                 isOpen={isApproveDialogOpen}
                 setIsDialogOpen={setIsApproveDialogOpen}
