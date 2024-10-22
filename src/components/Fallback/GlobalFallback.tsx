@@ -1,11 +1,11 @@
-import { Skeleton } from "@components/ui/skeleton"
-import { motion } from "framer-motion"
+import { Skeleton } from "@components/ui/skeleton";
+import { motion } from "framer-motion";
 
 const pulse = {
   initial: { opacity: 0.6 },
   animate: { opacity: 1 },
-  transition: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
-}
+  transition: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
+};
 
 const GlobalFallback = () => {
   return (
@@ -15,7 +15,11 @@ const GlobalFallback = () => {
         <Skeleton className="h-8 w-32 mb-8" />
         <nav className="space-y-4">
           {[...Array(24)].map((_, i) => (
-            <motion.div key={i} {...pulse} transition={{ ...pulse.transition, delay: i * 0.1 }}>
+            <motion.div
+              key={i}
+              {...pulse}
+              transition={{ ...pulse.transition, delay: i * 0.1 }}
+            >
               <Skeleton className="h-4 w-full" />
             </motion.div>
           ))}
@@ -40,8 +44,8 @@ const GlobalFallback = () => {
           <Skeleton className="h-10 w-[200px] mb-6" />
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(12)].map((_, i) => (
-              <motion.div 
-                key={i} 
+              <motion.div
+                key={i}
                 {...pulse}
                 transition={{ ...pulse.transition, delay: 0.2 + i * 0.1 }}
               >
@@ -57,7 +61,7 @@ const GlobalFallback = () => {
         </div>
       </main>
     </div>
-  )
+  );
 };
 
 export default GlobalFallback;
