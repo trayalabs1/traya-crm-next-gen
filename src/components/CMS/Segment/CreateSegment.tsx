@@ -477,6 +477,7 @@ export default function CreateSegment({
                             placeholder="Enter orders count"
                             {...field}
                             disabled={!isNew}
+                            className={!isNew ? "bg-muted" : ""}
                           />
                         </FormControl>
                         <FormMessage />
