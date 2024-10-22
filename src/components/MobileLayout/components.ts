@@ -4045,94 +4045,7 @@ export const componentsList = [
       },
     ],
   },
-  {
-    componentId: "component-1727628187536-GvlwCU",
-    name: "how_to_use_kit",
-    title: "",
-    description: "",
-    status: "published",
-    current_version: 1,
-    component_type: "Static",
-    gender: "All",
-    sub_components: [],
-    contents: [
-      {
-        content_name: "how_to_use_kit",
-        content_type: "banner",
-        content_data: [
-          [
-            {
-              product_id: "37770313564338",
-              name: "Scalp Oil",
-              type: "ayurveda",
-              Dosage: "Twice a week",
-              dosageCode: "TWICE_A_WEEK",
-              info: "Apply an adequate amount/coin sized amount on the scalp",
-              description: "Breakage, dandruff, sleep, stress - All sorted",
-              composition: "Base Oil",
-              itemCount: 1,
-              image_url: {
-                productUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                cartImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                mobileImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                singleHalfImages:
-                  "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-              },
-              cartDisplayName: null,
-              newlyAdded: false,
-              webUrl:
-                "https://formv2s.dev.hav-g.in/product-drawerv2/37770313564338",
-            },
-            {
-              product_id: "37681124081842",
-              name: "Anti-Dandruff Shampoo",
-              type: "allopathy",
-              Dosage: "Twice a week",
-              dosageCode: "TWICE_A_WEEK",
-              info: "Use twice a week. Get in touch if scalp gets too oily or dry.",
-              description: "Manages dandruff of all types",
-              composition: "",
-              itemCount: 1,
-              image_url: {
-                productUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                cartImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                mobileImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                singleHalfImages:
-                  "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-              },
-              cartDisplayName:
-                "Anti-Dandruff Shampoo with Ichthammol & Aloevera | Paraben Free",
-              newlyAdded: false,
-              webUrl:
-                "https://formv2s.dev.hav-g.in/product-drawerv2/37681124081842",
-            },
-            {
-              product_id: "42648509186226",
-              name: "Kevon",
-              type: "allopathy",
-              Dosage: "1-0-1",
-              dosageCode: "1-0-1",
-              info: "dandruff prevention",
-              description: "Night lotion",
-              composition: null,
-              itemCount: 1,
-              image_url: {
-                productUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                cartImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                mobileImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-                singleHalfImages:
-                  "https://dvv8w2q8s3qot.cloudfront.net/undefined",
-              },
-              cartDisplayName: "2% Ketoconazole Night Lotion",
-              newlyAdded: false,
-              webUrl:
-                "https://formv2s.dev.hav-g.in/product-drawerv2/42648509186226",
-            },
-          ],
-        ],
-      },
-    ],
-  },
+
   {
     componentId: "component-1727691529933-hoW1LJ",
     name: "why_this_plan_work_for_me",
@@ -4552,6 +4465,94 @@ export const componentsList = [
         content_data: {
           h1: "We are here to help you.",
         },
+      },
+    ],
+  },
+  {
+    componentId: "component-1727628187536-GvlwCU",
+    name: "how_to_use_kit",
+    title: "",
+    description: "",
+    status: "published",
+    current_version: 1,
+    component_type: "Static",
+    gender: "All",
+    sub_components: [],
+    contents: [
+      {
+        content_name: "how_to_use_kit",
+        content_type: "banner",
+        content_data: [
+          [
+            {
+              product_id: "37770313564338",
+              name: "Scalp Oil",
+              type: "ayurveda",
+              Dosage: "Twice a week",
+              dosageCode: "TWICE_A_WEEK",
+              info: "Apply an adequate amount/coin sized amount on the scalp",
+              description: "Breakage, dandruff, sleep, stress - All sorted",
+              composition: "Base Oil",
+              itemCount: 1,
+              image_url: {
+                productUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                cartImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                mobileImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                singleHalfImages:
+                  "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+              },
+              cartDisplayName: null,
+              newlyAdded: false,
+              webUrl:
+                "https://formv2s.dev.hav-g.in/product-drawerv2/37770313564338",
+            },
+            {
+              product_id: "37681124081842",
+              name: "Anti-Dandruff Shampoo",
+              type: "allopathy",
+              Dosage: "Twice a week",
+              dosageCode: "TWICE_A_WEEK",
+              info: "Use twice a week. Get in touch if scalp gets too oily or dry.",
+              description: "Manages dandruff of all types",
+              composition: "",
+              itemCount: 1,
+              image_url: {
+                productUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                cartImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                mobileImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                singleHalfImages:
+                  "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+              },
+              cartDisplayName:
+                "Anti-Dandruff Shampoo with Ichthammol & Aloevera | Paraben Free",
+              newlyAdded: false,
+              webUrl:
+                "https://formv2s.dev.hav-g.in/product-drawerv2/37681124081842",
+            },
+            {
+              product_id: "42648509186226",
+              name: "Kevon",
+              type: "allopathy",
+              Dosage: "1-0-1",
+              dosageCode: "1-0-1",
+              info: "dandruff prevention",
+              description: "Night lotion",
+              composition: null,
+              itemCount: 1,
+              image_url: {
+                productUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                cartImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                mobileImgUrl: "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+                singleHalfImages:
+                  "https://dvv8w2q8s3qot.cloudfront.net/undefined",
+              },
+              cartDisplayName: "2% Ketoconazole Night Lotion",
+              newlyAdded: false,
+              webUrl:
+                "https://formv2s.dev.hav-g.in/product-drawerv2/42648509186226",
+            },
+          ],
+        ],
       },
     ],
   },

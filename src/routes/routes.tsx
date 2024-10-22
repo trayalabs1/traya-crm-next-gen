@@ -33,9 +33,6 @@ const SegmentComponents = lazy(
 const ComponentContents = lazy(
   () => import("@components/CMS/Component/ComponentContents"),
 );
-// const RenderComponents = lazy(
-//   () => import("@components/MobileLayout/RenderMobileComponents"),
-// );
 const AccountPage = lazy(() => import("@components/Account/Account"));
 const Users = lazy(() => import("@components/Users/Users"));
 const UserForm = lazy(() => import("@components/Users/UserForm"));
