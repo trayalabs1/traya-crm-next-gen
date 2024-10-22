@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { loginApi } from "@api/userApi";
+import { userApi } from "@api/userApi";
 import { getErrorMessage, ROLES_IDS } from "@utils/common";
 import axios, { AxiosResponse } from "axios";
 import { Roles, User } from "user";
@@ -50,7 +50,7 @@ export const useAuthStore = create<AuthStoreStates & AuthStoreActions>()(
           set({ error: null });
           try {
             const response = await axios.post(
-              API_BASE_URL + loginApi.LOGIN,
+              API_BASE_URL + userApi.LOGIN,
               payload,
             );
 
@@ -73,7 +73,7 @@ export const useAuthStore = create<AuthStoreStates & AuthStoreActions>()(
           set(initialStates);
           try {
             const response: AxiosResponse<VerifyOTPResponse> = await axios.post(
-              API_BASE_URL + loginApi.VERIFY_OTP,
+              API_BASE_URL + userApi.VERIFY_OTP,
               payload,
             );
 
