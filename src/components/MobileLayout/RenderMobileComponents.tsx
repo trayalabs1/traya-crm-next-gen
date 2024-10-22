@@ -291,8 +291,7 @@ function RenderComponents({
       coach_tips: <EUCoachTips contents={contents} title={title} />,
       stay_consistent_order_O1: <StayConsistent contents={contents} />,
       prescription: <Prescription contents={contents} title={title} />,
-      reorder_kit:<ReorderKit  contents={contents} title={title} />,
-
+      reorder_kit: <ReorderKit contents={contents} title={title} />,
     };
 
     return (
