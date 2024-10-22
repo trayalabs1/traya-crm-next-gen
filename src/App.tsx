@@ -17,6 +17,8 @@ import { Toaster } from "@components/ui/toaster";
 import "react-toastify/dist/ReactToastify.min.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { getErrorMessage } from "@utils/common";
+import { LoaderOverlay } from "@components/ui/Loader/Loader";
+import { LoaderProvider } from "@providers/LoaderProvider";
 
 function AppRoutes() {
   const routes = AppRoutesConfig();
@@ -55,7 +57,10 @@ export default function App() {
                 }}
               >
                 <Suspense fallback={<GlobalFallback />}>
-                  <AppRoutes />
+                  <LoaderProvider>
+                    <AppRoutes />
+                    <LoaderOverlay variant="progress" color="primary" />
+                  </LoaderProvider>
                 </Suspense>
               </ErrorBoundary>
             )}
