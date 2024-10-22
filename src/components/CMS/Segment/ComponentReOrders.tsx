@@ -34,7 +34,7 @@ function ComponentOrders({
         (isArray(newComponents) &&
           newComponents.map((component, index) => ({
             ...component,
-            order: index + 1,
+            order: (index + 1) * 10,
           }))) ||
         [];
       setComponents(updatedComponents);
