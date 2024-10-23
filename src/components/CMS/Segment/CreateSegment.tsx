@@ -239,6 +239,7 @@ export default function CreateSegment({
     { enabled: false },
   );
   async function handlePhoneView() {
+    if (!(await form.trigger())) return;
     resetDiffCheckerStates();
     const segmentComponentContentData =
       await segmentComponentContentQuery.refetch();
