@@ -127,6 +127,7 @@ export default function SegmentManager() {
       await fetchDiffComponentsBulk({
         type: "newVersion",
         componentIds: componentIds,
+        draftdata: false,
       });
     }
     toggleDiffCheckerDrawer();

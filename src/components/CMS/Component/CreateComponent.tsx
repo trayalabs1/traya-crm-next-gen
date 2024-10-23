@@ -133,12 +133,15 @@ export default function CreateComponent({
   } = useDiffCheckerStore();
 
   const componentBulkQuery = useComponentBulk(
-    { componentIds: [id ?? "defaultId"] },
+    { componentIds: [id ?? "defaultId"], draftdata: false },
     { enabled: false },
   );
 
   const contentBulkQuery = useContentBulk(
-    { contentIds: _.map(form.getValues("data.contents"), "content_id") },
+    {
+      contentIds: _.map(form.getValues("data.contents"), "content_id"),
+      draftdata: false,
+    },
     { enabled: false },
   );
 

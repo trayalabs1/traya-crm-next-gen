@@ -7,15 +7,16 @@ import { Component, MobileComponent } from "cms";
 
 interface ComponentBulk {
   componentIds: string[];
+  draftdata: boolean;
 }
 
 export function useComponentBulk(
-  { componentIds }: ComponentBulk,
+  { componentIds, draftdata = false }: ComponentBulk,
   options?: Omit<UseQueryOptions<MobileComponent[]>, "queryKey" | "queryFn">,
 ) {
   const query = useQuery({
-    queryKey: ["getComponentsBulk", componentIds],
-    queryFn: () => getComponentsBulk({ componentIds }),
+    queryKey: ["getComponentsBulk", componentIds, draftdata],
+    queryFn: () => getComponentsBulk({ componentIds, draftdata }),
     ...options,
   });
 

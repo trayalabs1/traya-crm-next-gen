@@ -189,24 +189,28 @@ export const submitByChecker = async (payload: EntitiyActionBody) => {
 
 export const getComponentsBulk = async ({
   componentIds,
+  draftdata,
 }: {
   componentIds: string[];
+  draftdata: boolean;
 }) => {
   const response = await axiosClient.post(
     componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
-    { componentIds },
+    { componentIds, draftdata },
   );
   return response.data;
 };
 
 export const getContentsBulk = async ({
   contentIds,
+  draftdata,
 }: {
   contentIds: string[];
+  draftdata: boolean;
 }) => {
   const response = await axiosClient.post(
     contentsApi.GET_CONTENTS_BULK_BY_CONTENT_IDS,
-    { contentIds },
+    { contentIds, draftdata },
   );
   return response.data;
 };

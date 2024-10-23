@@ -225,7 +225,10 @@ export default function CreateSegment({
   } = useDiffCheckerStore();
 
   const componentBulkQuery = useComponentBulk(
-    { componentIds: _.map(form.getValues("components"), "component_id") },
+    {
+      componentIds: _.map(form.getValues("components"), "component_id"),
+      draftdata: false,
+    },
     { enabled: false },
   );
   const segmentComponentContentQuery = useSegmentComponentContent(
