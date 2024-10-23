@@ -37,8 +37,8 @@ export const segmentsApi = {
   UPDATE_SEGMENT: (id = "segmentId") => "/v2/cms/segment/update/" + id,
   GET_CONTENTS_COMPONENTS_FROM_SEGMENT: (
     segmentId: string,
-    fetchContents: boolean,
-  ) => `v2/cms/segment/component/content/${segmentId}/${fetchContents}`,
+    draftdata: boolean = false,
+  ) => `v2/cms/segment/component/content/${segmentId}/${draftdata}`,
 } as const;
 
 export const OTPApi = {

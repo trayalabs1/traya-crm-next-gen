@@ -1,6 +1,6 @@
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
-import Select from "react-select";
+import Select, { SingleValue } from "react-select";
 import { ArrowLeft, Smartphone } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -24,13 +24,19 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { getComponents } from "@services/cmsServices";
 import { useEffect, useState } from "react";
 import _, { get } from "lodash";
-import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
 import {
+  reactSelectSingleStyles,
+  reactSelectStyles,
+} from "@components/ui/ReactSelect/reactSelect";
+import {
+  CustomOptionType,
   // componentTypeList,
   genderList,
   generateQueryString,
   getErrorMessage,
   languageList,
+  mapToSelectOptions,
+  visualisationComponentsList,
 } from "@utils/common";
 import ContentReOrders from "./ContentReOrders";
 import { useDiffCheckerStore } from "../store/useCmsStore";
@@ -146,6 +152,8 @@ export default function CreateComponent({
   );
 
   async function handlePhoneView() {
+    if (!(await form.trigger())) return;
+
     resetDiffCheckerStates();
 
     let componentsBulkData: UseQueryResult<MobileComponent[]> | null = null;
@@ -249,11 +257,29 @@ export default function CreateComponent({
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter Name"
-                        {...field}
-                        disabled={!isNew || isDynamicType}
-                      />
+                      {isNew ? (
+                        <Select
+                          id="name"
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                          onChange={(
+                            newValue: SingleValue<CustomOptionType>,
+                          ) => {
+                            field.onChange(newValue?.value);
+                          }}
+                          styles={reactSelectSingleStyles}
+                          placeholder="Enter Name"
+                          options={mapToSelectOptions(
+                            visualisationComponentsList,
+                          )}
+                        />
+                      ) : (
+                        <Input
+                          placeholder="Enter Name"
+                          {...field}
+                          disabled={!isNew || isDynamicType}
+                        />
+                      )}
                     </FormControl>
 
                     <FormMessage />

@@ -32,7 +32,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Edit, FilterX, GitCompare, History } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { get, isArray, map, isEmpty } from "lodash";
+import { get, isArray, isEmpty } from "lodash";
 import {
   customerTypeList,
   formatWithSpaces,
@@ -92,7 +92,6 @@ export default function SegmentManager() {
     isDiffCheckerOpen,
     toggleDiffCheckerDrawer,
     fetchDiffSegment,
-    fetchDiffComponentsBulk,
     updateDiffStates,
     resetDiffCheckerStates,
   } = useDiffCheckerStore();
@@ -110,24 +109,22 @@ export default function SegmentManager() {
       draftData: segment.draft_data,
     });
 
-    //Check for new segement, Not have data
-    if (!(segment.status === "draft" && isEmpty(segment.data))) {
+    if (!isEmpty(segment.data)) {
       await fetchDiffSegment({
         type: "currentVersion",
         segmentId: segment.segment_id,
+        draftData: false,
       });
     }
 
-    if (segment.status !== "published") {
-      const componentIds = map(
-        get(segment, ["draft_data", "component_ids"]),
-        "component_id",
-      );
-
-      await fetchDiffComponentsBulk({
+    if (
+      (segment.current_version === 0 && isEmpty(segment.data)) ||
+      segment.status !== "published"
+    ) {
+      await fetchDiffSegment({
         type: "newVersion",
-        componentIds: componentIds,
-        draftdata: false,
+        segmentId: segment.segment_id,
+        draftData: true,
       });
     }
     toggleDiffCheckerDrawer();

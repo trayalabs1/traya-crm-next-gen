@@ -32,7 +32,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Edit, FilterX, GitCompare, History, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { get } from "lodash";
+import { get, isEmpty } from "lodash";
 import {
   componentTypeList,
   formatWithSpaces,
@@ -109,13 +109,17 @@ export default function ComponentManager() {
       draftData: component.draft_data,
     });
 
-    await fetchDiffComponentsBulk({
-      type: "currentVersion",
-      componentIds: [component.component_id],
-      draftdata: false,
-    });
+    if (!isEmpty(component.data))
+      await fetchDiffComponentsBulk({
+        type: "currentVersion",
+        componentIds: [component.component_id],
+        draftdata: false,
+      });
 
-    if (component.status !== "published") {
+    if (
+      (component.current_version === 0 && isEmpty(component.data)) ||
+      component.status !== "published"
+    ) {
       await fetchDiffComponentsBulk({
         type: "newVersion",
         componentIds: [component.component_id],

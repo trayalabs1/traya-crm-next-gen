@@ -4644,4 +4644,175 @@ export const componentsList = [
       },
     ],
   },
+  {
+    componentId: "component-<unique-id>",
+    name: "build_a_habbit",
+    title: "Log And Earn",
+    description: "",
+    status: "published",
+    current_version: 1,
+    component_type: "Static",
+    gender: "All",
+    sub_components: [],
+    contents: [
+      {
+        content_name: "follow_daily_routine",
+        content_type: "animation",
+        content_data: {
+          h1: "Follow Daily Routine,",
+          h2: "Earn Discounts",
+          h3: "Start logging your daily hair routine to earn amazing discounts",
+          h4: "UPTO 20% OFF",
+          cta: "Log & Earn",
+          discountTextColour: "#E85C4B",
+          animation:
+            "https://dvv8w2q8s3qot.cloudfront.net/App/Home/follow_daily_routine.json",
+        },
+      },
+      {
+        content_name: "stay_regular",
+        content_type: "animation",
+        content_data: {
+          h1: "Get discount on your",
+          h2: "next kit",
+          h3: "Taking medicines regularly? Tell us and earn coins",
+          h4: "UPTO 20% OFF",
+          cta: "Earn now!",
+          discountTextColour: "#E85C4B",
+          animation:
+            "https://dvv8w2q8s3qot.cloudfront.net/App/Home/stay_regular.json",
+        },
+      },
+    ],
+  },
+
+  {
+    componentId: "component-<unique-id-1>",
+    name: "reorder_kit_1",
+    title: "Don't wait till all products in your kit run out!",
+    description: "Gaps can delay results. Order your kit now.",
+    status: "published",
+    current_version: 1,
+    component_type: "Static",
+    gender: "ALL",
+    sub_components: [],
+    contents: [
+      {
+        content_name: "reorder_text_1",
+        content_type: "text",
+        content_data: {
+          h1: "Unlock Upto 20% Discount On Your Order",
+          image:
+            "https://dvv8w2q8s3qot.cloudfront.net/App/Home/cart_movement.json",
+          cta: "Order Now",
+          min_reorder_days: 21,
+          max_reorder_days: 30,
+          discount_text_colour: "#E85C4B",
+        },
+      },
+    ],
+  },
+  {
+    componentId: "component-<unique-id-2>",
+    name: "reorder_kit_2",
+    title: "Want To See Results In Time?",
+    description: "Gaps can delay results. Order your kit now.",
+    status: "published",
+    current_version: 1,
+    component_type: "Static",
+    gender: "ALL",
+    sub_components: [],
+    contents: [
+      {
+        content_name: "reorder_text_2",
+        content_type: "text",
+        content_data: {
+          h1: "",
+          image:
+            "https://dvv8w2q8s3qot.cloudfront.net/App/Home/reorderbanner.png",
+          cta: "Order Now",
+          min_reorder_days: 46,
+          max_reorder_days: "Infinity",
+          discount_text_colour: "#E85C4B",
+        },
+      },
+    ],
+  },
+  {
+    componentId: "component-<unique-id-3>",
+    name: "reorder_kit_3",
+    title: "Reason To Order Your Next Kit Now",
+    description: "You've got a discount!",
+    status: "published",
+    current_version: 1,
+    component_type: "Static",
+    gender: "ALL",
+    sub_components: [],
+    contents: [
+      {
+        content_name: "reorder_text_3",
+        content_type: "text",
+        content_data: {
+          h1: "Unlock Upto 20% Discount On Your Order",
+          image: "https://dvv8w2q8s3qot.cloudfront.net/App/Home/coin.json",
+          cta: "Order Now",
+          min_reorder_days: 31,
+          max_reorder_days: 37,
+          discount_text_colour: "#E85C4B",
+        },
+      },
+    ],
+  },
+  {
+    componentId: "component-<unique-id-4>",
+    name: "reorder_kit_4",
+    title: "Your Next Month's Kit Is Waiting!",
+    description: "Use your discount coupon before it expires.",
+    status: "published",
+    current_version: 1,
+    component_type: "Static",
+    gender: "ALL",
+    sub_components: [],
+    contents: [
+      {
+        content_name: "reorder_text_4",
+        content_type: "text",
+        content_data: {
+          h1: "Unlock Upto 20% Discount On Your Order",
+          image:
+            "https://dvv8w2q8s3qot.cloudfront.net/App/Home/cart_movement.json",
+          cta: "Order Now",
+          min_reorder_days: 38,
+          max_reorder_days: 45,
+          discount_text_colour: "#E85C4B",
+        },
+      },
+    ],
+  },
+  {
+    componentId: "component-<unique-id-5>",
+    name: "reorder_kit_5",
+    title: "Claim your discount NOW!",
+    description: "Your Next Month's Kit Is Waiting!",
+    status: "published",
+    current_version: 1,
+    component_type: "Static",
+    gender: "ALL",
+    sub_components: [],
+    contents: [
+      {
+        content_name: "reorder_text_5",
+        content_type: "text",
+        content_data: {
+          h1: "Get upto 20% OFF on your kit",
+          image:
+            "https://dvv8w2q8s3qot.cloudfront.net/App/Home/cart_movement.json",
+          cta: "Order Now",
+          min_reorder_days: 21,
+          max_reorder_days: 45,
+          discount_text_colour: "#E85C4B",
+        },
+      },
+    ],
+  },
 ];

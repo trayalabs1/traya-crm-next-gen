@@ -125,10 +125,10 @@ export const updateSegment = async ({
 
 export const getContentsComponentsFromSegment = async (
   segmentId: string,
-  fetchContents = false,
+  draftdata = false,
 ): Promise<SegmentComponentsContentsExpandedType> => {
   const response = await axiosClient.get(
-    segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, fetchContents),
+    segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, draftdata),
   );
   return response.data;
 };
