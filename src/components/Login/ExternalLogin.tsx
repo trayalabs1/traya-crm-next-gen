@@ -4,7 +4,13 @@ import axios from "axios";
 import { Card, CardContent } from "@components/ui/card";
 import { Button } from "@components/ui/button";
 import { Progress } from "@components/ui/progress";
-import { LockIcon, RefreshCwIcon, ArrowRightIcon, XIcon } from "lucide-react";
+import {
+  LockIcon,
+  RefreshCwIcon,
+  ArrowRightIcon,
+  XIcon,
+  ShieldOff,
+} from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { API_BASE_URL, LOGIN_URL } from "@config/config";
 import { LoginFrom, Roles, User } from "user";
@@ -13,7 +19,7 @@ import { get, isEmpty } from "lodash";
 import { useAuthStore } from "./store/useAuthStore";
 import { toast } from "react-toastify";
 
-type ValidationStatus = "loading" | "success" | "failed";
+type ValidationStatus = "loading" | "success" | "failed" | "unauthorized";
 
 const ExternalLogin = () => {
   const [validationStatus, setValidationStatus] =
@@ -85,6 +91,11 @@ const ExternalLogin = () => {
         const { email, first_name, id, phone_number, roles } =
           profileResponse.data;
         const roleId = get(roles, [0, "role_id"]);
+        if (!Object.keys(ROLES_IDS).includes(roleId)) {
+          setValidationStatus("unauthorized");
+          return;
+        }
+
         const user: User = {
           email,
           first_name,
@@ -118,14 +129,14 @@ const ExternalLogin = () => {
   }, [validateUser]);
 
   useEffect(() => {
-    if (validationStatus === "success" || validationStatus === "failed") {
+    if (["success", "failed", "unauthorized"].includes(validationStatus)) {
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             if (validationStatus === "success") {
               sessionStorage.clear();
-              window.location.replace("/");
+              handleSuccessRedirect();
             } else {
               handleInstantLoginRedirect();
             }
@@ -140,6 +151,10 @@ const ExternalLogin = () => {
 
   const handleInstantLoginRedirect = () => {
     window.location.replace(LOGIN_URL);
+  };
+
+  const handleSuccessRedirect = () => {
+    window.location.replace("/");
   };
 
   const renderStatusMessage = () => {
@@ -171,6 +186,18 @@ const ExternalLogin = () => {
           <h3 className="text-xl font-semibold text-white">Access Denied</h3>
           <p className="text-gray-400">
             Redirecting to Login in {countdown} seconds...
+          </p>
+        </>
+      ),
+      unauthorized: (
+        <>
+          <div className="bg-red-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+            <ShieldOff className="h-8 w-8 text-white" />
+          </div>
+          <h3 className="text-xl font-semibold text-white">Access Denied</h3>
+          <p className="text-gray-400">
+            <span>You do not have permission to access. </span>
+            <span>Redirecting to Login in {countdown} seconds...</span>
           </p>
         </>
       ),
