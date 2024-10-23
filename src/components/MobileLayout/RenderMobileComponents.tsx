@@ -26,7 +26,6 @@ import TrayaHolistic from "./MobileComponents/TrayaHolistic/TrayaHolistic";
 import CategorySlider from "./MobileComponents/CategorySlider/CategorySlider";
 import Urgency from "./MobileComponents/Urgency/Urgency";
 import RootCauses from "./MobileComponents/RootCauses/RootCauses";
-// import HowToUseTraya from "./MobileComponents/HowToUseKIt/HowToUseKIt";
 import VideoComp from "./MobileComponents/VideoComp/VideoComp";
 import DietPlanOld from "./MobileComponents/DietPlan/DietPlanOld";
 import SolutionHairConcern from "./MobileComponents/SolutionHairConcern/SolutionHairConcern";
@@ -38,6 +37,7 @@ import RetakeHairBanner from "./MobileComponents/RetakeHairBanner/RetakeHairBann
 import HowToUseTraya from "./MobileComponents/HowToUseKIt/HowToUseKIt";
 import Prescription from "./MobileComponents/Prescription/Prescription";
 import ReorderKit from "./MobileComponents/ReorderKit/ReorderKit";
+import TrackAndEarn from "./MobileComponents/TrackAndEarn/TrackAndEarn";
 export interface GetStartedV2Props {
   contents: MobileContent[] | MobileContent;
 }
@@ -287,7 +287,24 @@ function RenderComponents({
       coach_tips: <EUCoachTips contents={contents} title={title} />,
       stay_consistent_order_O1: <StayConsistent contents={contents} />,
       prescription: <Prescription contents={contents} title={title} />,
-      reorder_kit: <ReorderKit contents={contents} title={title} />,
+      reorder_kit: (
+        <ReorderKit contents={contents} title={title} gender={gender} />
+      ),
+      reorder_kit_1: (
+        <ReorderKit contents={contents} title={title} gender={gender} />
+      ),
+      reorder_kit_2: (
+        <ReorderKit contents={contents} title={title} gender={gender} />
+      ),
+      reorder_kit_3: (
+        <ReorderKit contents={contents} title={title} gender={gender} />
+      ),
+      reorder_kit_4: (
+        <ReorderKit contents={contents} title={title} gender={gender} />
+      ),
+      build_a_habbit: (
+        <TrackAndEarn gender={gender} contents={contents} title={title} />
+      ),
     };
 
     return (

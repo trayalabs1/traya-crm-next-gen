@@ -32,7 +32,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Edit, FilterX, GitCompare, History, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { get, map } from "lodash";
+import { get, isEmpty } from "lodash";
 import {
   componentTypeList,
   formatWithSpaces,
@@ -52,12 +52,13 @@ import {
 } from "@components/ui/tooltip";
 import { useAuth } from "src/context/useAuth";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
-import { Component, MobileComponent } from "cms";
+import { Component } from "cms";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import useFilteredStatusList from "@hooks/useFilteredStatusList";
 import { cn } from "@utils/shadcn";
 import { Input } from "@components/ui/input";
 import useDebounce from "@hooks/use-debounce";
+import { useLoader } from "@providers/LoaderProvider";
 
 export default function ComponentManager() {
   const navigate = useNavigate();
@@ -71,6 +72,7 @@ export default function ComponentManager() {
   const [version, setVersion] = useState<string>("");
   const [search, setSearch] = useState<string>("");
   const debouncedSearch = useDebounce(search, 600);
+  const loader = useLoader();
 
   const queryString = generateQueryString({
     page_number: String(page),
@@ -92,11 +94,11 @@ export default function ComponentManager() {
     toggleDiffCheckerDrawer,
     updateDiffStates,
     fetchDiffComponentsBulk,
-    fetchDiffContentsBulk,
     resetDiffCheckerStates,
   } = useDiffCheckerStore();
 
   const handleDiffChecker = async (component: Component) => {
+    loader.start();
     resetDiffCheckerStates();
     updateDiffStates({
       entityType: "component",
@@ -107,50 +109,59 @@ export default function ComponentManager() {
       draftData: component.draft_data,
     });
 
-    await fetchDiffComponentsBulk({
-      type: "currentVersion",
-      componentIds: [component.component_id],
-    });
-
-    let dataKey = "data";
-    if (component.status === "draft") {
-      dataKey = "draft_data";
-    }
-
-    const contentIds = map(
-      get(component, [dataKey, "content_ids"]),
-      "content_id",
-    );
-
-    if (component.status !== "published") {
-      const response = await fetchDiffContentsBulk({
-        contentIds: contentIds,
+    if (!isEmpty(component.data))
+      await fetchDiffComponentsBulk({
+        type: "currentVersion",
+        componentIds: [component.component_id],
+        draftdata: false,
       });
 
-      if (response?.status === 200 && response.data) {
-        const transformComponentData: MobileComponent[] = [
-          {
-            componentId: component.component_id,
-            name: component.name,
-            title: get(
-              component,
-              component.status === "draft" ? "draft_data.title" : "data.title",
-              "",
-            ),
-            description: get(
-              component,
-              component.status === "draft"
-                ? "draft_data.description"
-                : "data.description",
-              "",
-            ),
-            contents: response.data,
-          },
-        ];
-
-        updateDiffStates({ newVersion: transformComponentData });
-      }
+    if (
+      (component.current_version === 0 && isEmpty(component.data)) ||
+      component.status !== "published"
+    ) {
+      await fetchDiffComponentsBulk({
+        type: "newVersion",
+        componentIds: [component.component_id],
+        draftdata: true,
+      });
     }
+
+    // const contentIds = map(
+    //   get(component, [dataKey, "content_ids"]),
+    //   "content_id",
+    // );
+
+    // if (component.status !== "published") {
+    //   const response = await fetchDiffContentsBulk({
+    //     contentIds: contentIds,
+    //   });
+
+    //   if (response?.status === 200 && response.data) {
+    //     const transformComponentData: MobileComponent[] = [
+    //       {
+    //         componentId: component.component_id,
+    //         name: component.name,
+    //         title: get(
+    //           component,
+    //           component.status === "draft" ? "draft_data.title" : "data.title",
+    //           "",
+    //         ),
+    //         description: get(
+    //           component,
+    //           component.status === "draft"
+    //             ? "draft_data.description"
+    //             : "data.description",
+    //           "",
+    //         ),
+    //         contents: response.data,
+    //       },
+    //     ];
+
+    //     updateDiffStates({ newVersion: transformComponentData });
+    //   }
+    // }
+    loader.stop();
     toggleDiffCheckerDrawer();
   };
 

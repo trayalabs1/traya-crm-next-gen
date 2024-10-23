@@ -225,7 +225,10 @@ export default function CreateSegment({
   } = useDiffCheckerStore();
 
   const componentBulkQuery = useComponentBulk(
-    { componentIds: _.map(form.getValues("components"), "component_id") },
+    {
+      componentIds: _.map(form.getValues("components"), "component_id"),
+      draftdata: false,
+    },
     { enabled: false },
   );
   const segmentComponentContentQuery = useSegmentComponentContent(
@@ -236,6 +239,7 @@ export default function CreateSegment({
     { enabled: false },
   );
   async function handlePhoneView() {
+    if (!(await form.trigger())) return;
     resetDiffCheckerStates();
     const segmentComponentContentData =
       await segmentComponentContentQuery.refetch();

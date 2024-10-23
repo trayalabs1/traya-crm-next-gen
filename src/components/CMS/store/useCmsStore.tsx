@@ -41,9 +41,11 @@ interface DiffCheckerState {
 interface FetchDiffSegment {
   segmentId: string;
   type: "currentVersion" | "newVersion";
+  draftData: boolean;
 }
 interface FetchDiffComponentsBulk {
   componentIds: string[];
+  draftdata: boolean;
   type: "currentVersion" | "newVersion";
 }
 
@@ -83,12 +85,19 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
         }));
       },
 
-      fetchDiffSegment: async ({ segmentId, type }: FetchDiffSegment) => {
+      fetchDiffSegment: async ({
+        segmentId,
+        type,
+        draftData,
+      }: FetchDiffSegment) => {
         set({ loading: true, error: null });
         try {
           const response: AxiosResponse<MobileComponent[]> =
             await axiosClient.get(
-              segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, true),
+              segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(
+                segmentId,
+                draftData,
+              ),
             );
 
           const obj = { [type]: response.data };
@@ -104,13 +113,14 @@ export const useDiffCheckerStore = create<DiffCheckerActionAndState>()(
       fetchDiffComponentsBulk: async ({
         componentIds,
         type,
+        draftdata,
       }: FetchDiffComponentsBulk) => {
         set({ loading: true, error: null });
         try {
           const response: AxiosResponse<MobileComponent[]> =
             await axiosClient.post(
               componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
-              { componentIds: componentIds },
+              { componentIds: componentIds, draftdata },
             );
 
           const obj = { [type]: response.data };

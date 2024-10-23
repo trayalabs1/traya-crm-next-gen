@@ -125,10 +125,10 @@ export const updateSegment = async ({
 
 export const getContentsComponentsFromSegment = async (
   segmentId: string,
-  fetchContents = false,
+  draftdata = false,
 ): Promise<SegmentComponentsContentsExpandedType> => {
   const response = await axiosClient.get(
-    segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, fetchContents),
+    segmentsApi.GET_CONTENTS_COMPONENTS_FROM_SEGMENT(segmentId, draftdata),
   );
   return response.data;
 };
@@ -189,24 +189,28 @@ export const submitByChecker = async (payload: EntitiyActionBody) => {
 
 export const getComponentsBulk = async ({
   componentIds,
+  draftdata,
 }: {
   componentIds: string[];
+  draftdata: boolean;
 }) => {
   const response = await axiosClient.post(
     componentsApi.GET_COMPONENTS_BULK_BY_COMPONENT_IDS,
-    { componentIds },
+    { componentIds, draftdata },
   );
   return response.data;
 };
 
 export const getContentsBulk = async ({
   contentIds,
+  draftdata,
 }: {
   contentIds: string[];
+  draftdata: boolean;
 }) => {
   const response = await axiosClient.post(
     contentsApi.GET_CONTENTS_BULK_BY_CONTENT_IDS,
-    { contentIds },
+    { contentIds, draftdata },
   );
   return response.data;
 };

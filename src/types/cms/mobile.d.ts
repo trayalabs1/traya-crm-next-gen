@@ -62,6 +62,18 @@ export interface MobileContentData {
   content?: string;
   images?: string;
   _id?: string;
+  discountTextColour?: string;
+  discountMessage?: string;
+
+  id?: string;
+  name?: string;
+  image_url?: {
+    singleHalfImages: string;
+  };
+  newlyAdded?: boolean;
+  cartDisplayName?: string;
+  product_id?: string;
+  webUrl?: string;
 }
 
 interface componentDetails {
@@ -86,8 +98,13 @@ export interface MobileContent {
   images_circle?: string;
   title?: string;
   h1?: string;
+  cta?: string;
   cta1?: string;
   cta2?: string;
+  description?: string;
+  discountMessage?: string;
+  discountTextColour?: string;
+  image?: string;
 }
 
 export interface MobileComponent {

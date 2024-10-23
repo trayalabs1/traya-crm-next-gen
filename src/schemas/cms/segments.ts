@@ -162,7 +162,13 @@ export const segmentComponentsContentsExpanded = z.array(
     name: z.string(),
     title: z.string(),
     description: z.string(),
-    status: z.enum(["published"]),
+    status: z.enum([
+      "draft",
+      "submitted",
+      "approved_by_checker",
+      "approved_by_publisher",
+      "published",
+    ]),
     current_version: z.number(),
     contents: z
       .array(

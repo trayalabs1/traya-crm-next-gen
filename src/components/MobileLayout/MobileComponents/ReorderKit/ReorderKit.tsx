@@ -1,65 +1,60 @@
 import React from "react";
 import { ScrollArea } from "@components/ui/scroll-area";
 import { Button } from "@components/ui/button";
-import { MobileContent } from "cms";
-
-interface KitData {
-  title: string;
-  description: string;
-  discountMessage?: string;
-  discountTextColour?: string;
-  image: string;
-  cta: string;
-}
+import { Gender, MobileContent } from "cms";
+import { cn } from "@utils/shadcn";
 
 interface ReorderKitProps {
   contents: MobileContent | MobileContent[];
   title: string;
+  gender: Gender;
 }
 
-const ReorderKit: React.FC<ReorderKitProps> = ({ contents }) => {
+const ReorderKit: React.FC<ReorderKitProps> = ({ contents, gender }) => {
   contents = Array.isArray(contents) ? contents : [];
-
-  const data: KitData = Array.isArray(contents[0].content_data)
-    ? contents[0].content_data[0]
-    : {};
+  const data = contents[0]?.content_data ?? {};
   return (
-    <div className="mb-2 bg-white p-4 md:p-6">
+    <div className="mb-2 p-4">
       <ScrollArea className="w-full">
         <div className="border border-gray-200 rounded-lg p-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex-1 mb-4 md:mb-0 md:mr-4">
-              <h2 className="text-xl font-bold text-gray-800 mb-2">
-                {data.title}
+          <div className="flex justify-between items-center">
+            <div className="flex-1 mb-4">
+              <h2 className="text-md font-bold font-nunito text-gray-800">
+                {data?.title}
               </h2>
-              <p className="text-sm text-gray-600 mb-2 h-[34px] overflow-hidden">
-                {data.description}
+              <p className="text-sm font-nunito my-3 text-gray-600 h-[34px] text-wrap">
+                {data?.description}
               </p>
-              {data.discountMessage && (
+              {data?.discountMessage && (
                 <span
-                  className="inline-block px-2 py-1 rounded-full text-xs font-bold"
+                  className="inline-block px-2 py-1 rounded-full text-xs font-bold mt-4"
                   style={{
-                    backgroundColor: `${data.discountTextColour}1A`,
-                    color: data.discountTextColour,
+                    backgroundColor: "#E85C4B1A",
+                    color: data?.discountTextColour ?? "#E85C4B",
                   }}
                 >
-                  {data.discountMessage}
+                  {data?.discountMessage}
                 </span>
               )}
             </div>
-            <div className="w-32 h-40 relative">
+            <div className="w-32 h-40">
               <img
-                src={data.image}
+                src={data?.image}
                 alt="Kit Image"
                 className="object-contain w-full h-full"
               />
             </div>
           </div>
           <Button
-            className="w-full mt-4 bg-[#B7D340] text-black hover:bg-[#A1BD39]"
+            className={cn(
+              "w-full mt-4 text-black",
+              gender === "F"
+                ? "bg-[#BD5747] hover:bg-[#bb594a]"
+                : "bg-[#B7D340] hover:bg-[#bad447]",
+            )}
             onClick={() => console.log("Reorder clicked")}
           >
-            {data.cta}
+            {data?.cta}
           </Button>
         </div>
       </ScrollArea>

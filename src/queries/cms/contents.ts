@@ -18,15 +18,16 @@ export function useGetContents(
 }
 interface ContentBulk {
   contentIds: string[];
+  draftdata: boolean;
 }
 
 export function useContentBulk(
-  { contentIds }: ContentBulk,
+  { contentIds, draftdata = false }: ContentBulk,
   options?: Omit<UseQueryOptions<MobileContent[]>, "queryKey" | "queryFn">,
 ) {
   const query = useQuery({
-    queryKey: ["getContentsBulk", contentIds],
-    queryFn: () => getContentsBulk({ contentIds }),
+    queryKey: ["getContentsBulk", contentIds, draftdata],
+    queryFn: () => getContentsBulk({ contentIds, draftdata }),
     ...options,
   });
 
