@@ -1,4 +1,4 @@
-import { loginSchema } from "@schemas/user/user";
+import { loginSchema, ProfileSchema } from "@schemas/user/user";
 import { z } from "zod";
 
 export type Roles = "maker" | "checker" | "publisher";
@@ -13,3 +13,7 @@ interface User {
   tenants: string[];
 }
 export type LoginSchemaType = z.infer<typeof loginSchema>;
+
+export type Profile = z.infer<typeof ProfileSchema>;
+
+export type LoginFrom = "password" | "login" | "guest" | "crm";

@@ -1,8 +1,6 @@
-export const loginApi = {
+export const userApi = {
   LOGIN: "/login",
   VERIFY_OTP: "/login-otp",
-} as const;
-
-export const logoutApi = {
   LOGOUT: "/logout",
+  PROFILE: "/profile",
 } as const;

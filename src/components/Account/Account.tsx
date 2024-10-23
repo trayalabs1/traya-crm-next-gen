@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -43,12 +43,18 @@ import {
   Briefcase,
 } from "lucide-react";
 import { toast } from "@hooks/use-toast";
-
+import { useProfile } from "@queries/user/user";
+import { get } from "lodash";
+import { ROLES_IDS, ROLES_NAME } from "@utils/common";
 const personalFormSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  gender: z.enum(["male", "female", "other"], {
-    required_error: "Please select a gender.",
-  }),
+  first_name: z
+    .string()
+    .min(2, { message: "Name must be at least 2 characters." }),
+  gender: z
+    .string({
+      required_error: "Please select a gender.",
+    })
+    .nullable(),
   birthdate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
     message: "Please enter a valid date in YYYY-MM-DD format.",
   }),
@@ -78,11 +84,11 @@ const accountFormSchema = z
   });
 
 const dutyShiftSchema = z.object({
-  monday: z.object({ shift: z.string(), isBreak: z.boolean() }),
-  tuesday: z.object({ shift: z.string(), isBreak: z.boolean() }),
-  wednesday: z.object({ shift: z.string(), isBreak: z.boolean() }),
-  thursday: z.object({ shift: z.string(), isBreak: z.boolean() }),
-  friday: z.object({ shift: z.string(), isBreak: z.boolean() }),
+  // monday: z.object({ shift: z.string(), isBreak: z.boolean() }),
+  // tuesday: z.object({ shift: z.string(), isBreak: z.boolean() }),
+  // wednesday: z.object({ shift: z.string(), isBreak: z.boolean() }),
+  // thursday: z.object({ shift: z.string(), isBreak: z.boolean() }),
+  // friday: z.object({ shift: z.string(), isBreak: z.boolean() }),
   saturday: z.object({ shift: z.string(), isBreak: z.boolean() }),
   sunday: z.object({ shift: z.string(), isBreak: z.boolean() }),
 });
@@ -92,12 +98,12 @@ type AccountFormValues = z.infer<typeof accountFormSchema>;
 type DutyShiftValues = z.infer<typeof dutyShiftSchema>;
 
 const defaultPersonalValues: Partial<PersonalFormValues> = {
-  name: "John Doe",
-  gender: "male",
-  birthdate: "1990-01-01",
-  description: "This is my description",
-  role: "checker",
-  languages: ["English", "Spanish"],
+  first_name: "",
+  gender: "",
+  birthdate: "",
+  description: "",
+  role: "",
+  languages: [],
 };
 
 const defaultAccountValues: Partial<AccountFormValues> = {
@@ -105,16 +111,17 @@ const defaultAccountValues: Partial<AccountFormValues> = {
 };
 
 const defaultDutyShiftValues: DutyShiftValues = {
-  monday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
-  tuesday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
-  wednesday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
-  thursday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
-  friday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
+  // monday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
+  // tuesday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
+  // wednesday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
+  // thursday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
+  // friday: { shift: "9:00 AM - 5:00 PM", isBreak: false },
   saturday: { shift: "Off", isBreak: true },
   sunday: { shift: "Off", isBreak: true },
 };
 
 export default function AccountPage() {
+  const { data: profileData } = useProfile();
   const [personalEditing, setPersonalEditing] = useState(false);
   const [accountEditing, setAccountEditing] = useState(false);
   const [dutyShiftEditing, setDutyShiftEditing] = useState(false);
@@ -186,6 +193,23 @@ export default function AccountPage() {
       .toUpperCase();
   };
 
+  useEffect(() => {
+    if (profileData) {
+      const presonalData: PersonalFormValues = {
+        first_name: get(profileData, ["first_name"]) || "-",
+        gender: get(profileData, ["gender"]),
+        role: ROLES_IDS[get(profileData, ["roles", 0, "role_id"])],
+        languages: [],
+        birthdate: "",
+      };
+
+      const accountData: Pick<AccountFormValues, "email"> = {
+        email: get(profileData, "email"),
+      };
+      personalForm.reset(presonalData);
+      accountForm.reset(accountData);
+    }
+  }, [profileData, personalForm, accountForm]);
   return (
     <div className="container mx-auto py-10">
       <div className="flex items-center justify-between mb-6">
@@ -208,7 +232,7 @@ export default function AccountPage() {
                   <AvatarImage src={avatarUrl} alt="Profile picture" />
                 ) : (
                   <AvatarFallback>
-                    {getInitials(defaultPersonalValues.name || "")}
+                    {getInitials(profileData?.first_name || "")}
                   </AvatarFallback>
                 )}
               </Avatar>
@@ -229,11 +253,9 @@ export default function AccountPage() {
               />
             </div>
             <h2 className="text-2xl font-semibold">
-              {defaultPersonalValues.name}
+              {profileData?.first_name}
             </h2>
-            <p className="text-muted-foreground">
-              {defaultAccountValues.email}
-            </p>
+            <p className="text-muted-foreground">{profileData?.email}</p>
           </CardContent>
         </Card>
         <div className="w-full lg:w-2/3">
@@ -253,11 +275,11 @@ export default function AccountPage() {
                         Update your personal details here.
                       </CardDescription>
                     </div>
-                    <Button
+                    {/* <Button
                       onClick={() => setPersonalEditing(!personalEditing)}
                     >
                       {personalEditing ? "Cancel" : "Edit"}
-                    </Button>
+                    </Button> */}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -268,7 +290,7 @@ export default function AccountPage() {
                     >
                       <FormField
                         control={personalForm.control}
-                        name="name"
+                        name="first_name"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Name</FormLabel>
@@ -290,7 +312,6 @@ export default function AccountPage() {
                             <FormLabel>Gender</FormLabel>
                             <Select
                               onValueChange={field.onChange}
-                              defaultValue={field.value}
                               disabled={!personalEditing}
                             >
                               <FormControl>
@@ -299,9 +320,15 @@ export default function AccountPage() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="male">Male</SelectItem>
-                                <SelectItem value="female">Female</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
+                                {Object.entries(ROLES_NAME).map(
+                                  ([key, value]) => {
+                                    return (
+                                      <SelectItem key={key} value={key}>
+                                        {value}
+                                      </SelectItem>
+                                    );
+                                  },
+                                )}
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -449,9 +476,9 @@ export default function AccountPage() {
                         Manage your account settings and preferences.
                       </CardDescription>
                     </div>
-                    <Button onClick={() => setAccountEditing(!accountEditing)}>
+                    {/* <Button onClick={() => setAccountEditing(!accountEditing)}>
                       {accountEditing ? "Cancel" : "Edit"}
-                    </Button>
+                    </Button> */}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -550,11 +577,11 @@ export default function AccountPage() {
                         Manage your weekly duty shift.
                       </CardDescription>
                     </div>
-                    <Button
+                    {/* <Button
                       onClick={() => setDutyShiftEditing(!dutyShiftEditing)}
                     >
                       {dutyShiftEditing ? "Cancel" : "Edit"}
-                    </Button>
+                    </Button> */}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -577,7 +604,7 @@ export default function AccountPage() {
                                 <FormControl>
                                   <div className="flex flex-1">
                                     <Calendar className="w-4 h-4 text-muted-foreground mr-2 mt-3" />
-                                    <Input {...field} />
+                                    <Input disabled {...field} />
                                     {/* <Input {...field} disabled={!dutyShiftEditing || dutyShiftForm.watch(`${day}.isBreak`)} /> */}
                                   </div>
                                 </FormControl>

@@ -95,6 +95,7 @@ export interface MobileComponent {
   name: string;
   title?: string;
   description?: string;
+  gender?: Gender;
   sub_components?: SubComponents[] | SubComponents;
   contents: MobileContent[] | MobileContent;
 }
@@ -131,4 +132,4 @@ export interface TaskList {
   taskName: string;
 }
 export type Language = "hinglish" | "english";
-export type Gender = "F" | "M";
+export type Gender = "F" | "M" | "All";

@@ -7,7 +7,10 @@ export const getEnvironment = (): Environment => {
     return "development";
   }
 
-  if (import.meta.env.VITE_APP_ENV || VITE_APP_ENV === "development") {
+  if (
+    import.meta.env.VITE_APP_ENV === "development" ||
+    VITE_APP_ENV === "development"
+  ) {
     return "development";
   }
 
@@ -15,3 +18,4 @@ export const getEnvironment = (): Environment => {
 };
 
 export const isDevelopment = () => getEnvironment() === "development";
+export const isProduction = () => getEnvironment() === "production";

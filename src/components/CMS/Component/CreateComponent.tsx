@@ -26,7 +26,7 @@ import { useEffect, useState } from "react";
 import _, { get } from "lodash";
 import { reactSelectStyles } from "@components/ui/ReactSelect/reactSelect";
 import {
-  componentTypeList,
+  // componentTypeList,
   genderList,
   generateQueryString,
   getErrorMessage,
@@ -48,7 +48,7 @@ const defaultValues = {
   name: "",
   gender: undefined,
   language: undefined,
-  componentType: undefined,
+  componentType: { label: "Static", value: "Static" },
   data: {
     title: "",
     description: "",
@@ -351,7 +351,7 @@ export default function CreateComponent({
                   )}
                 />
               </div>
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <FormField
                   control={form.control}
                   name="componentType"
@@ -378,7 +378,7 @@ export default function CreateComponent({
                     </FormItem>
                   )}
                 />
-              </div>
+              </div> */}
             </div>
             <div className="space-y-2">
               <FormField

@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { Button } from "@components/ui/button";
-import { COLORS } from "../colors";
 import { cn } from "@utils/shadcn";
-import { HairTestProps } from "@components/MobileLayout/RenderMobileComponents";
+import { Gender, MobileContent } from "cms";
 
-const HairTest: React.FC<HairTestProps> = ({ contents }) => {
+export interface HairTestProps {
+  contents: MobileContent[] | MobileContent;
+  // title: string;
+  gender: Gender;
+}
+
+const HairTest: React.FC<HairTestProps> = ({ contents, gender }) => {
   // const saleTheme = { isOn: true };
 
   return (
@@ -19,6 +24,7 @@ const HairTest: React.FC<HairTestProps> = ({ contents }) => {
       <div className="p-4">
         <CustomBtn
           onPress={() => {}}
+          gender={gender}
           btnText={
             Array.isArray(contents) ? contents[0]?.content_data?.cta : ""
           }
@@ -36,9 +42,10 @@ interface CustomBtnProps {
   onPress: () => void;
   btnText?: string;
   btnSubText?: string;
+  gender?: Gender;
 }
 
-function CustomBtn({ onPress, btnText, btnSubText }: CustomBtnProps) {
+function CustomBtn({ onPress, btnText, btnSubText, gender }: CustomBtnProps) {
   const [isPressed, setIsPressed] = useState<boolean>(false);
   const handleMouseDown = () => {
     setIsPressed(true);
@@ -58,9 +65,10 @@ function CustomBtn({ onPress, btnText, btnSubText }: CustomBtnProps) {
       onMouseLeave={() => setIsPressed(false)}
       className={cn(
         "p-4 w-full transition-transform duration-200",
-        `bg-[${COLORS.greenB7D340}]`,
-        `hover:bg-[${COLORS.greenB7D340}]`,
         isPressed ? "transform scale-95" : "",
+        gender === "F"
+          ? "hover:bg-[#BD5747] bg-[#BD5747]"
+          : "hover:bg-[#B7D340] bg-[#B7D340]",
       )}
     >
       <span className="text-[#000000] font-nunito font-medium">{btnText}</span>

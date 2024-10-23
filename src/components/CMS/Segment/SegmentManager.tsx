@@ -58,6 +58,7 @@ import useFilteredStatusList from "@hooks/useFilteredStatusList";
 import { cn } from "@utils/shadcn";
 import { Input } from "@components/ui/input";
 import useDebounce from "@hooks/use-debounce";
+import { useLoader } from "@providers/LoaderProvider";
 export default function SegmentManager() {
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(PAGINATION_CONFIG.DEFAULT_PAGE);
@@ -95,8 +96,10 @@ export default function SegmentManager() {
     updateDiffStates,
     resetDiffCheckerStates,
   } = useDiffCheckerStore();
+  const loader = useLoader();
 
   const handleDiffChecker = async (segment: Segment) => {
+    loader.start();
     resetDiffCheckerStates();
     updateDiffStates({
       entityType: "segment",
@@ -127,6 +130,7 @@ export default function SegmentManager() {
       });
     }
     toggleDiffCheckerDrawer();
+    loader.stop();
   };
 
   function handleClearFilter() {

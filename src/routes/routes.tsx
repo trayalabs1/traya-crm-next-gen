@@ -3,10 +3,10 @@ import { useAuth } from "src/context/useAuth";
 import { Navigate, RouteObject } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import GuestRoute from "./GuestRoute";
-import Login from "@components/Login/Login";
+// import Login from "@components/Login/Login";
 import NotFound from "@components/NotFound/NotFound";
-import ForgotPasswordPage from "@components/ForgetPassword/ForgetPassword";
-import OtpVerification from "@components/Login/OTPVerification";
+// import ForgotPasswordPage from "@components/ForgetPassword/ForgetPassword";
+// import OtpVerification from "@components/Login/OTPVerification";
 import ExternalLogin from "@components/Login/ExternalLogin";
 
 const VersionHistory = lazy(
@@ -33,9 +33,6 @@ const SegmentComponents = lazy(
 const ComponentContents = lazy(
   () => import("@components/CMS/Component/ComponentContents"),
 );
-// const RenderComponents = lazy(
-//   () => import("@components/MobileLayout/RenderMobileComponents"),
-// );
 const AccountPage = lazy(() => import("@components/Account/Account"));
 const Users = lazy(() => import("@components/Users/Users"));
 const UserForm = lazy(() => import("@components/Users/UserForm"));
@@ -188,30 +185,30 @@ const AppRoutesConfig = (): RouteObject[] => {
         },
       ],
     },
-    {
-      path: "/login",
-      element: (
-        <GuestRoute isAuthenticated={isAuthenticated}>
-          <Login />
-        </GuestRoute>
-      ),
-    },
-    {
-      path: "/forget-password",
-      element: (
-        <GuestRoute isAuthenticated={isAuthenticated}>
-          <ForgotPasswordPage />
-        </GuestRoute>
-      ),
-    },
-    {
-      path: "/verify-account",
-      element: (
-        <GuestRoute isAuthenticated={isAuthenticated}>
-          <OtpVerification />
-        </GuestRoute>
-      ),
-    },
+    // {
+    //   path: "/login",
+    //   element: (
+    //     <GuestRoute isAuthenticated={isAuthenticated}>
+    //       <Login />
+    //     </GuestRoute>
+    //   ),
+    // },
+    // {
+    //   path: "/forget-password",
+    //   element: (
+    //     <GuestRoute isAuthenticated={isAuthenticated}>
+    //       <ForgotPasswordPage />
+    //     </GuestRoute>
+    //   ),
+    // },
+    // {
+    //   path: "/verify-account",
+    //   element: (
+    //     <GuestRoute isAuthenticated={isAuthenticated}>
+    //       <OtpVerification />
+    //     </GuestRoute>
+    //   ),
+    // },
     {
       path: "/external/:loginFrom",
       element: (

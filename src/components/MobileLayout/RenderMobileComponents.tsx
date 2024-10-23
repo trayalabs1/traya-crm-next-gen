@@ -35,6 +35,9 @@ import GetStart from "./MobileComponents/TopSection/GetStart";
 import StayConsistent from "./MobileComponents/StayConsistent/StayConsistent";
 import EUCoachTips from "./MobileComponents/CoachTips/CoachTips";
 import RetakeHairBanner from "./MobileComponents/RetakeHairBanner/RetakeHairBanner";
+import HowToUseTraya from "./MobileComponents/HowToUseKIt/HowToUseKIt";
+import Prescription from "./MobileComponents/Prescription/Prescription";
+import ReorderKit from "./MobileComponents/ReorderKit/ReorderKit";
 export interface GetStartedV2Props {
   contents: MobileContent[] | MobileContent;
 }
@@ -62,11 +65,6 @@ export interface TrayaDoctorsProps {
   title: string;
 }
 
-export interface HairTestProps {
-  contents: MobileContent[] | MobileContent;
-  // title: string;
-}
-
 export interface NotFoundProps {
   contents: MobileContent[] | MobileContent;
   name: string;
@@ -75,7 +73,6 @@ export interface NotFoundProps {
 
 interface RenderComponentsProps {
   components?: MobileComponent[];
-  gender?: Gender;
   lang?: Language;
 }
 
@@ -191,7 +188,6 @@ export interface EUCoachTipsProps {
 
 function RenderComponents({
   components,
-  gender = "M",
   lang = "english",
 }: RenderComponentsProps) {
   // if (!components) components = componentsList;
@@ -201,13 +197,16 @@ function RenderComponents({
       contents = [],
       sub_components,
       // additional_data,
+      gender: genderType,
       title = "",
     } = item;
 
+    const gender: Gender = genderType ? genderType : "All";
+
     const componentsMap: Record<string, React.ReactNode> = {
       name_draft: <GetStartedv2 contents={contents} />,
-      take_hair_test: <HairTest contents={contents} />,
-      complete_hair_test: <HairTest contents={contents} />,
+      take_hair_test: <HairTest contents={contents} gender={gender} />,
+      complete_hair_test: <HairTest contents={contents} gender={gender} />,
       why_trust_traya: <WhyTrustTraya contents={contents} />,
       what_causes_hair_loss: <RootCauses contents={contents} title={title} />,
       lead_book_a_call: (
@@ -271,8 +270,9 @@ function RenderComponents({
         <BookCall gender={gender} contents={contents} title={title} />
       ),
 
-      // how_to_use_kit:<HowToUseTraya contents={contents} title={title} />,
-
+      how_to_use_kit: (
+        <HowToUseTraya gender={gender} contents={contents} title={title} />
+      ),
       diet_plan: (
         <DietPlanOld gender={gender} contents={contents} title={title} />
       ),
@@ -286,6 +286,8 @@ function RenderComponents({
       ),
       coach_tips: <EUCoachTips contents={contents} title={title} />,
       stay_consistent_order_O1: <StayConsistent contents={contents} />,
+      prescription: <Prescription contents={contents} title={title} />,
+      reorder_kit: <ReorderKit contents={contents} title={title} />,
     };
 
     return (

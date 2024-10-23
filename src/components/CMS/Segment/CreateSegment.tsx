@@ -464,7 +464,7 @@ export default function CreateSegment({
                   />
                 </div>
               ) : null}
-              {isNew || _.isEmpty(form.getValues("orderCounts")) ? (
+              {isNew || !_.isEmpty(form.getValues("orderCounts")) ? (
                 <div className="space-y-2">
                   <FormField
                     control={form.control}
