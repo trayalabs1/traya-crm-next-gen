@@ -31,7 +31,7 @@ export function Sidebar() {
           variant="link"
           asChild
         >
-          <Link to="/dashboard" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             {sidebar?.isOpen ? (
               <StarFleet className="w-28" />
             ) : (
