@@ -36,6 +36,7 @@ import { generateQueryString } from "@utils/common";
 import _ from "lodash";
 import { uploadMedia } from "@services/cmsServices";
 import { useGetContents } from "@queries/cms/contents";
+import { toast } from "react-toastify";
 
 const contentTypes = [
   "banner",
@@ -482,6 +483,7 @@ export default function CreateContent({
   }, [isNew, refetch]);
 
   useEffect(() => {
+    if (_.isEmpty(content)) toast.error("Content Not Found");
     if (content) {
       setValue("name", get(content, ["name"], ""));
       setValue("type", get(content, ["type"], ""));

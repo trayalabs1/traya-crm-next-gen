@@ -80,7 +80,7 @@ export default function SegmentComponents(): React.ReactElement {
 
   const { data, isSuccess, isLoading } = useSegmentComponentContent({
     segmentId: segmentId ?? "defaultSegmentId",
-    fetchContents: false,
+    draftdata: false,
   });
 
   useEffect(() => {

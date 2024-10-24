@@ -373,95 +373,106 @@ const DiffChecker: React.FC<DiffCheckerProps> = ({
         <h2 className="text-xl font-bold font-openSans text-nowrap space-y-2">
           Diff Checker
         </h2>
-        {action === "CHANGES" ? (
-          <div className="flex justify-end space-x-4 my-2">
-            {(user?.role === ROLES_NAME.CHECKER &&
-              entity?.status === "submitted") ||
-            (user?.role === ROLES_NAME.PUBLISHER &&
-              entity?.status === "approved_by_checker") ? (
-              <CommonDialog
-                isOpen={isDiscardDialogOpen}
-                setIsDialogOpen={setIsDiscardDialogOpen}
-                onConfirm={handleDiscard}
-                onCancel={() => setIsDiscardDialogOpen(false)}
-                title="Are you sure you want to discard?"
-                description="This action cannot be undone. This will permanently discard the new version."
-                confirmVariant="destructive"
-                trigger={
-                  <Button
-                    variant="outline"
-                    className="shadow-md hover:shadow-lg transition-shadow duration-200"
-                  >
-                    <X className="mr-2 h-5 w-5" /> Discard
-                  </Button>
-                }
-              >
-                <MediaUploadWithComment
-                  onChange={setFiles}
-                  onComment={setComment}
-                />
-              </CommonDialog>
-            ) : null}
-            {((user?.role === ROLES_NAME.CHECKER &&
-              entity?.status === "submitted") ||
-              (user?.role === ROLES_NAME.PUBLISHER &&
-                entity?.status === "approved_by_checker")) &&
-            !(
-              diffEntity === "component" &&
-              component?.component_type === "Dynamic"
-            ) ? (
-              <CommonDialog
-                isOpen={isApproveDialogOpen}
-                setIsDialogOpen={setIsApproveDialogOpen}
-                onConfirm={() => handleApprove()}
-                onCancel={() => setIsApproveDialogOpen(false)}
-                confirmLabel="Approve"
-                title="Are you sure you want to approve?"
-                description="This will approve. You will need to enter an OTP to confirm."
-                trigger={
-                  <Button className="shadow-md hover:shadow-lg transition-shadow duration-20 bg-green-500 hover:bg-green-700">
-                    <Check className="mr-2 h-5 w-5" />{" "}
-                    {user?.role === ROLES_NAME.PUBLISHER
-                      ? "Publish"
-                      : "Approve"}
-                  </Button>
-                }
-              >
-                <MediaUploadWithComment
-                  onChange={setFiles}
-                  onComment={setComment}
-                />
-              </CommonDialog>
-            ) : null}
-
-            {ROLES_NAME.MAKER === user?.role && entity?.status === "draft" ? (
-              <CommonDialog
-                isOpen={isSubmitDialogOpen}
-                setIsDialogOpen={setIsSubmitDialogOpen}
-                onConfirm={handleSubmit}
-                onCancel={() => setIsSubmitDialogOpen(false)}
-                confirmLabel="Submit"
-                title="Are you sure you want to submit?"
-                description={`Are you sure you want to submit the ${getDiffEntityName({ segment, component, content })} (${_.startCase(diffEntity)}) for approval? It will be reviewed by the checker. You will need to enter an OTP to confirm.`}
-                trigger={
-                  <Button className="shadow-md hover:shadow-lg transition-shadow duration-20 bg-blue-500 hover:bg-blue-700">
-                    <SendHorizontal className="mr-2 h-5 w-5" /> Submit
-                  </Button>
-                }
-              />
-            ) : null}
-
-            {isOtpDialogOpen ? (
-              <OTPDialog
-                isOpen={isOtpDialogOpen}
-                onSubmit={handleOtpSubmit}
-                onClose={() => setIsOtpDialogOpen(false)}
-                onResend={handleResendOTP}
-                otp={otp}
-              />
-            ) : null}
+        <div className="flex justify-between">
+          <div className="inline-flex items-center gap-2 text-sm my-3 mr-3 max-w-full">
+            <span className="text-gray-600 font-semibold whitespace-nowrap">
+              {_.startCase(diffEntity)}:
+            </span>
+            <span className="font-normal text-primary break-all">
+              {_.get(entity, ["name"]) || "-"}
+            </span>
           </div>
-        ) : null}
+
+          {action === "CHANGES" ? (
+            <div className="flex justify-end space-x-4 my-2">
+              {(user?.role === ROLES_NAME.CHECKER &&
+                entity?.status === "submitted") ||
+              (user?.role === ROLES_NAME.PUBLISHER &&
+                entity?.status === "approved_by_checker") ? (
+                <CommonDialog
+                  isOpen={isDiscardDialogOpen}
+                  setIsDialogOpen={setIsDiscardDialogOpen}
+                  onConfirm={handleDiscard}
+                  onCancel={() => setIsDiscardDialogOpen(false)}
+                  title="Are you sure you want to discard?"
+                  description="This action cannot be undone. This will permanently discard the new version."
+                  confirmVariant="destructive"
+                  trigger={
+                    <Button
+                      variant="outline"
+                      className="shadow-md hover:shadow-lg transition-shadow duration-200"
+                    >
+                      <X className="mr-2 h-5 w-5" /> Discard
+                    </Button>
+                  }
+                >
+                  <MediaUploadWithComment
+                    onChange={setFiles}
+                    onComment={setComment}
+                  />
+                </CommonDialog>
+              ) : null}
+              {((user?.role === ROLES_NAME.CHECKER &&
+                entity?.status === "submitted") ||
+                (user?.role === ROLES_NAME.PUBLISHER &&
+                  entity?.status === "approved_by_checker")) &&
+              !(
+                diffEntity === "component" &&
+                component?.component_type === "Dynamic"
+              ) ? (
+                <CommonDialog
+                  isOpen={isApproveDialogOpen}
+                  setIsDialogOpen={setIsApproveDialogOpen}
+                  onConfirm={() => handleApprove()}
+                  onCancel={() => setIsApproveDialogOpen(false)}
+                  confirmLabel="Approve"
+                  title="Are you sure you want to approve?"
+                  description="This will approve. You will need to enter an OTP to confirm."
+                  trigger={
+                    <Button className="shadow-md hover:shadow-lg transition-shadow duration-20 bg-green-500 hover:bg-green-700">
+                      <Check className="mr-2 h-5 w-5" />{" "}
+                      {user?.role === ROLES_NAME.PUBLISHER
+                        ? "Publish"
+                        : "Approve"}
+                    </Button>
+                  }
+                >
+                  <MediaUploadWithComment
+                    onChange={setFiles}
+                    onComment={setComment}
+                  />
+                </CommonDialog>
+              ) : null}
+
+              {ROLES_NAME.MAKER === user?.role && entity?.status === "draft" ? (
+                <CommonDialog
+                  isOpen={isSubmitDialogOpen}
+                  setIsDialogOpen={setIsSubmitDialogOpen}
+                  onConfirm={handleSubmit}
+                  onCancel={() => setIsSubmitDialogOpen(false)}
+                  confirmLabel="Submit"
+                  title="Are you sure you want to submit?"
+                  description={`Are you sure you want to submit the ${getDiffEntityName({ segment, component, content })} (${_.startCase(diffEntity)}) for approval? It will be reviewed by the checker. You will need to enter an OTP to confirm.`}
+                  trigger={
+                    <Button className="shadow-md hover:shadow-lg transition-shadow duration-20 bg-blue-500 hover:bg-blue-700">
+                      <SendHorizontal className="mr-2 h-5 w-5" /> Submit
+                    </Button>
+                  }
+                />
+              ) : null}
+
+              {isOtpDialogOpen ? (
+                <OTPDialog
+                  isOpen={isOtpDialogOpen}
+                  onSubmit={handleOtpSubmit}
+                  onClose={() => setIsOtpDialogOpen(false)}
+                  onResend={handleResendOTP}
+                  otp={otp}
+                />
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </div>
       <div className="overflow-x-auto flex flex-wrap justify-center items-center gap-2 my-2">
         {currentVersion ? (

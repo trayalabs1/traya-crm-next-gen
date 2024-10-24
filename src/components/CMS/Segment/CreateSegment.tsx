@@ -3,7 +3,7 @@ import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import Select from "react-select";
 import { ArrowLeft, Smartphone } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getSegments } from "@services/cmsServices";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -51,7 +51,7 @@ import {
   useGetPublishedComponents,
 } from "src/queries/cms/component";
 import ComponentOrders from "./ComponentReOrders";
-import { toast } from "@hooks/use-toast";
+import { toast } from "react-toastify";
 
 type CreateSegmentProps = {
   onSubmit: (content: SegmentMutationPayload) => void;
@@ -91,6 +91,7 @@ export default function CreateSegment({
   onSubmit,
   onBack,
 }: CreateSegmentProps) {
+  const navigate = useNavigate();
   const handleSubmit = (data: FormSegmentSchemaType) => {
     onSubmit({ payload: data, id });
   };
@@ -137,11 +138,15 @@ export default function CreateSegment({
   useEffect(() => {
     if (!isNew) {
       refetch();
+    } else {
+      toast.error("Unable to create the segment");
+      navigate("/cms/segments/");
     }
-  }, [isNew, refetch, id]);
+  }, [isNew, refetch, id, navigate]);
 
   useEffect(() => {
     if (segment) {
+      if (_.isEmpty(segment?.mainData)) toast.error("Segment Not Found");
       const data = _.get(segment, ["mainData", 0]) || {};
       const name = _.get(data, ["name"]);
       const gender = genderList.find(
@@ -234,7 +239,7 @@ export default function CreateSegment({
   const segmentComponentContentQuery = useSegmentComponentContent(
     {
       segmentId: id ?? "defaultSegmentId",
-      fetchContents: true,
+      draftdata: false,
     },
     { enabled: false },
   );
@@ -256,19 +261,15 @@ export default function CreateSegment({
             current_version: item.current_version,
             contents: item.contents
               ? item.contents.map((content) => ({
-                  content_id: content.content_id,
-                  content_name: content.content_name,
-                  content_type: content.content_type,
-                  content_data: content.content_data,
+                  ...content,
                 }))
               : [],
           }))
         : null;
 
     let componentsBulkData: UseQueryResult<MobileComponent[]> | null = null;
-    if (form.formState.isDirty) {
+    if (segment?.mainData[0].status !== "published" || form.formState.isDirty)
       componentsBulkData = await componentBulkQuery.refetch();
-    }
 
     const modifiedSegment = form.getValues();
     const existingSegment = _.get(segment, ["mainData", 0]);
@@ -293,19 +294,11 @@ export default function CreateSegment({
     toggleDiffCheckerDrawer();
 
     if (componentsBulkData && componentsBulkData.isError) {
-      toast({
-        variant: "destructive",
-        duration: 1000,
-        description: getErrorMessage(componentsBulkData.error),
-      });
+      toast.error(getErrorMessage(componentsBulkData.error));
     }
 
     if (segmentComponentContentQuery.isError) {
-      toast({
-        variant: "destructive",
-        duration: 1000,
-        description: getErrorMessage(segmentComponentContentQuery.error),
-      });
+      toast.error(getErrorMessage(segmentComponentContentQuery.error));
     }
   }
   return (
