@@ -483,7 +483,7 @@ export default function CreateContent({
   }, [isNew, refetch]);
 
   useEffect(() => {
-    if (_.isEmpty(content)) toast.error("Content Not Found");
+    if (_.isEmpty(content) && !isNew) toast.error("Content Not Found");
     if (content) {
       setValue("name", get(content, ["name"], ""));
       setValue("type", get(content, ["type"], ""));
@@ -499,7 +499,7 @@ export default function CreateContent({
         setData(transformedData);
       }
     }
-  }, [content, setValue, id]);
+  }, [content, setValue, id, isNew]);
 
   const isDisabled = !isNew;
 

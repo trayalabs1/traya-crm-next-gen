@@ -112,7 +112,7 @@ export default function CreateComponent({
         gender: _.get(componentData, ["gender"])
           ? {
               label: _.get(componentData, ["gender"]),
-              value: _.get(componentData, ["gende"]),
+              value: _.get(componentData, ["gender"]),
             }
           : undefined,
         language: _.get(componentData, ["language"])
@@ -163,14 +163,15 @@ export default function CreateComponent({
     if (!(await form.trigger())) return;
 
     resetDiffCheckerStates();
+    const componentData = _.get(component, ["mainData", 0]);
 
     let componentsBulkData: UseQueryResult<MobileComponent[]> | null = null;
     let contentsBulkData: UseQueryResult<MobileContent[]> | null = null;
 
-    if (!isNew) componentsBulkData = await componentBulkQuery.refetch();
+    if (!_.isEmpty(componentData?.data) && componentData?.status !== "published")
+      componentsBulkData = await componentBulkQuery.refetch();
 
     contentsBulkData = await contentBulkQuery.refetch();
-    const componentData = _.get(component, ["mainData", 0]);
     const newComponentData = form.getValues();
     const newVersiontransformedData: MobileComponent[] | null = [
       {
@@ -201,6 +202,7 @@ export default function CreateComponent({
       newVersion: newVersiontransformedData,
       data,
       draftData,
+      component : componentData
     });
 
     if (componentsBulkData && componentsBulkData.isError) {
