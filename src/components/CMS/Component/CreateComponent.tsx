@@ -168,7 +168,10 @@ export default function CreateComponent({
     let componentsBulkData: UseQueryResult<MobileComponent[]> | null = null;
     let contentsBulkData: UseQueryResult<MobileContent[]> | null = null;
 
-    if (!_.isEmpty(componentData?.data) && componentData?.status !== "published")
+    if (
+      !_.isEmpty(componentData?.data) &&
+      componentData?.status !== "published"
+    )
       componentsBulkData = await componentBulkQuery.refetch();
 
     contentsBulkData = await contentBulkQuery.refetch();
@@ -202,7 +205,7 @@ export default function CreateComponent({
       newVersion: newVersiontransformedData,
       data,
       draftData,
-      component : componentData
+      component: componentData,
     });
 
     if (componentsBulkData && componentsBulkData.isError) {
