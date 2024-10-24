@@ -27,7 +27,7 @@ const Prescription: React.FC<PrescriptionProps> = ({ contents, title }) => {
     contents[0]?.content_data,
   )
     ? contents[0]?.content_data[0]
-    :  contents[0]?.content_data;
+    : contents[0]?.content_data;
   const [show] = useState(!prescriptionData?.isPrescriptionLocked);
 
   const handlePrescriptionClick = () => {
