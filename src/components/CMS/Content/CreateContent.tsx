@@ -381,10 +381,9 @@ export default function CreateContent({
     content_id: id,
   });
 
-  const { data: contentData, refetch } = useGetContents(queryString, {
+  const { data: content, refetch } = useGetContents(queryString, {
     enabled: false,
   });
-  const content = get(contentData, ["mainData", 0]);
 
   const validateData = (items: DataItem[]): boolean => {
     for (const item of items) {
@@ -483,23 +482,25 @@ export default function CreateContent({
   }, [isNew, refetch]);
 
   useEffect(() => {
-    if (_.isEmpty(content)) toast.error("Content Not Found");
     if (content) {
-      setValue("name", get(content, ["name"], ""));
-      setValue("type", get(content, ["type"], ""));
+      const contentData = get(content, ["mainData", 0]);
+
+      if (_.isEmpty(contentData)) toast.error("Content Not Found");
+      setValue("name", get(contentData, ["name"], ""));
+      setValue("type", get(contentData, ["type"], ""));
 
       let dataKey: "data" | "draft_data" = "draft_data";
-      if (content.status === "published") {
+      if (get(contentData, ["status"]) === "published") {
         dataKey = "data";
       }
-      const draftData = get(content, [dataKey], {}) || {};
+      const draftData = get(contentData, [dataKey], {}) || {};
 
       if (draftData) {
         const transformedData: DataItem[] = transformData(draftData);
         setData(transformedData);
       }
     }
-  }, [content, setValue, id]);
+  }, [content, setValue, id, isNew]);
 
   const isDisabled = !isNew;
 
@@ -518,7 +519,9 @@ export default function CreateContent({
           <ArrowLeft className="h-4 w-4 mr-4" />
           <h3 className="font-bold text-xl">
             {isNew ? "Create" : "Edit"} Content
-            {_.get(content, ["status"]) == "draft" ? " (Draft Version) " : ""}
+            {_.get(content, ["mainData", 0, "status"]) == "draft"
+              ? " (Draft Version) "
+              : ""}
           </h3>
         </Button>
       </div>
