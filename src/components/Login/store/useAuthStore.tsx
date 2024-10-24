@@ -1,0 +1,132 @@
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import { userApi } from "@api/userApi";
+import { getErrorMessage, ROLES_IDS } from "@utils/common";
+import axios, { AxiosResponse } from "axios";
+import { LoginFrom, Roles, User } from "user";
+import { API_BASE_URL, LOGIN_URL } from "@config/config";
+
+interface VerifyOTPResponse {
+  user: User;
+  token: string;
+}
+interface AuthStoreStates {
+  accessToken?: string;
+  user: User | null;
+  loginFrom: LoginFrom;
+  error: null | string;
+  otp?: string;
+  isAuthenticated: boolean;
+}
+interface AuthStoreActions {
+  login: (loginData: TLogin) => Promise<void>;
+  logout: () => Promise<void>;
+  verifyOtp: (verifyData: TVerifyOtp) => Promise<void>;
+  externalLogin: (
+    user: User,
+    accessToken: string,
+    loginFrom: LoginFrom,
+  ) => void;
+}
+
+interface TLogin {
+  email: string;
+  password: string;
+}
+
+interface TVerifyOtp {
+  email: string;
+  otp: string;
+}
+
+const initialStates: AuthStoreStates = {
+  user: null,
+  loginFrom: "guest",
+  error: null,
+  isAuthenticated: false,
+};
+
+export const useAuthStore = create<AuthStoreStates & AuthStoreActions>()(
+  devtools(
+    persist(
+      (set) => ({
+        ...initialStates,
+        login: async (payload: TLogin) => {
+          set({ error: null });
+          try {
+            const response = await axios.post(
+              API_BASE_URL + userApi.LOGIN,
+              payload,
+            );
+
+            if (import.meta.env.DEV) {
+              const data = response?.data ?? "";
+              const otp = data.split(":")[1]?.trim();
+              if (otp) set({ otp });
+            }
+          } catch (error) {
+            const errorMessage = getErrorMessage(error);
+            set({ error: errorMessage });
+          }
+        },
+        logout: async () => {
+          set(initialStates);
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.replace(LOGIN_URL);
+        },
+        verifyOtp: async (payload: TVerifyOtp) => {
+          set(initialStates);
+          try {
+            const response: AxiosResponse<VerifyOTPResponse> = await axios.post(
+              API_BASE_URL + userApi.VERIFY_OTP,
+              payload,
+            );
+
+            if (response.status === 200 && response.data) {
+              const user = response.data.user;
+              const accessToken = response.data.token;
+              if (user.roles && user.roles.length) {
+                const roleId = user.roles[0];
+                const role = ROLES_IDS[roleId] as Roles;
+
+                const userWithRole: User = { ...user, role };
+                set({
+                  user: userWithRole,
+                  accessToken,
+                  loginFrom: "password",
+                  isAuthenticated: true,
+                });
+              } else {
+                set({ error: "User has no assigned roles." });
+              }
+            }
+          } catch (error) {
+            const errorMessage = getErrorMessage(error);
+            set({ error: errorMessage });
+          }
+        },
+        externalLogin: (
+          user: User,
+          accessToken: string,
+          loginFrom: LoginFrom,
+        ) => {
+          set({ error: null });
+          set({
+            user: user,
+            accessToken,
+            loginFrom,
+            isAuthenticated: true,
+          });
+        },
+      }),
+      {
+        name: "authStore",
+        partialize(state) {
+          const { isAuthenticated, loginFrom, user, accessToken } = state;
+          return { isAuthenticated, loginFrom, user, accessToken };
+        },
+      },
+    ),
+  ),
+);
