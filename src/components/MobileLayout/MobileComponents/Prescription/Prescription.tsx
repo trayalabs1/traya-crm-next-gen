@@ -24,11 +24,11 @@ const Prescription: React.FC<PrescriptionProps> = ({ contents, title }) => {
   contents = Array.isArray(contents) ? contents : [];
 
   const prescriptionData: PrescriptionData = Array.isArray(
-    contents[0].content_data,
+    contents[0]?.content_data,
   )
-    ? contents[0].content_data[0]
-    : {};
-  const [show] = useState(!prescriptionData.isPrescriptionLocked);
+    ? contents[0]?.content_data[0]
+    :  contents[0]?.content_data;
+  const [show] = useState(!prescriptionData?.isPrescriptionLocked);
 
   const handlePrescriptionClick = () => {
     console.log("Prescription clicked");
@@ -38,7 +38,7 @@ const Prescription: React.FC<PrescriptionProps> = ({ contents, title }) => {
     <div className="bg-white p-4 mb-2">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-        {prescriptionData.howToUseText && (
+        {prescriptionData?.howToUseText && (
           <span
             className={`px-4 py-1 rounded-full text-white text-sm ${
               prescriptionData.howToUseText === "Expired"
@@ -46,7 +46,7 @@ const Prescription: React.FC<PrescriptionProps> = ({ contents, title }) => {
                 : "bg-green-600"
             }`}
           >
-            {prescriptionData.howToUseText}
+            {prescriptionData?.howToUseText}
           </span>
         )}
       </div>
@@ -55,13 +55,13 @@ const Prescription: React.FC<PrescriptionProps> = ({ contents, title }) => {
         <button onClick={handlePrescriptionClick} className="w-full">
           <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg p-4 flex justify-between items-center">
             <div>
-              <p className="text-gray-600 mb-2">{prescriptionData.title}</p>
+              <p className="text-gray-600 mb-2">{prescriptionData?.title}</p>
               <p className="text-blue-800 font-bold underline">
-                {prescriptionData.cta}
+                {prescriptionData?.cta}
               </p>
             </div>
             <img
-              src={prescriptionData.image_url}
+              src={prescriptionData?.image_url}
               alt="Prescription"
               className="w-28 h-24 object-contain"
             />
@@ -72,7 +72,7 @@ const Prescription: React.FC<PrescriptionProps> = ({ contents, title }) => {
           <DialogTrigger asChild>
             <button className="w-full">
               <img
-                src={prescriptionData.image_url}
+                src={prescriptionData?.image_url}
                 alt="Locked Prescription"
                 className="w-full h-26 object-cover rounded-lg"
               />

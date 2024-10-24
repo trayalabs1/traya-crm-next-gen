@@ -42,9 +42,8 @@ import ContentReOrders from "./ContentReOrders";
 import { useDiffCheckerStore } from "../store/useCmsStore";
 import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
 import { useComponentBulk } from "src/queries/cms/component";
-import { toast } from "@hooks/use-toast";
 import { useContentBulk, useGetPublishedContents } from "@queries/cms/contents";
-// import DiffCheckerDrawer from "../DiffChecker/DiffCheckerDrawer";
+import { toast } from "react-toastify";
 type CreateComponentProps = {
   onSubmit: (content: ComponentMutationPayload) => void;
   onBack?: () => void;
@@ -101,22 +100,31 @@ export default function CreateComponent({
 
   useEffect(() => {
     if (component) {
+      if (_.isEmpty(component?.mainData)) toast.error("Component Not Found");
+
       const componentData = _.get(component, ["mainData", 0]);
       // if (!componentData) return;
 
-      const dataKey = componentData.status === "draft" ? "draft_data" : "data";
+      const dataKey =
+        _.get(componentData, ["status"]) === "draft" ? "draft_data" : "data";
       const formData: Partial<FormComponentSchemaType> = {
-        name: componentData.name || "",
-        gender: componentData.gender
-          ? { label: componentData.gender, value: componentData.gender }
-          : undefined,
-        language: componentData.language
-          ? { label: componentData.language, value: componentData.language }
-          : undefined,
-        componentType: componentData.component_type
+        name: _.get(componentData, ["name"]) || "",
+        gender: _.get(componentData, ["gender"])
           ? {
-              label: componentData.component_type,
-              value: componentData.component_type,
+              label: _.get(componentData, ["gender"]),
+              value: _.get(componentData, ["gende"]),
+            }
+          : undefined,
+        language: _.get(componentData, ["language"])
+          ? {
+              label: _.get(componentData, ["language"]),
+              value: _.get(componentData, ["language"]),
+            }
+          : undefined,
+        componentType: _.get(componentData, ["component_type"])
+          ? {
+              label: _.get(componentData, ["component_type"]),
+              value: _.get(componentData, ["component_type"]),
             }
           : undefined,
         data: {
@@ -127,7 +135,7 @@ export default function CreateComponent({
       };
 
       form.reset(formData);
-      setIsDynamicType(componentData.component_type === "Dynamic");
+      setIsDynamicType(_.get(componentData, ["component_type"]) === "Dynamic");
     }
   }, [component, form]);
 
@@ -196,18 +204,10 @@ export default function CreateComponent({
     });
 
     if (componentsBulkData && componentsBulkData.isError) {
-      toast({
-        variant: "destructive",
-        duration: 1000,
-        description: getErrorMessage(componentsBulkData.error),
-      });
+      toast.error(getErrorMessage(componentsBulkData.error));
     }
     if (contentsBulkData && contentsBulkData.isError) {
-      toast({
-        variant: "destructive",
-        duration: 1000,
-        description: getErrorMessage(contentsBulkData.error),
-      });
+      toast.error(getErrorMessage(contentsBulkData.error));
     }
     toggleDiffCheckerDrawer();
   }

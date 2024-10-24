@@ -4,18 +4,18 @@ import { SegmentComponentsContentsExpandedType } from "cms";
 
 interface segmentComponentContent {
   segmentId: string;
-  fetchContents: boolean;
+  draftdata: boolean;
 }
 export function useSegmentComponentContent(
-  { segmentId, fetchContents }: segmentComponentContent,
+  { segmentId, draftdata }: segmentComponentContent,
   options?: Omit<
     UseQueryOptions<SegmentComponentsContentsExpandedType>,
     "queryKey" | "queryFn"
   >,
 ) {
   return useQuery({
-    queryKey: ["getContentComponentFromSegment", segmentId, fetchContents],
-    queryFn: () => getContentsComponentsFromSegment(segmentId, fetchContents),
+    queryKey: ["getContentComponentFromSegment", segmentId, draftdata],
+    queryFn: () => getContentsComponentsFromSegment(segmentId, draftdata),
     ...options,
   });
 }
